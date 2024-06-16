@@ -1,0 +1,3 @@
+﻿namespace WeatherApp.Application.Models.IntegrationEvents.WeatherModelingEvents;
+
+public record ModelingIntegrationEvent(Guid ModelingSubmissionId);
