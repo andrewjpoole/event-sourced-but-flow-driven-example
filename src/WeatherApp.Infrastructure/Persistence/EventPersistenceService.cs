@@ -4,29 +4,29 @@ using WeatherApp.Domain.ServiceDefinitions;
 
 namespace WeatherApp.Infrastructure.Persistence;
 
-public class EventPersistenceService : IEventPersistenceService
+public class EventPersistenceService(
+    ILogger<EventPersistenceService> logger,
+    IEventRepository eventRepository) 
+    : IEventPersistenceService
 {
-    private readonly ILogger<EventPersistenceService> logger;
-    private readonly IEventRepository eventRepository;
-
-    public EventPersistenceService(
-        ILogger<EventPersistenceService> logger,
-        IEventRepository eventRepository)
-    {
-        this.logger = logger;
-        this.eventRepository = eventRepository;
-    }
+    private readonly ILogger<EventPersistenceService> logger = logger;
 
     public async Task<PersistedEvent> PersistEvent(Event @event)
     {
-        var persistedEvent = await eventRepository.InsertEvent(@event.RequestId, @event.EventClassName, @event.SerialisedEvent);
-        return persistedEvent;
+        var result = await eventRepository.InsertEvent(@event);
+        if(result.TryGetPersistedEvent(out var persistedEvent))
+            return persistedEvent;
+        
+        throw new Exception($"Unable to persist event. {result.Error}");
     }
 
     public async Task<List<PersistedEvent>> PersistEvents(IEnumerable<Event> events)
     {
-        var persistedEvents = await eventRepository.InsertEvents(events.Select(e => (e.RequestId, e.EventClassName, SerialisedData: e.SerialisedEvent)).ToList());
-        return persistedEvents.ToList();
+        var result = await eventRepository.InsertEvents(events.ToList());
+        if(result.TryGetPersistedEvents(out var persistedEvents))
+            return persistedEvents;
+
+        throw new Exception($"Unable to persist events. {result.Error}");
     }
 
     public async Task<IEnumerable<PersistedEvent>> FetchEvents(Guid requestId)

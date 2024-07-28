@@ -1,5 +1,6 @@
 using System.Net;
 using System.Text.Json;
+using Azure.Messaging.ServiceBus;
 using FluentAssertions;
 using Moq;
 using Moq.Contrib.HttpClient;
@@ -7,15 +8,8 @@ using WeatherApp.Domain.EventSourcing;
 
 namespace WeatherApp.Tests.Framework;
 
-public class Then
+public class Then(ComponentTestFixture fixture)
 {
-    private readonly ComponentTestFixture fixture;
-
-    public Then(ComponentTestFixture fixture)
-    {
-        this.fixture = fixture;
-    }
-
     public Then And => this;
 
     public Then AndAssert(Action assertion)
@@ -89,9 +83,55 @@ public class Then
     {
         var typeOfT = typeof(T);
         var eventClassName = typeOfT.FullName ?? typeOfT.Name;
-        fixture.EventRepository?.PersistedEvents.Should().Contain(e => e.EventClassName == eventClassName,
+        fixture.EventRepositoryInMemory?.PersistedEvents.Should().Contain(e => e.EventClassName == eventClassName,
             $"{fixture.CurrentPhase}expected an event of type {eventClassName} to have been persisted in the database.");
 
         return this;
     }
+
+    public Then ANotificationShouldHaveBeenSent(string testLocation)
+    {
+        fixture.NotificationServiceFactory.NotificationHandler?.Notifications.Count.Should().Be(1);
+        fixture.NotificationServiceFactory.NotificationHandler?.Notifications.First().Value.Body.Should().Contain(testLocation);
+
+        return this;
+    }
+
+    public Then AMessageWasSent(Mock<ServiceBusSender> senderMock, int times = 1)
+    {
+        senderMock.Verify(x => x.SendMessageAsync(It.IsAny<ServiceBusMessage>(), It.IsAny<CancellationToken>()), Times.Exactly(times));
+
+        return this;
+    }
+
+    public Then AMessageWasSent(Mock<ServiceBusSender> senderMock, Func<ServiceBusMessage, bool> match, int times = 1)
+    {
+        senderMock.Verify(x => x.SendMessageAsync(It.Is<ServiceBusMessage>(m => match(m)), It.IsAny<CancellationToken>()), Times.Exactly(times));
+
+        return this;
+    }
+
+    public Then AMessageWasSent<TMessageType>(Func<ServiceBusMessage, bool> match, int times = 1, bool tryForwardToProcessor = true) where TMessageType : class
+    {
+        var senderMock = fixture.MockServiceBusSenders.GetSenderFor<TMessageType>();
+        senderMock.Verify(x => x.SendMessageAsync(It.Is<ServiceBusMessage>(m => match(m)), It.IsAny<CancellationToken>()), Times.Exactly(times));
+
+        senderMock.Setup(x => x.SendMessageAsync(It.Is<ServiceBusMessage>(m => match(m)), It.IsAny<CancellationToken>()))
+            .Callback<ServiceBusMessage, CancellationToken>((sbm, ctx) =>
+            {
+                if (fixture.EventListenerFactory.TestableServiceBusProcessors.HasProcessorFor<TMessageType>() == false)
+                    return;
+
+                var message = sbm.Body.ToObjectFromJson<TMessageType>();
+                var applicationProperties = (Dictionary<string, object>?)sbm.ApplicationProperties;
+                
+                var processor = fixture.EventListenerFactory.TestableServiceBusProcessors.GetProcessorFor<TMessageType>();
+                processor.SendMessage(message, applicationProperties: applicationProperties).GetAwaiter().GetResult();
+            });
+
+        return this;
+    }
 }
+
+
+

@@ -4,11 +4,9 @@ using WeatherApp.Application.Models;
 using WeatherApp.Application.Models.IntegrationEvents.WeatherModelingEvents;
 using WeatherApp.Application.Models.Requests;
 using WeatherApp.Domain.DomainEvents;
-using WeatherApp.Tests.Framework;
 
 namespace WeatherApp.Tests;
 
-[Collection(nameof(NonParallelCollectionDefinition))]
 public class ComponentTests(ComponentTestFixture testFixture) : IClassFixture<ComponentTestFixture>
 {
     [Fact]
@@ -27,16 +25,18 @@ public class ComponentTests(ComponentTestFixture testFixture) : IClassFixture<Co
     }
 
     [Fact]
-    public void Return_accepted_for_valid_request()
+    public void e2e_flow_notifications_sent_when_ModelingDataAccepted()
     {
         var (given, when, then) = testFixture.SetupHelpers();
+
+        var testLocation = $"testLocation{Guid.NewGuid()}"[..20];
 
         given.WeHaveSomeCollectedWeatherData(out var weatherData)
             .And.TheModelingServiceSubmitEndpointWillReturn(HttpStatusCode.Accepted)
             .And.TheServersAreStarted();
         
         when.InPhase("1 (initial API request)") 
-            .And.WeWrapTheCollectedWeatherDataInAnHttpRequestMessage(weatherData, "testLocation", out var httpRequest)
+            .And.WeWrapTheCollectedWeatherDataInAnHttpRequestMessage(weatherData, testLocation, out var httpRequest)
             .And.WeSendTheMessageToTheApi(httpRequest, out var response);
 
         then.And.TheModelingServiceSubmitEndpointShouldHaveBeenCalled(times: 1)
@@ -52,7 +52,8 @@ public class ComponentTests(ComponentTestFixture testFixture) : IClassFixture<Co
         when.InPhase("3 (2nd ASB message back from modeling service)")
             .AMessageAppears(message: new ModelUpdatedIntegrationEvent(responseBody.RequestId));
 
-        then.TheEventShouldHaveBeenPersisted<ModelUpdated>();
+        then.TheEventShouldHaveBeenPersisted<ModelUpdated>()
+            .And.ANotificationShouldHaveBeenSent(testLocation);
 
     }
 }

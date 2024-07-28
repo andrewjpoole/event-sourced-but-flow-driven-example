@@ -1,13 +1,8 @@
 namespace WeatherApp.Domain.Outcomes;
 
-public class InvalidWeatherDataFailure
+public class InvalidWeatherDataFailure(string detail)
 {
     public string Title => "Invalid WeatherData";
 
-    public string Detail { get; }
-
-    public InvalidWeatherDataFailure(string detail)
-    {
-        Detail = detail;
-    }
+    public string Detail { get; } = detail;
 }

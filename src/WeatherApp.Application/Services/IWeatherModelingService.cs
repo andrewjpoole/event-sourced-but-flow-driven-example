@@ -5,5 +5,5 @@ namespace WeatherApp.Application.Services;
 
 public interface IWeatherModelingService
 {
-    Task<OneOf<WeatherDataCollection, Failure>> Submit(WeatherDataCollection weatherDataCollection);
+    Task<OneOf<WeatherDataCollectionAggregate, Failure>> Submit(WeatherDataCollectionAggregate weatherDataCollectionAggregate);
 }

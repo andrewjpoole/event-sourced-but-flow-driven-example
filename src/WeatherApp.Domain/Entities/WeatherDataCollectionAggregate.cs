@@ -7,11 +7,10 @@ using WeatherApp.Domain.ServiceDefinitions;
 
 namespace WeatherApp.Domain.Entities;
 
-// ToDo:now improve name, include aggregate?
 // ToDo:now re-organise into vertical slices?
-public class WeatherDataCollection : AggregateRootBase
+public class WeatherDataCollectionAggregate : AggregateRootBase
 {
-    public WeatherDataCollection(Guid requestId, List<PersistedEvent> persistedEvents, IEventPersistenceService eventPersistenceService)
+    public WeatherDataCollectionAggregate(Guid requestId, List<PersistedEvent> persistedEvents, IEventPersistenceService eventPersistenceService)
         : base(requestId, persistedEvents, eventPersistenceService)
     {
         Check.NotNull(PersistedEvents);
@@ -30,59 +29,59 @@ public class WeatherDataCollection : AggregateRootBase
     // Properties from events which may not yet have happened, null if not yet happened.
     public Guid? LocationId => PersistedEvents.To<LocationIdFound>()!.LocationId;
     public Guid? ModelingSubmissionId => PersistedEvents.To<SubmittedToModeling>()!.SubmissionId;
-    
-    //bool? ModelingDataRejected,
-    //bool? ModelingDataAccepted,
-    //bool? SubmissionCompleted,
-    //bool? ModelUpdated
-    
-    public static async Task<OneOf<WeatherDataCollection, Failure>> Hydrate(IEventPersistenceService eventPersistenceService, Guid requestId)
+
+    // Flags from events, used to skip tasks which are already complete i.e. on retry.
+    public bool ModelingDataRejected => EventHasHappened<ModelingDataRejected>();
+    bool ModelingDataAccepted => EventHasHappened<ModelingDataAccepted>();
+    bool SubmissionCompleted => EventHasHappened<SubmissionComplete>();
+    bool ModelUpdated => EventHasHappened<ModelUpdated>();
+
+    public static async Task<OneOf<WeatherDataCollectionAggregate, Failure>> Hydrate(IEventPersistenceService eventPersistenceService, Guid requestId)
     {
         var persistedEvents = (await eventPersistenceService.FetchEvents(requestId)).ToList();
 
         if (persistedEvents.Count == 0)
             throw new ExpectedEventsNotFoundException();
 
-        return new WeatherDataCollection(requestId, persistedEvents, eventPersistenceService);
+        return new WeatherDataCollectionAggregate(requestId, persistedEvents, eventPersistenceService);
     }
 
-    public static async Task<OneOf<WeatherDataCollection, Failure>> PersistOrHydrate(IEventPersistenceService eventPersistenceService, Guid requestId, Event initialEvent)
+    public static async Task<OneOf<WeatherDataCollectionAggregate, Failure>> PersistOrHydrate(IEventPersistenceService eventPersistenceService, Guid requestId, Event initialEvent)
     {
         var existingPersistedEvents = (await eventPersistenceService.FetchEvents(requestId)).ToList();
 
         if (existingPersistedEvents.Count != 0)
-            return new WeatherDataCollection(requestId, existingPersistedEvents, eventPersistenceService);
+            return new WeatherDataCollectionAggregate(requestId, existingPersistedEvents, eventPersistenceService);
         
         var initialEvents = new List<Event>
         {
-            initialEvent,
-            //EventSourcing.Event.Create(new LogicalExecutionContextPersisted(LogicalExecutionContext.From(logicalExecutionContextSnapshot)), crossBorderPaymentId, debtorInstitutionId)
+            initialEvent
         };
         var persistedInitialEvents = await eventPersistenceService.PersistEvents(initialEvents);
 
-        var payment = new WeatherDataCollection(requestId, persistedInitialEvents, eventPersistenceService);
+        var payment = new WeatherDataCollectionAggregate(requestId, persistedInitialEvents, eventPersistenceService);
         return payment;
     }
 
-    public async Task<OneOf<WeatherDataCollection, Failure>> AppendSubmissionCompleteEvent()
+    public async Task<OneOf<WeatherDataCollectionAggregate, Failure>> AppendSubmissionCompleteEvent()
     {
         await AppendEvent(new SubmissionComplete());
         return this;
     }
 
-    public async Task<OneOf<WeatherDataCollection, Failure>> AppendModelingDataAcceptedEvent()
+    public async Task<OneOf<WeatherDataCollectionAggregate, Failure>> AppendModelingDataAcceptedEvent()
     {
         await AppendEvent(new ModelingDataAccepted());
         return this;
     }
 
-    public async Task<OneOf<WeatherDataCollection, Failure>> AppendModelingDataRejectedEvent(string reason)
+    public async Task<OneOf<WeatherDataCollectionAggregate, Failure>> AppendModelingDataRejectedEvent(string reason)
     {
         await AppendEvent(new ModelingDataRejected(reason));
         return this;
     }
 
-    public async Task<OneOf<WeatherDataCollection, Failure>> AppendModelUpdatedEvent()
+    public async Task<OneOf<WeatherDataCollectionAggregate, Failure>> AppendModelUpdatedEvent()
     {
         await AppendEvent(new ModelUpdated());
         return this;

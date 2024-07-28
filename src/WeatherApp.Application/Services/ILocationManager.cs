@@ -5,5 +5,5 @@ namespace WeatherApp.Application.Services;
 
 public interface ILocationManager
 {
-    Task<OneOf<WeatherDataCollection, Failure>> Locate(WeatherDataCollection weatherDataCollection);
+    Task<OneOf<WeatherDataCollectionAggregate, Failure>> Locate(WeatherDataCollectionAggregate weatherDataCollectionAggregate);
 }

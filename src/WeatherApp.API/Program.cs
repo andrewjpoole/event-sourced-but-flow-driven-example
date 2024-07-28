@@ -12,7 +12,7 @@ using WeatherApp.Infrastructure.LocationManager;
 using WeatherApp.Infrastructure.Notifications;
 using WeatherApp.Infrastructure.Persistence;
 
-namespace WeatherApp.WebAPI;
+namespace WeatherApp.API;
 
 public class Program
 {
@@ -21,15 +21,14 @@ public class Program
         var builder = WebApplication.CreateBuilder(args);
 
         // Add services to the container
-
         builder.Services
             .AddSingleton<IGetWeatherReportRequestHandler, GetWeatherReportRequestHandler>()
-            .AddSingleton<IPostWeatherDataHandler, CollectedWeatherDataOrchestrator>()
+            .AddSingleton<ISubmitWeatherDataCommandHandler, CollectedWeatherDataOrchestrator>()
             .AddSingleton<IRegionValidator, RegionValidator>()
             .AddSingleton<IDateChecker, DateChecker>()
             .AddSingleton<IWeatherForecastGenerator, WeatherForecastGenerator>()
             .AddSingleton<IEventPersistenceService, EventPersistenceService>()
-            .AddSingleton<IEventRepository, EventRepository>()
+            .AddSingleton<IEventRepository, EventRepositoryInMemory>()
             .AddSingleton<INotificationService, NotificationService>()
             .AddSingleton<IWeatherDataValidator, WeatherDataValidator>()
             .AddSingleton<ILocationManager, LocationManager>()
@@ -53,10 +52,10 @@ public class Program
         app.MapPost("/v1/collected-weather-data/{location}", (
             [FromRoute] string location,
             [FromBody] CollectedWeatherDataModel data,
-            [FromServices] IPostWeatherDataHandler handler,
+            [FromServices] ISubmitWeatherDataCommandHandler handler,
             [FromServices] IWeatherDataValidator weatherDataValidator,
             [FromServices] ILocationManager locationManager)
-            => CreateResponseFor(() => handler.HandlePostWeatherData(location, data, weatherDataValidator, locationManager)));
+            => CreateResponseFor(() => handler.HandleSubmitWeatherDataCommand(location, data, weatherDataValidator, locationManager)));
         #endregion
 
         static async Task<IResult> CreateResponseFor<TSuccess>(Func<Task<OneOf<TSuccess, Failure>>> handleRequestFunc)

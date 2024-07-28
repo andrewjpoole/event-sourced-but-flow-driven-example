@@ -4,8 +4,8 @@ using WeatherApp.Domain.Outcomes;
 
 namespace WeatherApp.Application.Orchestration;
 
-public interface IPostWeatherDataHandler
+public interface ISubmitWeatherDataCommandHandler
 {
-    Task<OneOf<WeatherDataCollectionResponse, Failure>> HandlePostWeatherData(string weatherDataLocation, CollectedWeatherDataModel weatherDataModel, 
+    Task<OneOf<WeatherDataCollectionResponse, Failure>> HandleSubmitWeatherDataCommand(string weatherDataLocation, CollectedWeatherDataModel weatherDataModel, 
         IWeatherDataValidator weatherDataValidator, ILocationManager locationManager);
 }

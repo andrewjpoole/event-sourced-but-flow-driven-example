@@ -1,19 +1,15 @@
 using Azure.Messaging.ServiceBus;
 
-namespace WeatherApp.Tests.Framework;
+namespace WeatherApp.Tests.Framework.ServiceBus;
 
-public class TestableProcessMessageEventArgs : ProcessMessageEventArgs
+public class TestableProcessMessageEventArgs(ServiceBusReceivedMessage message) 
+    : ProcessMessageEventArgs(message, null, CancellationToken.None)
 {
     public bool WasCompleted;
     public bool WasDeadLettered;
     public bool WasAbandoned;
-    public DateTime Created;
+    public DateTime Created = DateTime.UtcNow;
     public string DeadLetterReason = string.Empty;
-
-    public TestableProcessMessageEventArgs(ServiceBusReceivedMessage message) : base(message, null, CancellationToken.None)
-    {
-        Created = DateTime.UtcNow;
-    }
 
     public override Task CompleteMessageAsync(ServiceBusReceivedMessage message,
         CancellationToken cancellationToken = new())

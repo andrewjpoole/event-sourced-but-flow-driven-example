@@ -1,0 +1,15 @@
+﻿@WeatherApp.NotificationAPI_HostAddress = https://localhost:7215
+
+POST {{WeatherApp.NotificationAPI_HostAddress}}/v1/notificiations/{{$guid}}
+Content-Type: application/json
+Accept: application/json
+
+{
+    "TimeStamp" : "{{$datetime iso8601}}",
+    "Body" : "A test notification!"
+}
+###
+
+GET {{WeatherApp.NotificationAPI_HostAddress}}/v1/notifications
+
+###

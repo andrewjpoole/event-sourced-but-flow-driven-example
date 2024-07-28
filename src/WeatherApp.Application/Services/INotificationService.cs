@@ -5,5 +5,5 @@ namespace WeatherApp.Application.Services;
 
 public interface INotificationService
 {
-    Task<OneOf<WeatherDataCollection, Failure>> NotifyModelUpdated(WeatherDataCollection weatherDataCollection);
+    Task<OneOf<WeatherDataCollectionAggregate, Failure>> NotifyModelUpdated(WeatherDataCollectionAggregate weatherDataCollectionAggregate);
 }

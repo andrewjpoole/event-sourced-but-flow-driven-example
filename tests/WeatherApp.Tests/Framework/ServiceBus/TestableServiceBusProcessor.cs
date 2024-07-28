@@ -2,13 +2,14 @@ using System.Text.Json;
 using Azure.Messaging.ServiceBus;
 using WeatherApp.Domain.EventSourcing;
 
-namespace WeatherApp.Tests.Framework;
+namespace WeatherApp.Tests.Framework.ServiceBus;
 
-public class TestableServiceBusProcessor<T> : ServiceBusProcessor where T : class
+public class TestableServiceBusProcessor(string dummyQueueName) : ServiceBusProcessor
 {
-    public List<TestableProcessMessageEventArgs> MessageDeliveryAttempts = new();
+    public string DummyQueueName { get; } = dummyQueueName;
+    public List<TestableProcessMessageEventArgs> MessageDeliveryAttempts = [];
 
-    public async Task SendMessageWithRetries(T request, int maxDeliveryCount = 10)
+    public async Task SendMessageWithRetries<T>(T request, int maxDeliveryCount = 10) where T : class
     {
         for (var attempt = 1; attempt <= maxDeliveryCount; attempt++)
         {
@@ -23,9 +24,9 @@ public class TestableServiceBusProcessor<T> : ServiceBusProcessor where T : clas
         }
     }
 
-    public async Task SendMessage(T request, int deliveryCount = 1)
+    public async Task SendMessage<T>(T request, int deliveryCount = 1, Dictionary<string, object>? applicationProperties = null) where T : class
     {
-        var args = CreateMessageArgs(request, deliveryCount);
+        var args = CreateMessageArgs(request, deliveryCount, applicationProperties);
         MessageDeliveryAttempts.Add((TestableProcessMessageEventArgs)args);
         await base.OnProcessMessageAsync(args);
     }
@@ -46,14 +47,14 @@ public class TestableServiceBusProcessor<T> : ServiceBusProcessor where T : clas
         return Task.CompletedTask;
     }
 
-    public static ProcessMessageEventArgs CreateMessageArgs(T payload, int deliveryCount = 1)
+    public static ProcessMessageEventArgs CreateMessageArgs<T>(T payload, int deliveryCount = 1, Dictionary<string, object>? applicationProperties = null) where T : class
     {
         var payloadJson = JsonSerializer.Serialize(payload, GlobalJsonSerialiserSettings.Default);
 
         var correlationId = Guid.NewGuid().ToString();
-        var applicationProperties = new Dictionary<string, object>
+        applicationProperties ??= new Dictionary<string, object>
         {
-            {"origin", "ComponentTests"}
+            { "origin", "ComponentTests" }
         };
 
         var message = ServiceBusModelFactory.ServiceBusReceivedMessage(

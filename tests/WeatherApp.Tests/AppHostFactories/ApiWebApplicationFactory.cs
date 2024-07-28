@@ -6,16 +6,16 @@ using Moq;
 using WeatherApp.Infrastructure.ApiClients.WeatherModelingSystem;
 using WeatherApp.Infrastructure.Persistence;
 
-namespace WeatherApp.Tests.Framework;
+namespace WeatherApp.Tests.AppHostFactories;
 
-public class ApiWebApplicationFactory : WebApplicationFactory<WebAPI.Program>
+public class ApiWebApplicationFactory : WebApplicationFactory<API.Program>
 {
     public HttpClient? HttpClient;
 
     public readonly Mock<ILogger> MockLogger = new();
     public readonly Mock<HttpMessageHandler> MockWeatherModelingServiceHttpMessageHandler = new();
 
-    public Func<EventRepository>? SetSharedEventRepository = null;
+    public Func<EventRepositoryInMemory>? SetSharedEventRepository = null;
 
     // Using CreateHost here instead of ConfigureWebHost because CreateHost adds config just after WebApplication.CreateBuilder(args) is called
     // whereas ConfigureWebHost is called too late just before builder.Build() is called.
@@ -33,14 +33,12 @@ public class ApiWebApplicationFactory : WebApplicationFactory<WebAPI.Program>
 
                 services.AddHttpClient(typeof(IWeatherModelingServiceClient).FullName!, client => client.BaseAddress = new Uri(Constants.WeatherModelingServiceBaseUrl))
                     .ConfigurePrimaryHttpMessageHandler(() => MockWeatherModelingServiceHttpMessageHandler.Object);
-                
-                if(SetSharedEventRepository is not null)
+
+                if (SetSharedEventRepository is not null)
                     services.AddSingleton<IEventRepository>(_ => SetSharedEventRepository());
             });
 
         var host = base.CreateHost(builder);
-
-        //EventRepository = (WeatherDataPersistence)host.Services.GetService<IWeatherDataPersistence>()!; // todo: add an underlying layer to mock in future.
 
         return host;
     }

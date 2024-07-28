@@ -9,13 +9,13 @@ public class LocationManager : ILocationManager
 {
     private readonly Dictionary<string, Guid> knownLocations = [];
 
-    public async Task<OneOf<WeatherDataCollection, Failure>> Locate(WeatherDataCollection weatherDataCollection)
+    public async Task<OneOf<WeatherDataCollectionAggregate, Failure>> Locate(WeatherDataCollectionAggregate weatherDataCollectionAggregate)
     {
-        if (!knownLocations.ContainsKey(weatherDataCollection.Location))
-            knownLocations.Add(weatherDataCollection.Location, Guid.NewGuid());
+        if (!knownLocations.ContainsKey(weatherDataCollectionAggregate.Location))
+            knownLocations.Add(weatherDataCollectionAggregate.Location, Guid.NewGuid());
         
-        await weatherDataCollection.AppendEvent(new LocationIdFound(knownLocations[weatherDataCollection.Location]));
+        await weatherDataCollectionAggregate.AppendEvent(new LocationIdFound(knownLocations[weatherDataCollectionAggregate.Location]));
 
-        return weatherDataCollection;
+        return weatherDataCollectionAggregate;
     }
 }

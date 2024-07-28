@@ -5,22 +5,12 @@ using WeatherApp.Domain.Outcomes;
 
 namespace WeatherApp.Application.Handlers;
 
-public class GetWeatherReportRequestHandler : IGetWeatherReportRequestHandler
+public class GetWeatherReportRequestHandler(
+    IRegionValidator regionValidator,
+    IDateChecker dateChecker,
+    IWeatherForecastGenerator weatherForecastGenerator)
+    : IGetWeatherReportRequestHandler
 {
-    private readonly IRegionValidator regionValidator;
-    private readonly IDateChecker dateChecker;
-    private readonly IWeatherForecastGenerator weatherForecastGenerator;
-
-    public GetWeatherReportRequestHandler(
-        IRegionValidator regionValidator, 
-        IDateChecker dateChecker, 
-        IWeatherForecastGenerator weatherForecastGenerator)
-    {
-        this.regionValidator = regionValidator;
-        this.dateChecker = dateChecker;
-        this.weatherForecastGenerator = weatherForecastGenerator;
-    }
-    
     // ToDo:now replace the details for an aggregate
     public async Task<OneOf<WeatherReportResponse, Failure>> HandleGetWeatherReport(
         string requestedRegion, DateTime requestedDate)

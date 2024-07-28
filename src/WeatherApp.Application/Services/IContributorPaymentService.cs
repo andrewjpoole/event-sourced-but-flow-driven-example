@@ -5,10 +5,10 @@ namespace WeatherApp.Application.Services;
 
 public interface IContributorPaymentService
 {
-    Task<OneOf<WeatherDataCollection, Failure>> CreatePendingPayment(
-        WeatherDataCollection weatherDataCollection);
-    Task<OneOf<WeatherDataCollection, Failure>> RevokePendingPayment(
-        WeatherDataCollection weatherDataCollection);
-    Task<OneOf<WeatherDataCollection, Failure>> CommitPendingPayment(
-        WeatherDataCollection weatherDataCollection);
+    Task<OneOf<WeatherDataCollectionAggregate, Failure>> CreatePendingPayment(
+        WeatherDataCollectionAggregate weatherDataCollectionAggregate);
+    Task<OneOf<WeatherDataCollectionAggregate, Failure>> RevokePendingPayment(
+        WeatherDataCollectionAggregate weatherDataCollectionAggregate);
+    Task<OneOf<WeatherDataCollectionAggregate, Failure>> CommitPendingPayment(
+        WeatherDataCollectionAggregate weatherDataCollectionAggregate);
 }

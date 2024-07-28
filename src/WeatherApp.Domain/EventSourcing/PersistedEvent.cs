@@ -1,31 +1,31 @@
-﻿using System.Net.NetworkInformation;
-using System.Text.Json;
+﻿using System.Text.Json;
 
 namespace WeatherApp.Domain.EventSourcing;
 
-public class PersistedEvent : Event
+public class PersistedEvent(long id, 
+                            Guid streamId, 
+                            int version, 
+                            string eventClassName, 
+                            string serialisedEvent, 
+                            DateTime timestampCreatedUtc, 
+                            Dictionary<string, object>? additionalFields = null)
+    : Event(streamId, 
+            version, 
+            eventClassName, 
+            serialisedEvent,
+            additionalFields)
 {
-    public PersistedEvent(long id, Guid groupingId, string eventClassName, string serialisedEvent, DateTime timestampCreatedUtc)
-        : base(groupingId, eventClassName, serialisedEvent)
-    {
-        Id = id;
-        TimestampCreatedUTC = timestampCreatedUtc;
-    }
-
-    public long Id { get; }
-    public DateTime TimestampCreatedUTC { get; }
+    public long Id { get; } = id;
+    public DateTime TimestampCreatedUtc { get; } = timestampCreatedUtc;
 
     public T To<T>()
     {
-        if (Value == null)
-        {
-            var value = JsonSerializer.Deserialize<T>(SerialisedEvent, GlobalJsonSerialiserSettings.Default);
+        if (Value != null) return (T)Value;
 
-            if (value == null)
-                throw new Exception($"SerialisedEvent could not be de-serialised into {typeof(T).FullName}.");
+        var value = JsonSerializer.Deserialize<T>(SerialisedEvent, GlobalJsonSerialiserSettings.Default) ?? 
+                    throw new Exception($"SerialisedEvent could not be de-serialised into {typeof(T).FullName}.");
 
-            Value = value;
-        }
+        Value = value;
 
         return (T)Value;
     }

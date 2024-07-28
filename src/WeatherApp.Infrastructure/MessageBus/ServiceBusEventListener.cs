@@ -40,7 +40,7 @@ public class ServiceBusEventListener<T> : IHostedService, IDisposable
     {
         try
         {
-            logger.LogTrace($"Starting service, with MaxConcurrentCalls: {maxConcurrentCalls}");
+            logger.LogInformation($"Starting service, with MaxConcurrentCalls: {maxConcurrentCalls}");
 
             serviceBusProcessor = serviceBusClient.CreateProcessor(queueName, new ServiceBusProcessorOptions
             {
@@ -52,7 +52,7 @@ public class ServiceBusEventListener<T> : IHostedService, IDisposable
             serviceBusProcessor.ProcessMessageAsync += MessageHandler;
             serviceBusProcessor.ProcessErrorAsync += ErrorHandler;
 
-            logger.LogDebug($"Starting to consume from Queue: {queueName}");
+            logger.LogInformation($"Starting to consume from Queue: {queueName}");
 
             await serviceBusProcessor.StartProcessingAsync(cancellationToken);
         }

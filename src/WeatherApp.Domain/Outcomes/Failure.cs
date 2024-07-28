@@ -1,9 +1,11 @@
-using OneOf;
-
 namespace WeatherApp.Domain.Outcomes;
 
-public class Failure(OneOf<InvalidRequestFailure, UnsupportedRegionFailure, WeatherModelingServiceRejectionFailure> input)
-    : OneOfBase<InvalidRequestFailure, UnsupportedRegionFailure, WeatherModelingServiceRejectionFailure>(input)
+public class Failure(OneOf<InvalidRequestFailure, 
+                            UnsupportedRegionFailure, 
+                            WeatherModelingServiceRejectionFailure> input)
+    : OneOfBase<InvalidRequestFailure, 
+                UnsupportedRegionFailure, 
+                WeatherModelingServiceRejectionFailure>(input)
 {
     public static implicit operator Failure(InvalidRequestFailure failure) => new(failure);
     public static implicit operator Failure(UnsupportedRegionFailure failure) => new(failure);

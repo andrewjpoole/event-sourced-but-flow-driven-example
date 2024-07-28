@@ -26,8 +26,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\src\WeatherApp.API\WeatherApp.API.csproj" />
     <ProjectReference Include="..\..\src\WeatherApp.EventListener\WeatherApp.EventListener.csproj" />
-    <ProjectReference Include="..\..\src\WeatherApp.WebAPI\WeatherApp.WebAPI.csproj" />
+    <ProjectReference Include="..\..\src\WeatherApp.NotificationAPI\WeatherApp.NotificationAPI.csproj" />
   </ItemGroup>
 
 </Project>

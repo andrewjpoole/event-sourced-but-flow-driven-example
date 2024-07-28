@@ -11,9 +11,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WeatherApp.EventListener", 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WeatherApp.Infrastructure", "src\WeatherApp.Infrastructure\WeatherApp.Infrastructure.csproj", "{708F5848-92B2-4824-878F-0000431A3DDD}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WeatherApp.WebAPI", "src\WeatherApp.WebAPI\WeatherApp.WebAPI.csproj", "{5170EA5A-FA32-4D97-91D9-CC16EE23A5D0}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WeatherApp.Tests", "tests\WeatherApp.Tests\WeatherApp.Tests.csproj", "{29E5E253-D8F6-4C70-B8AF-EF52B0AA76BF}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WeatherApp.NotificationAPI", "src\WeatherApp.NotificationAPI\WeatherApp.NotificationAPI.csproj", "{C7AFB8EF-953C-40F6-A47B-2F27316A7DC3}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WeatherApp.API", "src\WeatherApp.API\WeatherApp.API.csproj", "{CA5C6D6E-6597-4219-B27F-F5DC5E55F64D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -37,14 +39,18 @@ Global
 		{708F5848-92B2-4824-878F-0000431A3DDD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{708F5848-92B2-4824-878F-0000431A3DDD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{708F5848-92B2-4824-878F-0000431A3DDD}.Release|Any CPU.Build.0 = Release|Any CPU
-		{5170EA5A-FA32-4D97-91D9-CC16EE23A5D0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{5170EA5A-FA32-4D97-91D9-CC16EE23A5D0}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{5170EA5A-FA32-4D97-91D9-CC16EE23A5D0}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{5170EA5A-FA32-4D97-91D9-CC16EE23A5D0}.Release|Any CPU.Build.0 = Release|Any CPU
 		{29E5E253-D8F6-4C70-B8AF-EF52B0AA76BF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{29E5E253-D8F6-4C70-B8AF-EF52B0AA76BF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{29E5E253-D8F6-4C70-B8AF-EF52B0AA76BF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{29E5E253-D8F6-4C70-B8AF-EF52B0AA76BF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C7AFB8EF-953C-40F6-A47B-2F27316A7DC3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C7AFB8EF-953C-40F6-A47B-2F27316A7DC3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C7AFB8EF-953C-40F6-A47B-2F27316A7DC3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C7AFB8EF-953C-40F6-A47B-2F27316A7DC3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CA5C6D6E-6597-4219-B27F-F5DC5E55F64D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CA5C6D6E-6597-4219-B27F-F5DC5E55F64D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CA5C6D6E-6597-4219-B27F-F5DC5E55F64D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CA5C6D6E-6597-4219-B27F-F5DC5E55F64D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

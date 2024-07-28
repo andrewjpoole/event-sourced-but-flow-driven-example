@@ -5,15 +5,8 @@ using WeatherApp.Domain.EventSourcing;
 
 namespace WeatherApp.Tests.Framework;
 
-public class When
+public class When(ComponentTestFixture fixture)
 {
-    private readonly ComponentTestFixture fixture;
-
-
-    public When(ComponentTestFixture fixture)
-    {
-        this.fixture = fixture;
-    }
     public When And => this;
 
     public When InPhase(string newPhase)
@@ -46,7 +39,7 @@ public class When
 
     public When AMessageAppears<T>(T message) where T : class
     {
-        var processor = fixture.EventListenerFactory.GetTestableServiceBusProcessor<T>();
+        var processor = fixture.EventListenerFactory.TestableServiceBusProcessors.GetProcessorFor<T>();
         processor.SendMessage(message).GetAwaiter().GetResult();
 
         return this;

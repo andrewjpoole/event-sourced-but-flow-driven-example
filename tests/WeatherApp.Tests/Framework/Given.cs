@@ -1,19 +1,12 @@
 using System.Net;
 using Moq.Contrib.HttpClient;
 using WeatherApp.Application.Models.Requests;
-using WeatherApp.Domain.Entities;
+using WeatherApp.Infrastructure.ApiClients.NotificationService;
 
 namespace WeatherApp.Tests.Framework;
 
-public class Given
+public class Given(ComponentTestFixture fixture)
 {
-    private readonly ComponentTestFixture fixture;
-    private readonly Random random = new();
-
-    public Given(ComponentTestFixture fixture)
-    {
-        this.fixture = fixture;
-    }
     public Given And => this;
 
     public Given WeHaveAWeatherReportRequest(string region, DateTime date, out HttpRequestMessage request)
@@ -24,12 +17,11 @@ public class Given
 
     public Given WeHaveSomeCollectedWeatherData(out CollectedWeatherDataModel data)
     {
-        data = new CollectedWeatherDataModel(new List<CollectedWeatherDataPointModel>
-        {
+        data = new CollectedWeatherDataModel([
             CannedData.GetRandCollectedWeatherDataModel(),
             CannedData.GetRandCollectedWeatherDataModel(),
             CannedData.GetRandCollectedWeatherDataModel()
-        });
+        ]);
 
         return this;
     }
@@ -37,7 +29,12 @@ public class Given
     public Given TheServersAreStarted()
     {
         fixture.ApiFactory.Start();
+        fixture.NotificationServiceFactory.Start();
         fixture.EventListenerFactory.Start();
+
+        // Replace the httpClient in eventlistener's IoC container with the in-memory one from the NotificationServiceFactory.
+        fixture.EventListenerFactory.ClearHttpClients();
+        fixture.EventListenerFactory.AddHttpClient(typeof(INotificationsClient).FullName!, fixture.NotificationServiceFactory.HttpClient!); 
         return this;
     }
 

@@ -1,17 +1,11 @@
 namespace WeatherApp.Domain.Outcomes;
 
-public class InvalidRequestFailure
+public class InvalidRequestFailure(IDictionary<string, string[]> validationErrors)
 {
-    public IDictionary<string, string[]> ValidationErrors { get; }
+    public IDictionary<string, string[]> ValidationErrors { get; } = validationErrors;
 
-    public InvalidRequestFailure(IDictionary<string, string[]> validationErrors)
+    public InvalidRequestFailure(string message) : this(new Dictionary<string, string[]>{{"model", new[] {message}}})
     {
-        ValidationErrors = validationErrors;
-    }
-
-    public InvalidRequestFailure(string message)
-    {
-        ValidationErrors = new Dictionary<string, string[]>{{"model", new[] {message}}};
     }
 
 

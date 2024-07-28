@@ -4,9 +4,7 @@ namespace WeatherApp.Infrastructure.Persistence;
 
 public interface IEventRepository
 {
-    Task<PersistedEvent> InsertEvent(Guid groupingId, string eventClassName, string serialisedEvent);
-
-    Task<List<PersistedEvent>> InsertEvents(IList<(Guid groupingId, string eventClassName, string serialisedEvent)> events);
-
-    Task<IEnumerable<PersistedEvent>> FetchEvents(Guid requestId);
+    Task<PersistedEventResult> InsertEvent(Event @event);
+    Task<PersistedEventsResult> InsertEvents(IList<Event> events);
+    Task<IEnumerable<PersistedEvent>> FetchEvents(Guid streamId);
 }

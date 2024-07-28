@@ -4,8 +4,8 @@ namespace WeatherApp.Application.Models.Requests;
 
 public record WeatherDataCollectionResponse(Guid RequestId)
 {
-    public static WeatherDataCollectionResponse FromWeatherDataCollection(WeatherDataCollection weatherDataCollection)
+    public static WeatherDataCollectionResponse FromWeatherDataCollection(WeatherDataCollectionAggregate weatherDataCollectionAggregate)
     {
-        return new WeatherDataCollectionResponse(weatherDataCollection.RequestId);
+        return new WeatherDataCollectionResponse(weatherDataCollectionAggregate.RequestId);
     }
 }

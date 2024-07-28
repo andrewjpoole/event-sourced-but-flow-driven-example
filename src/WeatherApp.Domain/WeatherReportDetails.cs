@@ -1,5 +1,4 @@
 using WeatherApp.Domain.Outcomes;
-using System;
 
 namespace WeatherApp.Domain;
 

@@ -6,31 +6,24 @@ using WeatherApp.Infrastructure.ApiClients.WeatherModelingSystem;
 
 namespace WeatherApp.Infrastructure.ModelingService;
 
-public class WeatherModelingService : IWeatherModelingService
+public class WeatherModelingService(IRefitClientWrapper<IWeatherModelingServiceClient> weatherModelingServiceClientWrapper) : IWeatherModelingService
 {
-    private readonly IRefitClientWrapper<IWeatherModelingServiceClient> weatherModelingServiceClientWrapper;
-
-    public WeatherModelingService(IRefitClientWrapper<IWeatherModelingServiceClient> weatherModelingServiceClientWrapper)
-    {
-        this.weatherModelingServiceClientWrapper = weatherModelingServiceClientWrapper;
-    }
-
-    public async Task<OneOf<WeatherDataCollection, Failure>> Submit(WeatherDataCollection weatherDataCollection)
+    public async Task<OneOf<WeatherDataCollectionAggregate, Failure>> Submit(WeatherDataCollectionAggregate weatherDataCollectionAggregate)
     {
         // calls out to an external service which returns an Accepted response
         // the result will be communicated via a service bus message...
 
         using var weatherModelingServiceClient = weatherModelingServiceClientWrapper.CreateClient();
 
-        var response = await weatherModelingServiceClient.PostCollectedData(weatherDataCollection.Location, weatherDataCollection); // response is null in LoggingHttpMessageHandler.Log.RequestEnd ???
+        var response = await weatherModelingServiceClient.PostCollectedData(weatherDataCollectionAggregate.Location, weatherDataCollectionAggregate); // response is null in LoggingHttpMessageHandler.Log.RequestEnd ???
         var bodyContent = await response.Content.ReadAsStringAsync();
 
         if (!response.IsSuccessStatusCode) 
-            return OneOf<WeatherDataCollection, Failure>.FromT1(new WeatherModelingServiceRejectionFailure(bodyContent));
+            return OneOf<WeatherDataCollectionAggregate, Failure>.FromT1(new WeatherModelingServiceRejectionFailure(bodyContent));
         
         var submissionId = Guid.Parse(bodyContent);
-        await weatherDataCollection.AppendEvent(new SubmittedToModeling(submissionId));
+        await weatherDataCollectionAggregate.AppendEvent(new SubmittedToModeling(submissionId));
 
-        return weatherDataCollection;
+        return weatherDataCollectionAggregate;
     }
 }

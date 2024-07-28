@@ -12,7 +12,7 @@ public record WindDirection
         Rules.StringRules.CheckNotNullEmptyOrWhitespace(windDirection);
         Rules.StringRules.CheckMaxLength(windDirection, 5);
 
-        // todo accept decimal degrees or "SSW" etc?
+        // in future, accept decimal degrees or "SSW" etc?
 
         Value = value;
     }
