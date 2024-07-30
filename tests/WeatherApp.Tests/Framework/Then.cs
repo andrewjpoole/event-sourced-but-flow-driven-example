@@ -110,28 +110,4 @@ public class Then(ComponentTestFixture fixture)
 
         return this;
     }
-
-    public Then AMessageWasSent<TMessageType>(Func<ServiceBusMessage, bool> match, int times = 1, bool tryForwardToProcessor = true) where TMessageType : class
-    {
-        var senderMock = fixture.MockServiceBusSenders.GetSenderFor<TMessageType>();
-        senderMock.Verify(x => x.SendMessageAsync(It.Is<ServiceBusMessage>(m => match(m)), It.IsAny<CancellationToken>()), Times.Exactly(times));
-
-        senderMock.Setup(x => x.SendMessageAsync(It.Is<ServiceBusMessage>(m => match(m)), It.IsAny<CancellationToken>()))
-            .Callback<ServiceBusMessage, CancellationToken>((sbm, ctx) =>
-            {
-                if (fixture.EventListenerFactory.TestableServiceBusProcessors.HasProcessorFor<TMessageType>() == false)
-                    return;
-
-                var message = sbm.Body.ToObjectFromJson<TMessageType>();
-                var applicationProperties = (Dictionary<string, object>?)sbm.ApplicationProperties;
-                
-                var processor = fixture.EventListenerFactory.TestableServiceBusProcessors.GetProcessorFor<TMessageType>();
-                processor.SendMessage(message, applicationProperties: applicationProperties).GetAwaiter().GetResult();
-            });
-
-        return this;
-    }
 }
-
-
-

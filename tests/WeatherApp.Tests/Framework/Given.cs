@@ -1,4 +1,6 @@
 using System.Net;
+using Azure.Messaging.ServiceBus;
+using Moq;
 using Moq.Contrib.HttpClient;
 using WeatherApp.Application.Models.Requests;
 using WeatherApp.Infrastructure.ApiClients.NotificationService;
@@ -44,6 +46,27 @@ public class Given(ComponentTestFixture fixture)
         fixture.ApiFactory.MockWeatherModelingServiceHttpMessageHandler
             .SetupRequest(HttpMethod.Post, r => r.RequestUri!.ToString().StartsWith($"{Constants.WeatherModelingServiceBaseUrl}{Constants.WeatherModelingServiceSubmissionUri}"))
             .ReturnsResponse(statusCode, new StringContent(submissionId.ToString()));
+        return this;
+    }
+
+    public Given MessagesSentWillBeReceived<TMessageType>() where TMessageType : class
+    {
+        // If there is no TestableServiceBusProcessor for the given TMessageType then just return.
+        if (fixture.EventListenerFactory.TestableServiceBusProcessors.HasProcessorFor<TMessageType>() == false)
+            return this;
+
+        var senderMock = fixture.MockServiceBusSenders.GetSenderFor<TMessageType>();
+
+        senderMock.Setup(x => x.SendMessageAsync(It.IsAny<ServiceBusMessage>(), It.IsAny<CancellationToken>()))
+            .Callback<ServiceBusMessage, CancellationToken>((sbm, ctx) =>
+            {
+                var message = sbm.Body.ToObjectFromJson<TMessageType>();
+                var applicationProperties = (Dictionary<string, object>?)sbm.ApplicationProperties;
+
+                var processor = fixture.EventListenerFactory.TestableServiceBusProcessors.GetProcessorFor<TMessageType>();
+                processor.SendMessage(message, applicationProperties: applicationProperties).GetAwaiter().GetResult();
+            });
+
         return this;
     }
 }

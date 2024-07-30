@@ -13,7 +13,7 @@ namespace WeatherApp.Tests.AppHostFactories;
 
 public class EventListenerWebApplicationFactory : WebApplicationFactory<EventListener.Program>
 {
-    private readonly CustomHttpClientFactory httpClientFactory = new();
+    private readonly CustomHttpClientFactory customHttpClientFactory = new();
     public TestableServiceBusProcessorCollection TestableServiceBusProcessors { get; }
     public int NumberOfSimulatedServiceBusMessageRetries = 3;
     public readonly Mock<ILogger> MockLogger = new();
@@ -83,15 +83,15 @@ public class EventListenerWebApplicationFactory : WebApplicationFactory<EventLis
         builder.ConfigureServices(services =>
         {
             // Replace standard IHttpClientFactory impl with custom one with any added HTTP clients.
-            services.AddSingleton<IHttpClientFactory>(httpClientFactory);
+            services.AddSingleton<IHttpClientFactory>(customHttpClientFactory);
         });
     }
 
-    public void ClearHttpClients() => httpClientFactory.HttpClients.Clear();
+    public void ClearHttpClients() => customHttpClientFactory.HttpClients.Clear();
 
     public void AddHttpClient(string clientName, HttpClient client)
     {
-        if (httpClientFactory.HttpClients.TryAdd(clientName, client) == false)
+        if (customHttpClientFactory.HttpClients.TryAdd(clientName, client) == false)
         {
             throw new InvalidOperationException($"HttpClient with name {clientName} is already added");
         }
