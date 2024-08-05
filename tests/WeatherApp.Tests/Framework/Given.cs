@@ -52,10 +52,10 @@ public class Given(ComponentTestFixture fixture)
     public Given MessagesSentWillBeReceived<TMessageType>() where TMessageType : class
     {
         // If there is no TestableServiceBusProcessor for the given TMessageType then just return.
-        if (fixture.EventListenerFactory.TestableServiceBusProcessors.HasProcessorFor<TMessageType>() == false)
+        if (fixture.MockServiceBus.HasProcessorFor<TMessageType>() == false)
             return this;
 
-        var senderMock = fixture.MockServiceBusSenders.GetSenderFor<TMessageType>();
+        var senderMock = fixture.MockServiceBus.GetSenderFor<TMessageType>();
 
         senderMock.Setup(x => x.SendMessageAsync(It.IsAny<ServiceBusMessage>(), It.IsAny<CancellationToken>()))
             .Callback<ServiceBusMessage, CancellationToken>((sbm, ctx) =>
@@ -63,7 +63,7 @@ public class Given(ComponentTestFixture fixture)
                 var message = sbm.Body.ToObjectFromJson<TMessageType>();
                 var applicationProperties = (Dictionary<string, object>?)sbm.ApplicationProperties;
 
-                var processor = fixture.EventListenerFactory.TestableServiceBusProcessors.GetProcessorFor<TMessageType>();
+                var processor = fixture.MockServiceBus.GetProcessorFor<TMessageType>();
                 processor.SendMessage(message, applicationProperties: applicationProperties).GetAwaiter().GetResult();
             });
 

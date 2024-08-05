@@ -39,7 +39,7 @@ public class When(ComponentTestFixture fixture)
 
     public When AMessageAppears<T>(T message) where T : class
     {
-        var processor = fixture.EventListenerFactory.TestableServiceBusProcessors.GetProcessorFor<T>();
+        var processor = fixture.MockServiceBus.GetProcessorFor<T>();
         processor.SendMessage(message).GetAwaiter().GetResult();
 
         return this;

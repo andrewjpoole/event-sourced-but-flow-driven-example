@@ -13,13 +13,11 @@ namespace WeatherApp.Tests.AppHostFactories;
 
 public class EventListenerWebApplicationFactory : WebApplicationFactory<EventListener.Program>
 {
+    private readonly ComponentTestFixture fixture;
     private readonly CustomHttpClientFactory customHttpClientFactory = new();
-    public TestableServiceBusProcessorCollection TestableServiceBusProcessors { get; }
-    public int NumberOfSimulatedServiceBusMessageRetries = 3;
+
     public readonly Mock<ILogger> MockLogger = new();
-
     public Func<EventRepositoryInMemory>? SetSharedEventRepository = null;
-
     public HttpClient? HttpClient;
 
 #if DEBUG
@@ -28,12 +26,9 @@ public class EventListenerWebApplicationFactory : WebApplicationFactory<EventLis
     private const bool DebugCompilationSymbolIsPresent = false;
 #endif
     
-    public EventListenerWebApplicationFactory()
+    public EventListenerWebApplicationFactory(ComponentTestFixture fixture)
     {
-        TestableServiceBusProcessors = new TestableServiceBusProcessorCollection();
-        TestableServiceBusProcessors.AddProcessorFor<ModelingDataAcceptedIntegrationEvent>();
-        TestableServiceBusProcessors.AddProcessorFor<ModelingDataRejectedIntegrationEvent>();
-        TestableServiceBusProcessors.AddProcessorFor<ModelUpdatedIntegrationEvent>();
+        this.fixture = fixture;
     }
     
     // Using CreateHost here instead of ConfigureWebHost because CreateHost adds config just after WebApplication.CreateBuilder(args) is called
@@ -59,13 +54,9 @@ public class EventListenerWebApplicationFactory : WebApplicationFactory<EventLis
                 services.AddSingleton(loggerFactory.Object);
 
                 var client = new Mock<ServiceBusClient>();
-                client.Setup(t => t.CreateProcessor(It.IsAny<string>(), It.IsAny<ServiceBusProcessorOptions>())).Returns((string queue, ServiceBusProcessorOptions _) =>
-                {
-                    return TestableServiceBusProcessors.GetByDummyQueueName(queue, DebugCompilationSymbolIsPresent) ?? 
-                           throw new Exception($"Can't find a registered TestableServiceBusProcessor for {queue}");
-
-                    return null!;
-                });
+                client.Setup(t => t.CreateProcessor(It.IsAny<string>(), It.IsAny<ServiceBusProcessorOptions>())).Returns((string queue, ServiceBusProcessorOptions _) => 
+                    fixture.MockServiceBus.GetProcessorByDummyQueueName(queue, DebugCompilationSymbolIsPresent) ?? 
+                        throw new Exception($"Can't find a registered TestableServiceBusProcessor for {queue}"));
                 services.AddSingleton(client.Object);
 
                 if (SetSharedEventRepository is not null)

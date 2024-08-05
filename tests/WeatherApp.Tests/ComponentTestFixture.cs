@@ -13,19 +13,22 @@ public class ComponentTestFixture : IDisposable
     public readonly ApiWebApplicationFactory ApiFactory;
     public readonly EventListenerWebApplicationFactory EventListenerFactory;
     public readonly NotificationServiceWebApplicationFactory NotificationServiceFactory;
-
-    public readonly MockServiceBusSenderCollection MockServiceBusSenders;
+    
+    public readonly MockServiceBus MockServiceBus;
 
     public EventRepositoryInMemory EventRepositoryInMemory = new();
 
     public ComponentTestFixture()
     {
         ApiFactory = new() { SetSharedEventRepository = () => EventRepositoryInMemory };
-        EventListenerFactory = new() { SetSharedEventRepository = () => EventRepositoryInMemory };
+        EventListenerFactory = new(this) { SetSharedEventRepository = () => EventRepositoryInMemory };
         NotificationServiceFactory = new();
 
-        MockServiceBusSenders = new MockServiceBusSenderCollection();
-        MockServiceBusSenders.AddSenderFor<DummyIntegrationEvent>();
+        MockServiceBus = new MockServiceBus();
+        MockServiceBus.AddSenderFor<DummyIntegrationEvent>();
+        MockServiceBus.AddProcessorFor<ModelingDataAcceptedIntegrationEvent>();
+        MockServiceBus.AddProcessorFor<ModelingDataRejectedIntegrationEvent>();
+        MockServiceBus.AddProcessorFor<ModelUpdatedIntegrationEvent>();
     }
 
     public void Dispose()
