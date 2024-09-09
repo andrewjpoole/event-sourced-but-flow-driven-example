@@ -53,11 +53,13 @@ public class EventListenerWebApplicationFactory : WebApplicationFactory<EventLis
                 loggerFactory.Setup(x => x.CreateLogger(It.IsAny<string>())).Returns(MockLogger.Object);
                 services.AddSingleton(loggerFactory.Object);
 
-                var client = new Mock<ServiceBusClient>();
-                client.Setup(t => t.CreateProcessor(It.IsAny<string>(), It.IsAny<ServiceBusProcessorOptions>())).Returns((string queue, ServiceBusProcessorOptions _) => 
-                    fixture.MockServiceBus.GetProcessorByDummyQueueName(queue, DebugCompilationSymbolIsPresent) ?? 
-                        throw new Exception($"Can't find a registered TestableServiceBusProcessor for {queue}"));
-                services.AddSingleton(client.Object);
+                fixture.MockServiceBus.WireUpSendersAndProcessors(services);
+
+                //var client = new Mock<ServiceBusClient>();
+                //client.Setup(t => t.CreateProcessor(It.IsAny<string>(), It.IsAny<ServiceBusProcessorOptions>())).Returns((string queue, ServiceBusProcessorOptions _) => 
+                //    fixture.MockServiceBus.GetProcessorByDummyQueueName(queue, DebugCompilationSymbolIsPresent) ?? 
+                //        throw new Exception($"Can't find a registered TestableServiceBusProcessor for {queue}"));
+                //services.AddSingleton(client.Object);
 
                 if (SetSharedEventRepository is not null)
                     services.AddSingleton<IEventRepository>(_ => SetSharedEventRepository());

@@ -1,5 +1,6 @@
 using System.Text.Json;
 using Azure.Messaging.ServiceBus;
+using Microsoft.Extensions.DependencyInjection;
 using Moq;
 
 namespace WeatherApp.Tests.Framework.ServiceBus;
@@ -8,6 +9,19 @@ public class MockServiceBus
 {
     private readonly Dictionary<Type, TestableServiceBusProcessor> processors = new();
     private readonly Dictionary<Type, Mock<ServiceBusSender>> mockSenders = new();
+
+    public void WireUpSendersAndProcessors(IServiceCollection services)
+    {
+        var client = new Mock<ServiceBusClient>();
+
+        client.Setup(t => t.CreateProcessor(It.IsAny<string>(), It.IsAny<ServiceBusProcessorOptions>()))
+            .Returns((string queue, ServiceBusProcessorOptions _) => GetProcessorByDummyQueueName(queue));
+
+        client.Setup(t => t.CreateSender(It.IsAny<string>()))
+            .Returns<string>(GetSenderByDummyQueueName);
+
+        services.AddSingleton(client.Object);
+    }
 
     public void AddProcessorFor<T>()
     {
@@ -21,16 +35,22 @@ public class MockServiceBus
 
     public TestableServiceBusProcessor GetProcessorFor(Type type) => processors[type];
 
-    public TestableServiceBusProcessor? GetProcessorByDummyQueueName(string dummyQueueName, bool prefixLocalMachineName)
+    public TestableServiceBusProcessor GetProcessorByDummyQueueName(string dummyQueueName)
     {
-        foreach (var processor in processors.Values)
+        var machineName = Environment.MachineName.ToLower();
+
+        if (dummyQueueName.StartsWith(machineName))
+            dummyQueueName = dummyQueueName.Replace($"{machineName}-", string.Empty);
+
+        var typeName = dummyQueueName.GetTypeNameFromDummyQueueName();
+
+        foreach (var kvPair in processors)
         {
-            var prefixedDummyQueueName = prefixLocalMachineName ? $"{Environment.MachineName}-{processor.DummyQueueName}" : processor.DummyQueueName;
-            if (prefixedDummyQueueName == dummyQueueName)
-                return processor;
+            if (kvPair.Key.Name == typeName)
+                return kvPair.Value;
         }
 
-        return null;
+        throw new Exception($"Can't find a registered TestableServiceBusProcessor for {dummyQueueName}");
     }
 
     public void ClearDeliveryAttemptsOnAllProcessors()
@@ -40,7 +60,7 @@ public class MockServiceBus
             processor.MessageDeliveryAttempts.Clear();
         }
     }
-    
+
     public void AddSenderFor<T>()
     {
         var mockSender = new Mock<ServiceBusSender>();
@@ -53,9 +73,9 @@ public class MockServiceBus
         return mockSenders.ContainsKey(typeOfT) == false ? null : mockSenders[typeOfT];
     }
 
-    public ServiceBusSender GetSenderByDummyQueueName(string dummyQueueName, bool prefixLocalMachineName)
+    public ServiceBusSender GetSenderByDummyQueueName(string dummyQueueName)
     {
-        var machineName = Environment.MachineName;
+        var machineName = Environment.MachineName.ToLower();
 
         if (dummyQueueName.StartsWith(machineName))
             dummyQueueName = dummyQueueName.Replace($"{machineName}-", string.Empty);
@@ -111,8 +131,9 @@ public class MockServiceBus
             mockSender.Value.Setup(x => x.SendMessageAsync(It.IsAny<ServiceBusMessage>(), It.IsAny<CancellationToken>()))
                 .Callback<ServiceBusMessage, CancellationToken>((sbm, ctx) =>
                 {
-                    //var message = sbm.Body.ToObjectFromJson(mockSender.Key);
-                    var message = JsonSerializer.Deserialize(sbm.Body, mockSender.Key);
+                    var message = JsonSerializer.Deserialize(sbm.Body, mockSender.Key) ??
+                                  throw new Exception("unable to deserialise service bus message body");
+
                     var applicationProperties = (Dictionary<string, object>?)sbm.ApplicationProperties;
 
                     var processor = GetProcessorFor(mockSender.Key);

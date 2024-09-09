@@ -6,7 +6,7 @@ public class QueueOrTopicName
     public QueueOrTopicName(string queueOrTopicName)
     {
 #if DEBUG
-        Name = $"{Environment.MachineName}-{queueOrTopicName}";
+        Name = $"{Environment.MachineName.ToLower()}-{queueOrTopicName}";
 #else
         Name = queueOrTopicName;
 #endif
