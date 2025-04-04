@@ -1,0 +1,24 @@
+@baseUrl = https://localhost:7320
+@paymentId = 12345678-1234-1234-1234-123456789012
+@contributorId = 12345678-1234-1234-1234-123456789012
+
+### Health Check
+GET {{baseUrl}}/
+
+### Create a Pending Payment
+POST {{baseUrl}}/v1/contributor-payments/{{contributorId}}/pending
+Content-Type: application/json
+
+{
+  "contributorId": "{{contributorId}}",
+  "paymentId": "{{paymentId}}",
+  "amount": 100.50,
+  "currency": "GBP",
+  "description": "Payment for submitted weather data"
+}
+
+### Revoke a Payment
+POST {{baseUrl}}/v1/contributor-payments/{{contributorId}}/revoke/{{paymentId}}
+
+### Commit a Payment
+POST {{baseUrl}}/v1/contributor-payments/{{contributorId}}/commit/{{paymentId}}

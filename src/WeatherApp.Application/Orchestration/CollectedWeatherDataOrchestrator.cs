@@ -6,13 +6,14 @@ using WeatherApp.Domain.DomainEvents;
 using WeatherApp.Domain.Entities;
 using WeatherApp.Domain.EventSourcing;
 using WeatherApp.Domain.ServiceDefinitions;
+using WeatherApp.Application.Models.IntegrationEvents.NotificationEvents;
 
 namespace WeatherApp.Application.Orchestration;
 
 public class CollectedWeatherDataOrchestrator(
     IEventPersistenceService eventPersistenceService,
     IWeatherModelingService weatherModelingService,
-    INotificationService notificationService,
+    //INotificationService notificationService,
     IContributorPaymentService contributorPaymentService)
     :
         ISubmitWeatherDataCommandHandler,
@@ -20,7 +21,8 @@ public class CollectedWeatherDataOrchestrator(
         IEventHandler<ModelingDataRejectedIntegrationEvent>,
         IEventHandler<ModelUpdatedIntegrationEvent>
 {
-    public Task<OneOf<WeatherDataCollectionResponse, Failure>> HandleSubmitWeatherDataCommand(string weatherDataLocation, 
+    public Task<OneOf<WeatherDataCollectionResponse, Failure>> HandleSubmitWeatherDataCommand(
+        string weatherDataLocation, 
         CollectedWeatherDataModel weatherDataModel, 
         IWeatherDataValidator weatherDataValidator, 
         ILocationManager locationManager)
@@ -41,7 +43,7 @@ public class CollectedWeatherDataOrchestrator(
     
     public async Task HandleEvent(ModelingDataRejectedIntegrationEvent dataRejectedIntegrationEvent)
     {
-        await WeatherDataCollectionAggregate.Hydrate(eventPersistenceService, dataRejectedIntegrationEvent.RequestId)
+        await WeatherDataCollectionAggregate.Hydrate(eventPersistenceService, dataRejectedIntegrationEvent.StreamId)
             .Then(x => x.AppendModelingDataRejectedEvent(dataRejectedIntegrationEvent.Reason))
             .Then(contributorPaymentService.RevokePendingPayment)
             .ThrowOnFailure(nameof(ModelingDataRejectedIntegrationEvent));
@@ -49,7 +51,7 @@ public class CollectedWeatherDataOrchestrator(
 
     public async Task HandleEvent(ModelingDataAcceptedIntegrationEvent dataAcceptedIntegrationEvent)
     {
-        await WeatherDataCollectionAggregate.Hydrate(eventPersistenceService, dataAcceptedIntegrationEvent.RequestId)
+        await WeatherDataCollectionAggregate.Hydrate(eventPersistenceService, dataAcceptedIntegrationEvent.StreamId)
             .Then(x => x.AppendModelingDataAcceptedEvent())
             .Then(contributorPaymentService.CommitPendingPayment)
             .Then(x => x.AppendSubmissionCompleteEvent())
@@ -58,9 +60,10 @@ public class CollectedWeatherDataOrchestrator(
 
     public async Task HandleEvent(ModelUpdatedIntegrationEvent integrationEvent)
     {
-        await WeatherDataCollectionAggregate.Hydrate(eventPersistenceService, integrationEvent.RequestId)
-            .Then(x => x.AppendModelUpdatedEvent())
-            .Then(notificationService.NotifyModelUpdated)
+        await WeatherDataCollectionAggregate.Hydrate(eventPersistenceService, integrationEvent.StreamId)
+            //.Then(x => x.AppendModelUpdatedEvent())
+            .Then(eventPersistenceService.AppendModelUpdatedEventAndCreateOutboxItem) // Appends domain event and persists outbox item in single transaction.
+            //.Then(notificationService.NotifyModelUpdated)
             .ThrowOnFailure(nameof(ModelUpdatedIntegrationEvent));
     }
 }

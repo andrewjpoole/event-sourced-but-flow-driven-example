@@ -33,6 +33,7 @@ public class Given(ComponentTestFixture fixture)
         fixture.ApiFactory.Start();
         fixture.NotificationServiceFactory.Start();
         fixture.EventListenerFactory.Start();
+        fixture.OutboxApplicationFactory.Start();
 
         // Replace the httpClient in eventlistener's IoC container with the in-memory one from the NotificationServiceFactory.
         fixture.EventListenerFactory.ClearHttpClients();

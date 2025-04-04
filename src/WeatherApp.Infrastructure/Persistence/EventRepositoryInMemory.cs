@@ -1,4 +1,5 @@
 ﻿using WeatherApp.Domain.EventSourcing;
+using WeatherApp.Infrastructure.RetryableDapperConnection;
 
 namespace WeatherApp.Infrastructure.Persistence;
 
@@ -27,6 +28,16 @@ public class EventRepositoryInMemory : IEventRepository
     public Task<IEnumerable<PersistedEvent>> FetchEvents(Guid streamId)
     {
         return Task.FromResult(PersistedEvents.Where(pe => pe.StreamId == streamId));
+    }
+
+    public Task<PersistedEventResult> InsertEvent(Event @event, IDbTransactionWrapped transaction)
+    {
+        throw new NotImplementedException();
+    }
+
+    public IDbTransactionWrapped BeginTransaction()
+    {
+        throw new NotImplementedException();
     }
 }
 

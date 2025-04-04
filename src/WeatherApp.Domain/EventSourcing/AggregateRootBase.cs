@@ -2,9 +2,9 @@
 
 namespace WeatherApp.Domain.EventSourcing;
 
-public class AggregateRootBase(Guid requestId, List<PersistedEvent> persistedEvents, IEventPersistenceService eventPersistenceService)
+public class AggregateRootBase(Guid streamId, List<PersistedEvent> persistedEvents, IEventPersistenceService eventPersistenceService)
 {
-    public Guid RequestId { get; } = requestId;
+    public Guid StreamId { get; } = streamId;
     protected List<PersistedEvent> PersistedEvents { get; } = persistedEvents;
     protected IEventPersistenceService EventPersistenceService { get; } = eventPersistenceService;
 
@@ -13,21 +13,21 @@ public class AggregateRootBase(Guid requestId, List<PersistedEvent> persistedEve
         if (version == -1)
             version = GetNextExpectedVersion();
 
-        var @event = EventSourcing.Event.Create(eventAsT, RequestId, version);
+        var @event = EventSourcing.Event.Create(eventAsT, StreamId, version);
         var persistedEvent = await EventPersistenceService.PersistEvent(@event);
         PersistedEvents.Add(persistedEvent);
     }
 
     public async Task AppendEvents(IEnumerable<Event> events)
     {
-        if (events.Any(e => e.StreamId != this.RequestId))
+        if (events.Any(e => e.StreamId != StreamId))
             throw new Exception("All events must have the correct CrossBorderPaymentId");
 
         var persistedEvents = await EventPersistenceService.PersistEvents(events);
         persistedEvents.AddRange(persistedEvents);
     }
 
-    private int GetNextExpectedVersion()
+    public int GetNextExpectedVersion()
     {
         return PersistedEvents.OrderBy(x => x.Version).Last().Version;
     }

@@ -1,9 +1,9 @@
-﻿using WeatherApp.Domain.Entities;
-using WeatherApp.Domain.Outcomes;
+﻿// using WeatherApp.Domain.Entities;
+// using WeatherApp.Domain.Outcomes;
 
-namespace WeatherApp.Application.Services;
+// namespace WeatherApp.Application.Services;
 
-public interface INotificationService
-{
-    Task<OneOf<WeatherDataCollectionAggregate, Failure>> NotifyModelUpdated(WeatherDataCollectionAggregate weatherDataCollectionAggregate);
-}
+// public interface INotificationService
+// {
+//     Task<OneOf<WeatherDataCollectionAggregate, Failure>> NotifyModelUpdated(WeatherDataCollectionAggregate weatherDataCollectionAggregate);
+// }

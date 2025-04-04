@@ -12,8 +12,15 @@ public class EventRepositorySql(IDbConnectionFactory dbConnectionFactory, IDbQue
         return await InsertEventInternal(connection, @event.StreamId, @event.Version, @event.EventClassName, @event.SerialisedEvent);
     }
 
+    public async Task<PersistedEventResult> InsertEvent(Event @event, IDbTransactionWrapped transaction)
+    {
+        var connection = transaction.GetConnection();
+        return await InsertEventInternal(connection, @event.StreamId, @event.Version, @event.EventClassName, @event.SerialisedEvent, transaction);
+    }
+
     public async Task<PersistedEventsResult> InsertEvents(IList<Event> events)
     {
+        // todo: use db transaction? all or nothing?
         using var connection = dbConnectionFactory.Create();
         var newPersistedEvents = new List<PersistedEvent>();
         foreach (var @event in events)
@@ -77,5 +84,11 @@ public class EventRepositorySql(IDbConnectionFactory dbConnectionFactory, IDbQue
 
         var rows = await connection.QueryAsync(dbQueryProvider.FetchDomainEventsByStreamId, dynamicParameters);
         return (IEnumerable<PersistedEvent>)rows.Select(r => PersistedEventMapper.MapFromDynamic(r));
+    }
+
+    public IDbTransactionWrapped BeginTransaction()
+    {
+        using var connection = dbConnectionFactory.Create();
+        return connection.BeginTransaction();
     }
 }

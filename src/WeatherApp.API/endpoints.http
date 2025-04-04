@@ -1,0 +1,20 @@
+@baseUrl = https://localhost:7220
+@today = {{new Date}}
+
+### Health Check
+GET http://localhost:5000/
+
+### Get Weather Forecast
+GET http://localhost:5000/v1/weather-forecast/Glastonbury/{{today}}
+Content-Type: application/json
+
+### Submit Collected Weather Data
+POST http://localhost:5000/v1/collected-weather-data/BA160TE
+Content-Type: application/json
+
+{
+  "temperature": 25.5,
+  "humidity": 60,
+  "windSpeed": 15.2,
+  "precipitation": 0.0
+}

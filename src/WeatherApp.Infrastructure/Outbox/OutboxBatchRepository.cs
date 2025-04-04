@@ -1,18 +1,19 @@
-using System.Data;
 using Dapper;
+using WeatherApp.Infrastructure.Persistence;
+using WeatherApp.Infrastructure.RetryableDapperConnection;
 
 namespace WeatherApp.Infrastructure.Outbox;
 
 public class OutboxBatchRepository : IOutboxBatchRepository
-{
-    private readonly IDbConnection _dbConnection;
+{    
+    private readonly IDbConnectionFactory dbConnectionFactory;
 
-    public OutboxBatchRepository(IDbConnection dbConnection)
+    public OutboxBatchRepository(IDbConnectionFactory dbConnectionFactory)
     {
-        _dbConnection = dbConnection;
+        this.dbConnectionFactory = dbConnectionFactory;
     }
 
-    public async Task<IEnumerable<OutboxBatchItem>> GetNextBatchAsync(int batchSize)
+    public async Task<IEnumerable<OutboxBatchItem>> GetNextBatchAsync(int batchSize, IDbTransactionWrapped dbTransactionWrapped)
     {
         const string sql = @"
             WITH LatestStatus AS
@@ -41,6 +42,8 @@ public class OutboxBatchRepository : IOutboxBatchRepository
                 OR (LS.[Status] = 3 AND LS.[NotBefore] < GETUTCDATE()) -- Scheduled and NotBefore has passed        
             ORDER BY OI.[Created];";
 
-        return await _dbConnection.QueryAsync<OutboxBatchItem>(sql, new { BatchSize = batchSize });        
+        var parameters = new DynamicParameters();
+        parameters.Add("BatchSize", batchSize);
+        return await dbTransactionWrapped.GetConnection().Query<OutboxBatchItem>(sql, parameters, dbTransactionWrapped);        
     }
 }

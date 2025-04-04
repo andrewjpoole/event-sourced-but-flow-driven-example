@@ -11,25 +11,14 @@ using WeatherApp.Tests.Framework.ServiceBus;
 
 namespace WeatherApp.Tests.AppHostFactories;
 
-public class EventListenerWebApplicationFactory : WebApplicationFactory<EventListener.Program>
+public class EventListenerWebApplicationFactory(ComponentTestFixture fixture) : WebApplicationFactory<EventListener.Program>
 {
-    private readonly ComponentTestFixture fixture;
+    private readonly ComponentTestFixture fixture = fixture;
     private readonly CustomHttpClientFactory customHttpClientFactory = new();
 
     public readonly Mock<ILogger> MockLogger = new();
     public Func<EventRepositoryInMemory>? SetSharedEventRepository = null;
     public HttpClient? HttpClient;
-
-#if DEBUG
-    private const bool DebugCompilationSymbolIsPresent = true;
-#else
-    private const bool DebugCompilationSymbolIsPresent = false;
-#endif
-    
-    public EventListenerWebApplicationFactory(ComponentTestFixture fixture)
-    {
-        this.fixture = fixture;
-    }
     
     // Using CreateHost here instead of ConfigureWebHost because CreateHost adds config just after WebApplication.CreateBuilder(args) is called
     // whereas ConfigureWebHost is called too late just before builder.Build() is called
@@ -41,7 +30,7 @@ public class EventListenerWebApplicationFactory : WebApplicationFactory<EventLis
         Environment.SetEnvironmentVariable("ServiceBus__Inbound__MaxConcurrentCalls", "1");
         Environment.SetEnvironmentVariable("ServiceBus__Inbound__InitialBackoffInMs", "2000");
         Environment.SetEnvironmentVariable("ServiceBus__Inbound__PrefetchCount", "1");
-        Environment.SetEnvironmentVariable("ServiceBusSettings__FullyQualifiedNamespace", "component-test-servicebus-namespace");
+        //Environment.SetEnvironmentVariable("ServiceBusSettings__FullyQualifiedNamespace", "component-test-servicebus-namespace");
 
         Environment.SetEnvironmentVariable("NotificationsServiceOptions__BaseUrl", Constants.WeatherModelingServiceBaseUrl); // Value will not be used but does need to be a valid URI.
         Environment.SetEnvironmentVariable("NotificationsServiceOptions__MaxRetryCount", "3");
@@ -54,13 +43,7 @@ public class EventListenerWebApplicationFactory : WebApplicationFactory<EventLis
                 services.AddSingleton(loggerFactory.Object);
 
                 fixture.MockServiceBus.WireUpSendersAndProcessors(services);
-
-                //var client = new Mock<ServiceBusClient>();
-                //client.Setup(t => t.CreateProcessor(It.IsAny<string>(), It.IsAny<ServiceBusProcessorOptions>())).Returns((string queue, ServiceBusProcessorOptions _) => 
-                //    fixture.MockServiceBus.GetProcessorByDummyQueueName(queue, DebugCompilationSymbolIsPresent) ?? 
-                //        throw new Exception($"Can't find a registered TestableServiceBusProcessor for {queue}"));
-                //services.AddSingleton(client.Object);
-
+                
                 if (SetSharedEventRepository is not null)
                     services.AddSingleton<IEventRepository>(_ => SetSharedEventRepository());
             });

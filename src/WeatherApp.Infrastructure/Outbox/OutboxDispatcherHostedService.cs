@@ -2,12 +2,22 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using WeatherApp.Infrastructure.MessageBus;
+using WeatherApp.Infrastructure.Persistence;
+using WeatherApp.Domain.Logging;
 
 namespace WeatherApp.Infrastructure.Outbox;
 
-public class OutboxDispatcherHostedService(Logger<OutboxDispatcherHostedService> logger, IOutboxBatchRepository outboxBatchRepository, IOutboxRepository outboxRepository, IUniversalMessageSender messageSender, TimeProvider timeProvider, IOptions<OutboxProcessorOptions> options) : IHostedService
+public class OutboxDispatcherHostedService(
+    ILogger<OutboxDispatcherHostedService> logger, 
+    IDbConnectionFactory dbConnectionFactory,
+    IOutboxBatchRepository outboxBatchRepository, 
+    IOutboxRepository outboxRepository, 
+    IUniversalMessageSender messageSender, 
+    TimeProvider timeProvider, 
+    IOptions<OutboxProcessorOptions> options) : IHostedService
 {
-    private readonly Logger<OutboxDispatcherHostedService> logger = logger;
+    private readonly ILogger<OutboxDispatcherHostedService> logger = logger;
+    private readonly IDbConnectionFactory dbConnectionFactory = dbConnectionFactory;
     private readonly IOutboxBatchRepository outboxBatchRepository = outboxBatchRepository;
     private readonly IOutboxRepository outboxRepository = outboxRepository;
     private readonly IUniversalMessageSender messageSender = messageSender;
@@ -46,7 +56,11 @@ public class OutboxDispatcherHostedService(Logger<OutboxDispatcherHostedService>
 
     public async Task ProcessOutboxBatchAsync(int batchSize, CancellationToken cancellationToken)
     {
-        var outboxItems = await outboxBatchRepository.GetNextBatchAsync(batchSize);
+        using var connection = dbConnectionFactory.Create();
+        var transaction = connection.BeginTransaction();
+
+        var outboxItems = await outboxBatchRepository.GetNextBatchAsync(batchSize, transaction);
+        logger.LogOutboxItemCount(outboxItems.Count());
 
         foreach (var item in outboxItems)
         {
@@ -54,12 +68,15 @@ public class OutboxDispatcherHostedService(Logger<OutboxDispatcherHostedService>
             {
                 await messageSender.SendAsync(item.SerialisedData, item.MessagingEntityName, cancellationToken);
                 await outboxRepository.AddSentStatus(OutboxSentStatusUpdate.CreateSent(item.Id));
+                logger.LogDispatchedOutboxItem(item.Id);
             }
             catch (Exception ex)
             {
-                logger.LogWarning(ex, "Failed to send message for OutboxItemId: {OutboxItemId}", item.Id);
+                logger.LogFailedToSendOutboxItem(ex, item.Id);
                 await outboxRepository.AddSentStatus(OutboxSentStatusUpdate.CreateTransientFailure(item.Id, timeProvider.GetUtcNow().AddMinutes(5)));
             }            
         }
+
+        transaction.Rollback();
     }
 }

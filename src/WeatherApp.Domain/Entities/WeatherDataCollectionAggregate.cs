@@ -4,14 +4,14 @@ using WeatherApp.Domain.EventSourcing;
 using WeatherApp.Domain.Exceptions;
 using WeatherApp.Domain.Outcomes;
 using WeatherApp.Domain.ServiceDefinitions;
+using WeatherApp.Domain.ValueObjects;
 
 namespace WeatherApp.Domain.Entities;
 
-// ToDo:now re-organise into vertical slices?
 public class WeatherDataCollectionAggregate : AggregateRootBase
 {
-    public WeatherDataCollectionAggregate(Guid requestId, List<PersistedEvent> persistedEvents, IEventPersistenceService eventPersistenceService)
-        : base(requestId, persistedEvents, eventPersistenceService)
+    public WeatherDataCollectionAggregate(Guid streamId, List<PersistedEvent> persistedEvents, IEventPersistenceService eventPersistenceService)
+        : base(streamId, persistedEvents, eventPersistenceService)
     {
         Check.NotNull(PersistedEvents);
 
@@ -28,13 +28,16 @@ public class WeatherDataCollectionAggregate : AggregateRootBase
 
     // Properties from events which may not yet have happened, null if not yet happened.
     public Guid? LocationId => PersistedEvents.To<LocationIdFound>()!.LocationId;
+    public PendingContributorPayment? PendingPayment => PersistedEvents.To<PendingContributorPaymentPosted>()?.PendingContributorPayment;
     public Guid? ModelingSubmissionId => PersistedEvents.To<SubmittedToModeling>()!.SubmissionId;
 
     // Flags from events, used to skip tasks which are already complete i.e. on retry.
     public bool ModelingDataRejected => EventHasHappened<ModelingDataRejected>();
-    bool ModelingDataAccepted => EventHasHappened<ModelingDataAccepted>();
-    bool SubmissionCompleted => EventHasHappened<SubmissionComplete>();
-    bool ModelUpdated => EventHasHappened<ModelUpdated>();
+    public bool ModelingDataAccepted => EventHasHappened<ModelingDataAccepted>();
+    public bool SubmissionCompleted => EventHasHappened<SubmissionComplete>();
+    public bool ModelUpdated => EventHasHappened<ModelUpdated>();
+    public bool PendingPaymentRevoked => EventHasHappened<PendingContributorPaymentRevoked>();
+    public bool PendingPaymentCommitted => EventHasHappened<PendingContributorPaymentCommitted>();
 
     public static async Task<OneOf<WeatherDataCollectionAggregate, Failure>> Hydrate(IEventPersistenceService eventPersistenceService, Guid requestId)
     {
@@ -86,4 +89,23 @@ public class WeatherDataCollectionAggregate : AggregateRootBase
         await AppendEvent(new ModelUpdated());
         return this;
     }
+
+    public async Task<OneOf<WeatherDataCollectionAggregate, Failure>> AppendPendingContributorPaymentEvent(PendingContributorPayment pendingPayment)
+    {
+        await AppendEvent(new PendingContributorPaymentPosted(pendingPayment));
+        return this;
+    }
+
+    public async Task<OneOf<WeatherDataCollectionAggregate, Failure>> AppendRevokedContributorPaymentEvent(Guid paymentId)
+    {
+        await AppendEvent(new PendingContributorPaymentRevoked(paymentId));
+        return this;
+    }
+
+    public async Task<OneOf<WeatherDataCollectionAggregate, Failure>> AppendCommittedContributorPaymentEvent(Guid paymentId)
+    {
+        await AppendEvent(new PendingContributorPaymentRevoked(paymentId));
+        return this;
+    }
+    
 }

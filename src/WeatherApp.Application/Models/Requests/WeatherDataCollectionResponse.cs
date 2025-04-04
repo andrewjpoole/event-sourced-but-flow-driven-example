@@ -6,6 +6,6 @@ public record WeatherDataCollectionResponse(Guid RequestId)
 {
     public static WeatherDataCollectionResponse FromWeatherDataCollection(WeatherDataCollectionAggregate weatherDataCollectionAggregate)
     {
-        return new WeatherDataCollectionResponse(weatherDataCollectionAggregate.RequestId);
+        return new WeatherDataCollectionResponse(weatherDataCollectionAggregate.StreamId);
     }
 }

@@ -2,13 +2,17 @@
 using WeatherApp.Application.Services;
 using WeatherApp.Infrastructure.ModelingService;
 using Polly;
+using Microsoft.Extensions.Configuration;
 
 namespace WeatherApp.Infrastructure.ApiClients.WeatherModelingSystem;
 
 public static class WeatherModelingServiceRegistrations
 {
-    public static IServiceCollection AddWeatherModelingService(this IServiceCollection services, WeatherModelingServiceOptions options)
+    public static IServiceCollection AddWeatherModelingService(this IServiceCollection services, IConfiguration config)
     {
+        var options = config.GetSection(WeatherModelingServiceOptions.ConfigSectionName).Get<WeatherModelingServiceOptions>() ??
+                                    throw new Exception($"A {nameof(WeatherModelingServiceOptions)} config section is required.");
+
         var typeOfClientInterface = typeof(WeatherModelingService);
         var nameOfClientInterface = typeOfClientInterface.FullName ?? typeOfClientInterface.Name;
         services.AddHttpClient(nameOfClientInterface, client =>

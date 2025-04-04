@@ -1,6 +1,6 @@
-using System.Collections.ObjectModel;
 using System.Text.Json;
 using Azure.Messaging.ServiceBus;
+using Microsoft.Extensions.Options;
 
 namespace WeatherApp.Infrastructure.MessageBus;
 
@@ -8,11 +8,11 @@ public class MessageSender<T> : IMessageSender<T>
 {
     private readonly ServiceBusSender serviceBusSender;
 
-    public MessageSender(ServiceBusClient serviceBusClient, ServiceBusOutboundEntitiyOptions options)
+    public MessageSender(ServiceBusClient serviceBusClient, IOptions<ServiceBusOptions> options)
     {
         var type = typeof(T);
         var typeName = type.FullName ?? type.Name;
-        var entityName = options.ResolveQueueOrTopicNameFromConfig(typeName);
+        var entityName = options.Value.ResolveQueueOrTopicNameFromConfig(typeName);
 
         serviceBusSender = serviceBusClient.CreateSender(entityName);
     }

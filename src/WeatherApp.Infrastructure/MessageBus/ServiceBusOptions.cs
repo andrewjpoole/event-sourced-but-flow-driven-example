@@ -4,7 +4,7 @@ public class ServiceBusOptions
 {
     public Dictionary<string, string> Names { get; set; } = new();
     public int InitialBackoffInMs { get; set; } = 2000;
-    public int MaxConcurrentCalls { get; set; }
+    public int MaxConcurrentCalls { get; set; } = 1;
 
     public string ResolveQueueOrTopicNameFromConfig(string messageClassName)
     {
@@ -28,7 +28,7 @@ public class ServiceBusInboundQueueHandlerOptions : ServiceBusOptions
     public const string Name = "ServiceBus:Inbound";
 }
 
-public class ServiceBusOutboundEntitiyOptions : ServiceBusOptions
+public class ServiceBusOutboundEntityOptions : ServiceBusOptions
 {
     public const string Name = "ServiceBus:Outbound";
 }

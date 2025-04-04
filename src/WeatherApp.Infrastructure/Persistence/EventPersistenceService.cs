@@ -1,15 +1,24 @@
 ﻿using Microsoft.Extensions.Logging;
 using WeatherApp.Domain.EventSourcing;
 using WeatherApp.Domain.ServiceDefinitions;
+using WeatherApp.Infrastructure.Outbox;
+using WeatherApp.Domain.Logging;
+using WeatherApp.Domain.Entities;
+using WeatherApp.Domain.Outcomes;
+using WeatherApp.Application.Models.IntegrationEvents.NotificationEvents;
+using System;
+using WeatherApp.Domain.DomainEvents;
 
 namespace WeatherApp.Infrastructure.Persistence;
 
 public class EventPersistenceService(
     ILogger<EventPersistenceService> logger,
-    IEventRepository eventRepository) 
+    IEventRepository eventRepository, 
+    IOutboxRepository outboxRepository, 
+    TimeProvider timeProvider) 
     : IEventPersistenceService
 {
-    private readonly ILogger<EventPersistenceService> logger = logger;
+    protected readonly ILogger<EventPersistenceService> logger = logger;
 
     public async Task<PersistedEvent> PersistEvent(Event @event)
     {
@@ -34,4 +43,46 @@ public class EventPersistenceService(
         var persistedEvents = await eventRepository.FetchEvents(requestId);
         return persistedEvents;
     }
+
+    private async Task<PersistedEvent> AtomicallyPersistDomainEventAndCreateOutboxRecord<TDomainEvent>(Event @event, OutboxItem outboxItem) where TDomainEvent : class, IDomainEvent
+    {
+        var transaction = eventRepository.BeginTransaction();
+        try
+        {
+            var result = await eventRepository.InsertEvent(@event, transaction);            
+            await outboxRepository.Add(outboxItem);
+            transaction.Commit();    
+
+            if(result.TryGetPersistedEvent(out var persistedEvent))
+                return persistedEvent;
+
+            throw new Exception($"Unable to persist event. {result.Error}");
+        }
+        catch (Exception ex)
+        {
+            logger.LogFailedToPersistDomainEventAndOutboxItem(ex, @event.StreamId);
+            transaction.Rollback();
+            throw;
+        }
+    }
+
+    public async Task<OneOf<WeatherDataCollectionAggregate, Failure>> AppendModelUpdatedEventAndCreateOutboxItem(WeatherDataCollectionAggregate weatherDataCollectionAggregate)
+    {
+        var userNotificationEvent = new UserNotificationEvent("Message here", timeProvider.GetUtcNow());
+        var outboxItem = OutboxItem.Create(userNotificationEvent, "weatherapp-user-notification");
+        
+        var version = weatherDataCollectionAggregate.GetNextExpectedVersion();
+        var @event = Event.Create<ModelUpdated>(new ModelUpdated(), weatherDataCollectionAggregate.StreamId, version);
+        
+        await AtomicallyPersistDomainEventAndCreateOutboxRecord<ModelUpdated>(@event, outboxItem);
+        return weatherDataCollectionAggregate;
+    }    
 }
+
+// public class WeatherAppEventPersistenceService(
+//     ILogger<EventPersistenceService> logger,
+//     IEventRepository eventRepository) 
+//     : EventPersistenceService, IWeatherAppEventPersistenceService
+// {
+    
+// }
