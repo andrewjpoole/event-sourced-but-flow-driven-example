@@ -2,10 +2,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Polly;
 using WeatherApp.Application.Services;
-using WeatherApp.Infrastructure.ApiClients.NotificationService;
-using WeatherApp.Infrastructure.ContributorPayments;
 
-namespace WeatherApp.Infrastructure.ApiClients.ContributorPaymentsService;
+namespace WeatherApp.Infrastructure.ContributorPayments;
 
 public static class ContributorPaymentsServiceRegistrations
 {

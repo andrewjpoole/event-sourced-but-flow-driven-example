@@ -4,7 +4,7 @@ using WeatherApp.Domain.Entities;
 using WeatherApp.Domain.Outcomes;
 using WeatherApp.Domain.ValueObjects;
 using WeatherApp.Domain.Logging;
-using WeatherApp.Infrastructure.ApiClients.NotificationService;
+using WeatherApp.Infrastructure.ApiClientWrapper;
 
 namespace WeatherApp.Infrastructure.ContributorPayments;
 

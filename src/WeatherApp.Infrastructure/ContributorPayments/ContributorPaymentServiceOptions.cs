@@ -1,8 +1,8 @@
-﻿namespace WeatherApp.Infrastructure.ApiClients.NotificationService;
+namespace WeatherApp.Infrastructure.ContributorPayments;
 
-public class NotificationsServiceOptions
+public class ContributorPaymentServiceOptions
 {
-    public static string ConfigSectionName => "NotificationsServiceOptions";
+    public static string ConfigSectionName => "ContributorPaymentServiceOptions";
 
     public string? BaseUrl { get; set; }
     public string? SubscriptionKey { get; set; }

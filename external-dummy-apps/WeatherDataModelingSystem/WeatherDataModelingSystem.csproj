@@ -8,9 +8,7 @@
 
   <ItemGroup>
 	  <ProjectReference Include="..\..\src\WeatherApp.Application\WeatherApp.Application.csproj" />
-	  <ProjectReference Include="..\..\src\WeatherApp.Infrastructure\WeatherApp.Infrastructure.csproj" />
-	  <ProjectReference Include="..\WeatherApp.Application\WeatherApp.Application.csproj" />
-	  <ProjectReference Include="..\WeatherApp.Infrastructure\WeatherApp.Infrastructure.csproj" />
+	  <ProjectReference Include="..\..\src\WeatherApp.Infrastructure\WeatherApp.Infrastructure.csproj" />	  
   </ItemGroup>
 
   <ItemGroup>

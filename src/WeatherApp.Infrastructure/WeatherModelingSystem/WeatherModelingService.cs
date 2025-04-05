@@ -3,8 +3,9 @@ using WeatherApp.Domain.DomainEvents;
 using WeatherApp.Domain.Entities;
 using WeatherApp.Domain.Outcomes;
 using WeatherApp.Infrastructure.ApiClients.WeatherModelingSystem;
+using WeatherApp.Infrastructure.ApiClientWrapper;
 
-namespace WeatherApp.Infrastructure.ModelingService;
+namespace WeatherApp.Infrastructure.WeatherModelingSystem;
 
 public class WeatherModelingService(IRefitClientWrapper<IWeatherModelingServiceClient> weatherModelingServiceClientWrapper) : IWeatherModelingService
 {

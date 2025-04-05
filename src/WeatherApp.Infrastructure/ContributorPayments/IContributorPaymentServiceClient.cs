@@ -1,7 +1,7 @@
 using Refit;
 using WeatherApp.Domain.ValueObjects;
 
-namespace WeatherApp.Infrastructure.ApiClients.NotificationService;
+namespace WeatherApp.Infrastructure.ContributorPayments;
 
 public interface IContributorPaymentServiceClient : IDisposable
 {

@@ -5,7 +5,6 @@ using WeatherApp.Application.Orchestration;
 using WeatherApp.Application.Services;
 using WeatherApp.Domain.Outcomes;
 using WeatherApp.Domain.ServiceDefinitions;
-using WeatherApp.Infrastructure.ApiClients;
 using WeatherApp.Infrastructure.ApiClients.WeatherModelingSystem;
 using WeatherApp.Infrastructure.ContributorPayments;
 using WeatherApp.Infrastructure.LocationManager;
@@ -13,7 +12,7 @@ using WeatherApp.Infrastructure.LocationManager;
 using WeatherApp.Infrastructure.Persistence;
 using OpenTelemetry.Logs;
 using OpenTelemetry.Resources;
-using WeatherApp.Infrastructure.ApiClients.ContributorPaymentsService;
+using WeatherApp.Infrastructure.ApiClientWrapper;
 
 namespace WeatherApp.API;
 

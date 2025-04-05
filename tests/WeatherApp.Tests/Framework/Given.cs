@@ -3,7 +3,6 @@ using Azure.Messaging.ServiceBus;
 using Moq;
 using Moq.Contrib.HttpClient;
 using WeatherApp.Application.Models.Requests;
-using WeatherApp.Infrastructure.ApiClients.NotificationService;
 
 namespace WeatherApp.Tests.Framework;
 
@@ -36,8 +35,8 @@ public class Given(ComponentTestFixture fixture)
         fixture.OutboxApplicationFactory.Start();
 
         // Replace the httpClient in eventlistener's IoC container with the in-memory one from the NotificationServiceFactory.
-        fixture.EventListenerFactory.ClearHttpClients();
-        fixture.EventListenerFactory.AddHttpClient(typeof(INotificationsClient).FullName!, fixture.NotificationServiceFactory.HttpClient!); 
+        //fixture.EventListenerFactory.ClearHttpClients();
+        //fixture.EventListenerFactory.AddHttpClient(typeof(INotificationsClient).FullName!, fixture.NotificationServiceFactory.HttpClient!); 
         return this;
     }
 
@@ -57,6 +56,9 @@ public class Given(ComponentTestFixture fixture)
             return this;
 
         var senderMock = fixture.MockServiceBus.GetSenderFor<TMessageType>();
+        // If there is no senderMock for the given TMessageType then just return.
+        if (senderMock == null)
+            return this;
 
         senderMock.Setup(x => x.SendMessageAsync(It.IsAny<ServiceBusMessage>(), It.IsAny<CancellationToken>()))
             .Callback<ServiceBusMessage, CancellationToken>((sbm, ctx) =>

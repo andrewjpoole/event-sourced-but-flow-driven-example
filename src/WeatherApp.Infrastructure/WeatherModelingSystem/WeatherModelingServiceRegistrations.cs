@@ -1,8 +1,8 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using WeatherApp.Application.Services;
-using WeatherApp.Infrastructure.ModelingService;
 using Polly;
 using Microsoft.Extensions.Configuration;
+using WeatherApp.Infrastructure.WeatherModelingSystem;
 
 namespace WeatherApp.Infrastructure.ApiClients.WeatherModelingSystem;
 

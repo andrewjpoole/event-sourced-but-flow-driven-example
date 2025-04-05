@@ -1,7 +1,7 @@
 ﻿using System.Text.Json;
 using Refit;
 
-namespace WeatherApp.Infrastructure.ApiClients;
+namespace WeatherApp.Infrastructure.ApiClientWrapper;
 
 public class RefitClientWrapper<T>(IHttpClientFactory clientFactory) : IRefitClientWrapper<T>
 {
