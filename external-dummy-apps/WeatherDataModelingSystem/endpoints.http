@@ -1,13 +1,65 @@
 @baseUrl = https://localhost:7300
-@streamId = {{new UUID}}
+@streamId = {{$guid}}
+
+
 
 ### Health Check
 GET {{baseUrl}}/
 
 ### Post collected weather data
-POST {{baseUrl}}/v1/collected-weather-data/Bristol
+
+POST {{baseUrl}}/v1/collected-weather-data/Bristol/{{streamId}}
 Content-Type: application/json
 
 {
-    "streamId": "{streamId}}"
+    "points": [
+        {
+            "id": "{{$guid}}",
+            "time": "{{$datetime iso8601}}",
+            "windSpeed": {
+                "value": {{$randomInt 0 69}},
+                "unit": "m/s"
+            },
+            "windDirection": {
+                "value": "{{$randomInt 0 360}}"
+            },
+            "temperature": {
+                "value": {{$randomInt -15 40}}.{{$randomInt 0 99}},
+                "unit": "°C"
+            },
+            "humidity": {
+                "value": {{$randomInt 20 100}},
+                "unit": "%"
+            }
+        }
+    ]
+}
+
+### Test
+@windDirection = {{$randomInt 0 360}}
+POST {{baseUrl}}/test
+Content-Type: application/json
+
+{
+    "points": [
+        {
+            "id": "{{$guid}}",
+            "time": "{{$datetime iso8601}}",
+            "windSpeed": {
+                "value": {{$randomInt 0 80}},
+                "unit": "m/s"
+            },
+            "windDirection": {
+                "value": "{{$randomInt 0 360}}"
+            },
+            "temperature": {
+                "value": {{$randomInt -15 40}}.{{$randomInt 0 99}},
+                "unit": "°C"
+            },
+            "humidity": {
+                "value": {{$randomInt 20 100}},
+                "unit": "%"
+            }
+        }
+    ]
 }

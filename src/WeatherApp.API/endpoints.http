@@ -13,8 +13,21 @@ POST http://localhost:5000/v1/collected-weather-data/BA160TE
 Content-Type: application/json
 
 {
-  "temperature": 25.5,
-  "humidity": 60,
-  "windSpeed": 15.2,
-  "precipitation": 0.0
+  "Id": "{{new UUID}}",
+  "time": "{{new Date}}",
+  "WindSpeed": {
+    "Value": 12.5,
+    "Unit": "m/s"
+  },
+  "WindDirection": {
+    "Value": "87"
+  },
+  "Temperature": {
+    "Value": 22.3,
+    "Unit": "°C"
+  },
+  "Humidity": {
+    "Value": 65,
+    "Unit": "%"
+  }
 }

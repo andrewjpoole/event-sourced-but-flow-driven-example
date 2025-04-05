@@ -11,10 +11,10 @@ public class MessageSender<T> : IMessageSender<T>
     public MessageSender(ServiceBusClient serviceBusClient, IOptions<ServiceBusOptions> options)
     {
         var type = typeof(T);
-        var typeName = type.FullName ?? type.Name;
-        var entityName = options.Value.ResolveQueueOrTopicNameFromConfig(typeName);
+        var entityNameFotTypeFromConfig = options.Value.ResolveQueueOrTopicNameFromConfig(type.Name);
+        var queueOrTopicName = new QueueOrTopicName(entityNameFotTypeFromConfig).Name;
 
-        serviceBusSender = serviceBusClient.CreateSender(entityName);
+        serviceBusSender = serviceBusClient.CreateSender(queueOrTopicName);
     }
 
     public async Task SendAsync(T payload, CancellationToken cancellationToken = default)

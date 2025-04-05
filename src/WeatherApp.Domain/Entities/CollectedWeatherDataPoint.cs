@@ -4,7 +4,7 @@ namespace WeatherApp.Domain.Entities;
 
 public record CollectedWeatherDataPoint(
     Guid Id,
-    DateTimeOffset time,
+    DateTimeOffset Time,
     WindSpeed WindSpeed,
     WindDirection WindDirection,
     Temperature Temperature,

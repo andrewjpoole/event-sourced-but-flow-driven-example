@@ -16,24 +16,27 @@ public class ServiceBusEventListener<T> : IHostedService, IDisposable
     private readonly ServiceBusClient serviceBusClient;
     private ServiceBusProcessor? serviceBusProcessor;
 
-    private readonly string queueName;
+    private readonly string queueOrTopicName;
     private readonly int maxConcurrentCalls;
     private readonly int initialBackoffInMs;
     private readonly int maxJitterInMs;
 
     public ServiceBusEventListener(
         ServiceBusClient serviceBusClient,
-        IOptions<ServiceBusOptions> queueHandlerOptions,
+        IOptions<ServiceBusOptions> options,
         IEventHandler<T> eventHandler,
         ILogger<ServiceBusEventListener<T>> logger)
     {
         this.logger = logger;
         this.serviceBusClient = serviceBusClient;
         this.eventHandler = eventHandler;
-        initialBackoffInMs = queueHandlerOptions.Value.InitialBackoffInMs;
-        maxConcurrentCalls = queueHandlerOptions.Value.MaxConcurrentCalls;
+        initialBackoffInMs = options.Value.InitialBackoffInMs;
+        maxConcurrentCalls = options.Value.MaxConcurrentCalls;
         maxJitterInMs = Convert.ToInt32(initialBackoffInMs * 0.1);
-        queueName = new QueueOrTopicName(queueHandlerOptions.Value.ResolveQueueOrTopicNameFromConfig(typeof(T).Name)).Name;
+        
+        var type = typeof(T);
+        var entityNameFotTypeFromConfig = options.Value.ResolveQueueOrTopicNameFromConfig(type.Name);
+        queueOrTopicName = new QueueOrTopicName(entityNameFotTypeFromConfig).Name;
     }
 
     public async Task StartAsync(CancellationToken cancellationToken)
@@ -42,7 +45,7 @@ public class ServiceBusEventListener<T> : IHostedService, IDisposable
         {
             logger.LogInformation($"Starting service, with MaxConcurrentCalls: {maxConcurrentCalls}");
 
-            serviceBusProcessor = serviceBusClient.CreateProcessor(queueName, new ServiceBusProcessorOptions
+            serviceBusProcessor = serviceBusClient.CreateProcessor(queueOrTopicName, new ServiceBusProcessorOptions
             {
                 PrefetchCount = 1,
                 AutoCompleteMessages = false,
@@ -52,7 +55,7 @@ public class ServiceBusEventListener<T> : IHostedService, IDisposable
             serviceBusProcessor.ProcessMessageAsync += MessageHandler;
             serviceBusProcessor.ProcessErrorAsync += ErrorHandler;
 
-            logger.LogInformation($"Starting to consume from Queue: {queueName}");
+            logger.LogInformation($"Starting to consume from Queue: {queueOrTopicName}");
 
             await serviceBusProcessor.StartProcessingAsync(cancellationToken);
         }
