@@ -47,10 +47,10 @@ public class RetryableConnection :IRetryableConnection
     public async Task<IEnumerable<dynamic>> Query(string sql, DynamicParameters parameters, IDbTransactionWrapped? transaction = null, int? commandTimeout = null, CommandType? commandType = null) =>
         await InternalExecute(c => c.QueryAsync(sql, parameters, transaction?.ToIDbTransaction(), commandTimeout, commandType));
 
-    public async Task<T> QuerySingleOrDefault<T>(string sql, DynamicParameters parameters, IDbTransactionWrapped? transaction = null, int? commandTimeout = null, CommandType? commandType = null) =>
+    public async Task<T?> QuerySingleOrDefault<T>(string sql, DynamicParameters parameters, IDbTransactionWrapped? transaction = null, int? commandTimeout = null, CommandType? commandType = null) =>
         await InternalExecute(c => c.QuerySingleOrDefaultAsync<T>(sql, parameters, transaction?.ToIDbTransaction(), commandTimeout, commandType));
 
-    public async Task<dynamic> QuerySingleOrDefault(string sql, DynamicParameters parameters, IDbTransactionWrapped? transaction = null, int? commandTimeout = null, CommandType? commandType = null) =>
+    public async Task<dynamic?> QuerySingleOrDefault(string sql, DynamicParameters parameters, IDbTransactionWrapped? transaction = null, int? commandTimeout = null, CommandType? commandType = null) =>
         await InternalExecute(c => c.QuerySingleOrDefaultAsync(sql, parameters, transaction?.ToIDbTransaction(), commandTimeout, commandType));
 
     public IDbTransactionWrapped BeginTransaction(IsolationLevel isolationLevel = IsolationLevel.RepeatableRead)

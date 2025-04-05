@@ -1,9 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Options;
 using OpenTelemetry.Logs;
 using OpenTelemetry.Resources;
 using WeatherApp.Application.Models.IntegrationEvents.WeatherModelingEvents;
-using WeatherApp.Domain.DomainEvents;
 using WeatherApp.Domain.Entities;
 using WeatherApp.Infrastructure.MessageBus;
 
@@ -43,10 +41,10 @@ public class Program
 
         app.MapGet("/", () => "Weather Data Modeling System is running!");
         
-        app.MapPost("/v1/collected-weather-data/{location}", async (string location, [FromBody]WeatherDataCollectionAggregate payload, HttpContext context) => 
+        app.MapPost("/v1/collected-weather-data/{location}/{submissionId}", async (string location, Guid submissionId, [FromBody]CollectedWeatherData payload, HttpContext context) => 
            {
                 var modelingDataAcceptedIntegrationEventSender = context.RequestServices.GetRequiredService<IMessageSender<ModelingDataAcceptedIntegrationEvent>>();
-                var modelingDataAcceptedIntegrationEvent = new ModelingDataAcceptedIntegrationEvent(payload.StreamId);
+                var modelingDataAcceptedIntegrationEvent = new ModelingDataAcceptedIntegrationEvent(submissionId);
                 await modelingDataAcceptedIntegrationEventSender.SendAsync(modelingDataAcceptedIntegrationEvent);
 
                 // Don't await, but after some time simulate sending the ModelUpdatedEvent...
@@ -54,7 +52,7 @@ public class Program
                 {
                     await Task.Delay(10_000);
                     var modelingDataAcceptedIntegrationEventSender = context.RequestServices.GetRequiredService<IMessageSender<ModelUpdatedIntegrationEvent>>();
-                    var modelUpdatedIntegrationEvent = new ModelUpdatedIntegrationEvent(payload.StreamId);
+                    var modelUpdatedIntegrationEvent = new ModelUpdatedIntegrationEvent(submissionId);
                     await modelingDataAcceptedIntegrationEventSender.SendAsync(modelUpdatedIntegrationEvent);
                 });
 

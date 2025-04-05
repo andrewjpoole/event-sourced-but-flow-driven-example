@@ -16,7 +16,11 @@ public class WeatherModelingService(IRefitClientWrapper<IWeatherModelingServiceC
 
         using var weatherModelingServiceClient = weatherModelingServiceClientWrapper.CreateClient();
 
-        var response = await weatherModelingServiceClient.PostCollectedData(weatherDataCollectionAggregate.Location, weatherDataCollectionAggregate); // response is null in LoggingHttpMessageHandler.Log.RequestEnd ???
+        var response = await weatherModelingServiceClient.PostCollectedData(
+            weatherDataCollectionAggregate.Location, 
+            weatherDataCollectionAggregate.StreamId, 
+            weatherDataCollectionAggregate.Data);
+            
         var bodyContent = await response.Content.ReadAsStringAsync();
 
         if (!response.IsSuccessStatusCode) 
