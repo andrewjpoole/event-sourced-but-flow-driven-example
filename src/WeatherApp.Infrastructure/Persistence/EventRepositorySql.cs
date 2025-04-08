@@ -61,10 +61,11 @@ public class EventRepositorySql(IDbConnectionFactory dbConnectionFactory, IDbQue
             dynamicParameters.Add(QueryParameters.EventClassName, eventClassName);
             dynamicParameters.Add(QueryParameters.SerialisedEvent, serialisedEvent);
 
-            var dataRow = await connection.QuerySingleOrDefault(
+            dynamic? dataRow = await connection.QuerySingleOrDefault(
                 dbQueryProvider.InsertDomainEvent,
                 dynamicParameters,
                 transaction);
+                
             var persistedEvent = (PersistedEvent)PersistedEventMapper.MapFromDynamic(dataRow);
 
             return PersistedEventResult.FromSuccess(persistedEvent);
@@ -83,12 +84,17 @@ public class EventRepositorySql(IDbConnectionFactory dbConnectionFactory, IDbQue
         dynamicParameters.Add(QueryParameters.StreamId, streamId);
 
         var rows = await connection.QueryAsync(dbQueryProvider.FetchDomainEventsByStreamId, dynamicParameters);
-        return (IEnumerable<PersistedEvent>)rows.Select(r => PersistedEventMapper.MapFromDynamic(r));
+
+        if (rows == null || !rows.Any())        
+            return []; 
+
+        var persistedEvents = rows.Select(r => (PersistedEvent)PersistedEventMapper.MapFromDynamic(r));
+        return persistedEvents;
     }
 
     public IDbTransactionWrapped BeginTransaction()
     {
-        using var connection = dbConnectionFactory.Create();
+        var connection = dbConnectionFactory.Create();
         return connection.BeginTransaction();
     }
 }

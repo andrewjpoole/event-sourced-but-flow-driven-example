@@ -27,9 +27,17 @@ public class AggregateRootBase(Guid streamId, List<PersistedEvent> persistedEven
         persistedEvents.AddRange(persistedEvents);
     }
 
+    public void AddPersistedEvent(PersistedEvent persistedEvent)
+    {
+        if (PersistedEvents.Any(pe => pe.Version == persistedEvent.Version))
+            throw new Exception($"Version {persistedEvent.Version} already exists in the aggregate.");
+
+        PersistedEvents.Add(persistedEvent);
+    }
+
     public int GetNextExpectedVersion()
     {
-        return PersistedEvents.OrderBy(x => x.Version).Last().Version;
+        return PersistedEvents.OrderBy(x => x.Version).Last().Version + 1;
     }
 
     public bool EventHasHappened<T>()

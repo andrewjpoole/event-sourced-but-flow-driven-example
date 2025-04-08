@@ -13,14 +13,15 @@ public static class WeatherModelingServiceRegistrations
         var options = config.GetSection(WeatherModelingServiceOptions.ConfigSectionName).Get<WeatherModelingServiceOptions>() ??
                                     throw new Exception($"A {nameof(WeatherModelingServiceOptions)} config section is required.");
 
-        var typeOfClientInterface = typeof(WeatherModelingService);
+        var serviceBaseUrl = config.GetValue<string>("services:weathermodelingservice:https:0");
+        if (string.IsNullOrWhiteSpace(serviceBaseUrl))
+            throw new Exception($"Expected a service url from aspire at services__weathermodelingservice__https__0.");
+
+        var typeOfClientInterface = typeof(IWeatherModelingServiceClient);
         var nameOfClientInterface = typeOfClientInterface.FullName ?? typeOfClientInterface.Name;
         services.AddHttpClient(nameOfClientInterface, client =>
-            {
-                if (string.IsNullOrWhiteSpace(options.BaseUrl))
-                    throw new Exception($"{nameof(options.BaseUrl)} is required on {nameof(WeatherModelingServiceOptions)} section in config.");
-
-                client.BaseAddress = new Uri(options.BaseUrl);
+            {                
+                client.BaseAddress = new Uri(serviceBaseUrl);
                 client.DefaultRequestHeaders.Add(options.ApiManagerSubscriptionKeyHeader, options.SubscriptionKey);
             })
             .AddTransientHttpErrorPolicy(policy =>

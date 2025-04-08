@@ -2,14 +2,10 @@ using WeatherApp.Application.Handlers;
 using WeatherApp.Application.Models.IntegrationEvents.WeatherModelingEvents;
 using WeatherApp.Application.Orchestration;
 using WeatherApp.Application.Services;
-using WeatherApp.Domain.ServiceDefinitions;
 using WeatherApp.Infrastructure.ApiClients.WeatherModelingSystem;
 using WeatherApp.Infrastructure.LocationManager;
 using WeatherApp.Infrastructure.MessageBus;
-//using WeatherApp.Infrastructure.Notifications;
 using WeatherApp.Infrastructure.Persistence;
-using OpenTelemetry.Logs;
-using OpenTelemetry.Resources;
 using WeatherApp.Infrastructure.Outbox;
 using WeatherApp.Infrastructure.ApiClientWrapper;
 using WeatherApp.Infrastructure.ContributorPayments;
@@ -22,34 +18,24 @@ public class Program
     {
         var builder = WebApplication.CreateBuilder(args);
 
-        builder.Configuration.AddEnvironmentVariables(prefix: "WeatherApp_");
-        builder.Configuration.AddEnvironmentVariables(prefix: "WeatherApp_Listener_");
-
-        builder.Logging
-            .ClearProviders()
-            .AddConsole();
-
-        builder.Services.AddOpenTelemetry()
-            .ConfigureResource(r => r.AddService(builder.Environment.ApplicationName))
-            .WithLogging(logging => logging
-                .AddOtlpExporter());
+        builder.AddServiceDefaults();
+        builder.AddAzureServiceBusClient(connectionName: "asb");
+        builder.AddSqlServerClient(connectionName: "WeatherAppDb");
         
         var config = builder.Configuration;
         
         builder.Services
-            .AddDatabase(config)
+            .AddDatabaseConnectionFactory()
             .AddEventSourcing()
             .AddServiceBusInboundQueueHandlerOptions(config)
-            .ConfigureServiceBusClient(config)
+            .AddServiceBusOutboundEntityOptions(config)
             .AddOutboxServices()
             .AddSingleton(x => TimeProvider.System)
             .AddSingleton<IGetWeatherReportRequestHandler, GetWeatherReportRequestHandler>()
             .AddSingleton<ISubmitWeatherDataCommandHandler, CollectedWeatherDataOrchestrator>()
             .AddSingleton<IRegionValidator, RegionValidator>()
             .AddSingleton<IDateChecker, DateChecker>()
-            .AddSingleton<IWeatherForecastGenerator, WeatherForecastGenerator>()
-            .AddSingleton<IEventPersistenceService, EventPersistenceService>()
-            .AddSingleton<IEventRepository, EventRepositoryInMemory>()
+            .AddSingleton<IWeatherForecastGenerator, WeatherForecastGenerator>()  
             .AddSingleton<IWeatherDataValidator, WeatherDataValidator>()
             .AddSingleton<ILocationManager, LocationManager>()
             .AddContributorPaymentsService(config)
@@ -63,7 +49,7 @@ public class Program
 
         var app = builder.Build();
 
-        app.MapGet("/", () => "Hello World!");
+        app.MapGet("/", () => "Weather App Event Listener is running!");
 
         await app.RunAsync();
     }

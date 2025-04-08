@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
-using OpenTelemetry.Logs;
-using OpenTelemetry.Resources;
+
 using WeatherApp.Domain.ValueObjects;
 
 namespace ContributorPaymentsService;
@@ -11,14 +10,7 @@ public class Program
     {
         var builder = WebApplication.CreateBuilder(args);
 
-        builder.Logging
-            .ClearProviders()
-            .AddConsole();
-
-        builder.Services.AddOpenTelemetry()
-            .ConfigureResource(r => r.AddService(builder.Environment.ApplicationName))
-            .WithLogging(logging => logging
-                .AddOtlpExporter());
+        builder.AddServiceDefaults();
         
         var app = builder.Build();
 

@@ -2,8 +2,6 @@ using WeatherApp.Infrastructure.Persistence;
 using WeatherApp.Infrastructure.Outbox;
 using WeatherApp.Infrastructure.MessageBus;
 using WeatherApp.Domain.Logging;
-using OpenTelemetry.Logs;
-using OpenTelemetry.Resources;
 
 namespace WeatherApp.Outbox;
 
@@ -13,21 +11,13 @@ public class Program
     {
         var builder = WebApplication.CreateBuilder(args);
 
-        builder.Configuration.AddEnvironmentVariables(prefix: "WeatherApp_");
-
-        builder.Logging
-            .ClearProviders()
-            .AddConsole();
-
-        builder.Services.AddOpenTelemetry()
-            .ConfigureResource(r => r.AddService(builder.Environment.ApplicationName))
-            .WithLogging(logging => logging
-                .AddOtlpExporter());
+        builder.AddServiceDefaults(); 
+        builder.AddAzureServiceBusClient(connectionName: "asb");
+        builder.AddSqlServerClient(connectionName: "WeatherAppDb");
 
         builder.Services
-            .AddDatabase(builder.Configuration)
+            .AddDatabaseConnectionFactory()
             .AddSingleton(x => TimeProvider.System)
-            .ConfigureServiceBusClient(builder.Configuration)
             .AddUniversalMessageSender(builder.Configuration)
             .AddOutboxDispatcherService();
 

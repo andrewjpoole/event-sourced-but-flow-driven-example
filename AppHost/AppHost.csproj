@@ -1,0 +1,31 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <Sdk Name="Aspire.AppHost.Sdk" Version="9.1.0" />
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net9.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <IsAspireHost>true</IsAspireHost>
+    <UserSecretsId>c28b160a-2291-4001-9e6e-bcecf3d2caff</UserSecretsId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Aspire.Hosting.AppHost" Version="9.1.0" />
+    <PackageReference Include="Aspire.Hosting.Azure.ServiceBus" Version="9.1.0" />
+    <PackageReference Include="Aspire.Hosting.SqlServer" Version="9.1.0" />
+    <PackageReference Include="CommunityToolkit.Aspire.Hosting.SqlDatabaseProjects" Version="9.3.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\external-dummy-apps\ContributorPaymentsService\ContributorPaymentsService.csproj" />
+    <ProjectReference Include="..\external-dummy-apps\NotificationService\NotificationService.csproj" />
+    <ProjectReference Include="..\external-dummy-apps\WeatherDataModelingSystem\WeatherDataModelingSystem.csproj" />
+    <ProjectReference Include="..\src\WeatherApp.API\WeatherApp.API.csproj" />
+    <ProjectReference Include="..\src\WeatherApp.EventListener\WeatherApp.EventListener.csproj" />
+    <ProjectReference Include="..\src\WeatherApp.Outbox\WeatherApp.Outbox.csproj" />
+    <ProjectReference Include="..\database\WeatherAppDb.sqlproj" />
+  </ItemGroup>
+
+</Project>

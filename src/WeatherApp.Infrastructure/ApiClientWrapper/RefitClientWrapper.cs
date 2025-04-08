@@ -16,7 +16,12 @@ public class RefitClientWrapper<T>(IHttpClientFactory clientFactory) : IRefitCli
 
         var typeOfT = typeof(T);
         var nameofT = typeOfT.FullName ?? typeOfT.Name;
-        var refitClient = RestService.For<T>(clientFactory.CreateClient(nameofT), new RefitSettings(new SystemTextJsonContentSerializer(jsonSerializerOptions)));
+
+        var client = clientFactory.CreateClient(nameofT);
+        if (client == null)
+            throw new ArgumentNullException(nameof(client), $"HttpClient with name {nameofT} not found.");
+            
+        var refitClient = RestService.For<T>(client, new RefitSettings(new SystemTextJsonContentSerializer(jsonSerializerOptions)));
 
         return refitClient;
     }

@@ -48,7 +48,7 @@ public static class MessageBusRegistrations
         var serviceBusOutboundEntityOptions = configuration.GetSection(ServiceBusOutboundEntityOptions.Name).Get<ServiceBusOutboundEntityOptions>() ??
                                    throw new Exception($"A {nameof(ServiceBusOutboundEntityOptions)} config section is required.");
 
-        IOptions<ServiceBusOptions> outboundServiceBusOptions = Options.Create(serviceBusOutboundEntityOptions);
+        var outboundServiceBusOptions = Options.Create(serviceBusOutboundEntityOptions);
         services.AddSingleton(outboundServiceBusOptions);
 
         return services;        
@@ -59,8 +59,7 @@ public static class MessageBusRegistrations
         var queueHandlerOptions = configuration.GetSection(ServiceBusInboundQueueHandlerOptions.Name).Get<ServiceBusInboundQueueHandlerOptions>() ??
                                   throw new Exception($"A {nameof(ServiceBusInboundQueueHandlerOptions)} config section is required.");
 
-
-        IOptions<ServiceBusOptions> inboundServiceBusOptions = Options.Create(queueHandlerOptions);
+        var inboundServiceBusOptions = Options.Create(queueHandlerOptions);
         services.AddSingleton(inboundServiceBusOptions);
 
         return services;

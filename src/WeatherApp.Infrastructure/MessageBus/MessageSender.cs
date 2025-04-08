@@ -8,7 +8,7 @@ public class MessageSender<T> : IMessageSender<T>
 {
     private readonly ServiceBusSender serviceBusSender;
 
-    public MessageSender(ServiceBusClient serviceBusClient, IOptions<ServiceBusOptions> options)
+    public MessageSender(ServiceBusClient serviceBusClient, IOptions<ServiceBusOutboundEntityOptions> options)
     {
         var type = typeof(T);
         var entityNameFotTypeFromConfig = options.Value.ResolveQueueOrTopicNameFromConfig(type.Name);

@@ -17,7 +17,9 @@ public static class OutboxRegistrations
 
     public static IServiceCollection AddOutboxServices(this IServiceCollection services)
     {
-        services.AddSingleton<IOutboxRepository, OutboxRepository>();
+        services
+            .AddSingleton<IOutboxItemFactory, OutboxItemFactory>()
+            .AddSingleton<IOutboxRepository, OutboxRepository>();
 
         return services;
     }

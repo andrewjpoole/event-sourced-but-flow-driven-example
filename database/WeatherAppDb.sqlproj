@@ -9,6 +9,7 @@
   </PropertyGroup>
   <ItemGroup>
     <None Include="localdb.publish.xml" />
+    <None Include="sql-container.publish.xml" />
   </ItemGroup>
   <Target Name="BeforeBuild">
     <Delete Files="$(BaseIntermediateOutputPath)\project.assets.json" />

@@ -23,7 +23,7 @@ public class ServiceBusEventListener<T> : IHostedService, IDisposable
 
     public ServiceBusEventListener(
         ServiceBusClient serviceBusClient,
-        IOptions<ServiceBusOptions> options,
+        IOptions<ServiceBusInboundQueueHandlerOptions> options,
         IEventHandler<T> eventHandler,
         ILogger<ServiceBusEventListener<T>> logger)
     {

@@ -14,13 +14,7 @@ public class UniversalMessageSender : IUniversalMessageSender
         this.serviceBusClient = serviceBusClient;
     }
 
-    public async Task SendAsync(object payload, string entityName, CancellationToken cancellationToken = default)
-    {
-        var messageBody = JsonSerializer.Serialize(payload);
-        await SendAsync(messageBody, entityName, cancellationToken);
-    }
-
-    public Task SendAsync(string serializedPayload, string entityName, CancellationToken cancellationToken = default)
+    public async Task SendAsync(string serializedPayload, string entityName, CancellationToken cancellationToken = default)
     {
         var message = new ServiceBusMessage(serializedPayload)
         {
@@ -32,6 +26,6 @@ public class UniversalMessageSender : IUniversalMessageSender
             }
         };
         var sender = senders.GetOrAdd(entityName, serviceBusClient.CreateSender(entityName));
-        return sender.SendMessageAsync(message, cancellationToken);
+        await sender.SendMessageAsync(message, cancellationToken);        
     }
 }

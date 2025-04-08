@@ -1,4 +1,5 @@
-﻿using WeatherApp.Application.Services;
+﻿using Microsoft.Extensions.Logging;
+using WeatherApp.Application.Services;
 using WeatherApp.Domain.DomainEvents;
 using WeatherApp.Domain.Entities;
 using WeatherApp.Domain.Outcomes;
@@ -7,7 +8,10 @@ using WeatherApp.Infrastructure.ApiClientWrapper;
 
 namespace WeatherApp.Infrastructure.WeatherModelingSystem;
 
-public class WeatherModelingService(IRefitClientWrapper<IWeatherModelingServiceClient> weatherModelingServiceClientWrapper) : IWeatherModelingService
+public class WeatherModelingService(
+    ILogger<WeatherModelingService> logger,
+    IRefitClientWrapper<IWeatherModelingServiceClient> weatherModelingServiceClientWrapper    
+    ) : IWeatherModelingService
 {
     public async Task<OneOf<WeatherDataCollectionAggregate, Failure>> Submit(WeatherDataCollectionAggregate weatherDataCollectionAggregate)
     {
@@ -28,6 +32,9 @@ public class WeatherModelingService(IRefitClientWrapper<IWeatherModelingServiceC
         
         var submissionId = Guid.Parse(bodyContent);
         await weatherDataCollectionAggregate.AppendEvent(new SubmittedToModeling(submissionId));
+
+        logger.LogInformation("Weather data submitted to modeling service for location: {Location}, submissionId: {SubmissionId}", 
+            weatherDataCollectionAggregate.Location, submissionId);
 
         return weatherDataCollectionAggregate;
     }

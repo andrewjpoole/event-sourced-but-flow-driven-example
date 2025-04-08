@@ -1,33 +1,24 @@
 @baseUrl = https://localhost:7220
-@today = {{new Date}}
+@streamId = {{$guid}}
 
 ### Health Check
-GET http://localhost:5000/
+GET {{baseUrl}}/
 
-### Get Weather Forecast
-GET http://localhost:5000/v1/weather-forecast/Glastonbury/{{today}}
+### Get weather forecoast
+GET {{baseUrl}}/v1/weather-forecast/Bristol/{{$datetime iso8601}}
+
+### Post collected weather data
+POST {{baseUrl}}/v1/collected-weather-data/Bristol
 Content-Type: application/json
-
-### Submit Collected Weather Data
-POST http://localhost:5000/v1/collected-weather-data/BA160TE
-Content-Type: application/json
-
+    
 {
-  "Id": "{{new UUID}}",
-  "time": "{{new Date}}",
-  "WindSpeed": {
-    "Value": 12.5,
-    "Unit": "m/s"
-  },
-  "WindDirection": {
-    "Value": "87"
-  },
-  "Temperature": {
-    "Value": 22.3,
-    "Unit": "°C"
-  },
-  "Humidity": {
-    "Value": 65,
-    "Unit": "%"
-  }
-}
+    "points": [
+        {
+            "time": "{{$datetime iso8601}}",
+            "windSpeedInMetersPerSecond": {{$randomInt 0 69}}.{{$randomInt 0 99}},
+            "windDirection": "N",
+            "temperatureReadingInDegreesCelcius": {{$randomInt -15 40}}.{{$randomInt 0 99}},
+            "humidityReadingInPercent": {{$randomInt 20 100}}
+        }
+    ]
+}  

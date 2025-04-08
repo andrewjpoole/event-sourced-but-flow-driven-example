@@ -4,15 +4,12 @@ using WeatherApp.Application.Models.Requests;
 using WeatherApp.Application.Orchestration;
 using WeatherApp.Application.Services;
 using WeatherApp.Domain.Outcomes;
-using WeatherApp.Domain.ServiceDefinitions;
 using WeatherApp.Infrastructure.ApiClients.WeatherModelingSystem;
 using WeatherApp.Infrastructure.ContributorPayments;
 using WeatherApp.Infrastructure.LocationManager;
-//using WeatherApp.Infrastructure.Notifications;
 using WeatherApp.Infrastructure.Persistence;
-using OpenTelemetry.Logs;
-using OpenTelemetry.Resources;
 using WeatherApp.Infrastructure.ApiClientWrapper;
+using WeatherApp.Infrastructure.Outbox;
 
 namespace WeatherApp.API;
 
@@ -22,21 +19,13 @@ public class Program
     {
         var builder = WebApplication.CreateBuilder(args);
 
-        builder.Configuration.AddEnvironmentVariables(prefix: "WeatherApp_");
-        builder.Configuration.AddEnvironmentVariables(prefix: "WeatherApp_API_");
-
-        builder.Logging
-            .ClearProviders()
-            .AddConsole();
-
-        builder.Services.AddOpenTelemetry()
-            .ConfigureResource(r => r.AddService(builder.Environment.ApplicationName))
-            .WithLogging(logging => logging
-                .AddOtlpExporter());
-
+        builder.AddServiceDefaults();
+        builder.AddSqlServerClient(connectionName: "WeatherAppDb");
+           
         // Add services to the container
         builder.Services
-            .AddDatabase(builder.Configuration)
+            .AddDatabaseConnectionFactory()
+            .AddOutboxServices()
             .AddEventSourcing()
             .AddSingleton<IGetWeatherReportRequestHandler, GetWeatherReportRequestHandler>()
             .AddSingleton<ISubmitWeatherDataCommandHandler, CollectedWeatherDataOrchestrator>()

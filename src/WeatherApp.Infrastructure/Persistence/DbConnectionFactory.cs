@@ -1,18 +1,28 @@
-﻿using System.Data.SqlClient;
+﻿using System.ComponentModel;
+using Microsoft.Data.SqlClient;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using WeatherApp.Domain.Logging;
 using WeatherApp.Infrastructure.RetryableDapperConnection;
 
 namespace WeatherApp.Infrastructure.Persistence;
 
-public class DbConnectionFactory(ILogger<DbConnectionFactory> logger, string connectionString) : IDbConnectionFactory
+public class DbConnectionFactory(
+    ILogger<DbConnectionFactory> logger, 
+    IServiceScopeFactory serviceScopeFactory    
+    ) : IDbConnectionFactory
 {
     public RetryableConnection Create()
     {
         try
         {
-            var connection = new SqlConnection(connectionString);
-            return new RetryableConnection(connection, logger);
+
+            var scope = serviceScopeFactory.CreateScope();
+            
+            var sqlConnection = scope.ServiceProvider.GetService<SqlConnection>() ?? 
+                throw new InvalidOperationException("SqlConnection not found in service provider.");
+            
+            return new RetryableConnection(sqlConnection, logger);
         }
         catch (Exception ex)
         {

@@ -1,6 +1,4 @@
 using Microsoft.AspNetCore.Mvc;
-using OpenTelemetry.Logs;
-using OpenTelemetry.Resources;
 using WeatherApp.Application.Models.IntegrationEvents.WeatherModelingEvents;
 using WeatherApp.Domain.Entities;
 using WeatherApp.Infrastructure.MessageBus;
@@ -13,22 +11,12 @@ public class Program
     {
         var builder = WebApplication.CreateBuilder(args);
 
-        builder.Configuration.AddEnvironmentVariables(prefix: "WeatherApp_");
-        builder.Configuration.AddEnvironmentVariables(prefix: "WeatherApp_WDMS_");
-
-        builder.Logging
-            .ClearProviders()
-            .AddConsole();
-
-        builder.Services.AddOpenTelemetry()
-            .ConfigureResource(r => r.AddService(builder.Environment.ApplicationName))
-            .WithLogging(logging => logging
-                .AddOtlpExporter());
+        builder.AddServiceDefaults();   
+        builder.AddAzureServiceBusClient(connectionName: "asb");
 
         builder.Services
             .AddSingleton(x => TimeProvider.System)
             .AddServiceBusOutboundEntityOptions(builder.Configuration)
-            .ConfigureServiceBusClient(builder.Configuration)
             .AddSingleton<IMessageSender<ModelingDataAcceptedIntegrationEvent>, MessageSender<ModelingDataAcceptedIntegrationEvent>>()
             .AddSingleton<IMessageSender<ModelingDataRejectedIntegrationEvent>, MessageSender<ModelingDataRejectedIntegrationEvent>>()
             .AddSingleton<IMessageSender<ModelUpdatedIntegrationEvent>, MessageSender<ModelUpdatedIntegrationEvent>>();
@@ -45,27 +33,30 @@ public class Program
 
         app.MapGet("/", () => "Weather Data Modeling System is running!");
         
-        app.MapPost("/v1/collected-weather-data/{location}/{submissionId}", async (string location, Guid submissionId, [FromBody]CollectedWeatherData payload, HttpContext context) => 
+        app.MapPost("/v1/collected-weather-data/{location}/{streamId}", async (string location, Guid streamId, [FromBody]CollectedWeatherData payload, HttpContext context) => 
            {
-                logger.LogInformation("Received collected weather data for location: {Location}, submissionId: {SubmissionId}", location, submissionId);
+                logger.LogInformation("Received collected weather data for location: {Location}, submissionId: {SubmissionId}", location, streamId);
 
                 await Task.Delay(5_000); // Simulate some processing time
                 
-                var modelingDataAcceptedIntegrationEvent = new ModelingDataAcceptedIntegrationEvent(submissionId);
+                var modelingDataAcceptedIntegrationEvent = new ModelingDataAcceptedIntegrationEvent(streamId);
                 await modelingDataAcceptedIntegrationEventSender.SendAsync(modelingDataAcceptedIntegrationEvent);
-                logger.LogInformation("ModelingDataAcceptedIntegrationEvent sent for location: {Location}, submissionId: {SubmissionId}", location, submissionId);
+                logger.LogInformation("ModelingDataAcceptedIntegrationEvent sent for location: {Location}, submissionId: {SubmissionId}", location, streamId);
 
                 // Don't await, but after some time simulate sending the ModelUpdatedEvent...
                 _ = Task.Run(async () => 
                 {
                     await Task.Delay(10_000);
-                    logger.LogInformation("Simulating model update for location: {Location}, submissionId: {SubmissionId}", location, submissionId);
-                    var modelUpdatedIntegrationEvent = new ModelUpdatedIntegrationEvent(submissionId);
+                    logger.LogInformation("Simulating model update for location: {Location}, submissionId: {SubmissionId}", location, streamId);
+                    var modelUpdatedIntegrationEvent = new ModelUpdatedIntegrationEvent(streamId);
                     await modelUpdatedIntegrationEventSender.SendAsync(modelUpdatedIntegrationEvent);
-                    logger.LogInformation("ModelUpdatedIntegrationEvent sent for location: {Location}, submissionId: {SubmissionId}", location, submissionId);
+                    logger.LogInformation("ModelUpdatedIntegrationEvent sent for location: {Location}, submissionId: {SubmissionId}", location, streamId);
                 });
 
                 context.Response.StatusCode = StatusCodes.Status200OK;
+                context.Response.ContentType = "application/json";
+                await context.Response.WriteAsync(Guid.NewGuid().ToString()); // return submission ID as response.
+
                 return;
            });
 

@@ -1,6 +1,6 @@
 ﻿using System.Collections.Immutable;
 using System.Data;
-using System.Data.SqlClient;
+using Microsoft.Data.SqlClient;
 using Dapper;
 using Microsoft.Extensions.Logging;
 using Polly;
@@ -33,7 +33,7 @@ public class RetryableConnection :IRetryableConnection
     }
 
     public async Task<IEnumerable<dynamic>> QueryAsync(string sql, DynamicParameters parameters, IDbTransactionWrapped? transaction = null, int? commandTimeout = null, CommandType? commandType = null) =>
-        await InternalExecute(c => c.QueryAsync<IEnumerable<dynamic>>(sql, parameters, transaction?.ToIDbTransaction(), commandTimeout, commandType));
+        await InternalExecute(c => c.QueryAsync<dynamic>(sql, parameters, transaction?.ToIDbTransaction(), commandTimeout, commandType));
 
     public async Task<int> ExecuteAsync(string sql, DynamicParameters parameters, IDbTransactionWrapped? transaction = null, int? commandTimeout = null, CommandType? commandType = null) =>
         await InternalExecute(c => c.ExecuteAsync(sql, parameters, transaction?.ToIDbTransaction(), commandTimeout, commandType));

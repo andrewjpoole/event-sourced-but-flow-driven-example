@@ -6,14 +6,14 @@ using WeatherApp.Domain.Logging;
 using WeatherApp.Domain.Entities;
 using WeatherApp.Domain.Outcomes;
 using WeatherApp.Application.Models.IntegrationEvents.NotificationEvents;
-using System;
 using WeatherApp.Domain.DomainEvents;
 
 namespace WeatherApp.Infrastructure.Persistence;
 
 public class EventPersistenceService(
     ILogger<EventPersistenceService> logger,
-    IEventRepository eventRepository, 
+    IEventRepository eventRepository,
+    IOutboxItemFactory outboxItemFactory,
     IOutboxRepository outboxRepository, 
     TimeProvider timeProvider) 
     : IEventPersistenceService
@@ -69,12 +69,15 @@ public class EventPersistenceService(
     public async Task<OneOf<WeatherDataCollectionAggregate, Failure>> AppendModelUpdatedEventAndCreateOutboxItem(WeatherDataCollectionAggregate weatherDataCollectionAggregate)
     {
         var userNotificationEvent = new UserNotificationEvent("Message here", timeProvider.GetUtcNow());
-        var outboxItem = OutboxItem.Create(userNotificationEvent, "weatherapp-user-notification");
+        var outboxItem = outboxItemFactory.Create(userNotificationEvent);
         
         var version = weatherDataCollectionAggregate.GetNextExpectedVersion();
         var @event = Event.Create<ModelUpdated>(new ModelUpdated(), weatherDataCollectionAggregate.StreamId, version);
         
-        await AtomicallyPersistDomainEventAndCreateOutboxRecord<ModelUpdated>(@event, outboxItem);
+        var persistedEvent = await AtomicallyPersistDomainEventAndCreateOutboxRecord<ModelUpdated>(@event, outboxItem);
+
+        weatherDataCollectionAggregate.AddPersistedEvent(persistedEvent);
+
         return weatherDataCollectionAggregate;
     }    
 }

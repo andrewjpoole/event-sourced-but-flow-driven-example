@@ -1,6 +1,3 @@
-using Microsoft.Extensions.Options;
-using OpenTelemetry.Logs;
-using OpenTelemetry.Resources;
 using WeatherApp.Application.Models.IntegrationEvents.NotificationEvents;
 using WeatherApp.Application.Services;
 using WeatherApp.Infrastructure.MessageBus;
@@ -14,26 +11,11 @@ public class Program
     {
         var builder = Host.CreateApplicationBuilder(args);
 
-        builder.Configuration.AddEnvironmentVariables(prefix: "WeatherApp_");
-        builder.Configuration.AddEnvironmentVariables(prefix: "WeatherApp_Notifications_");
-
-        builder.Logging
-            .ClearProviders()
-            .AddConsole();
-
-        builder.Services.AddOpenTelemetry()
-            .ConfigureResource(r => r.AddService(builder.Environment.ApplicationName))
-            .WithLogging(logging => logging
-                .AddOtlpExporter());
-
-        var queueHandlerOptions = builder.Configuration.GetSection(ServiceBusInboundQueueHandlerOptions.Name).Get<ServiceBusInboundQueueHandlerOptions>() ??
-                                  throw new Exception($"A {nameof(ServiceBusInboundQueueHandlerOptions)} config section is required.");
-
-        IOptions<ServiceBusOptions> inboundServiceBusOptions = Options.Create(queueHandlerOptions);
+        builder.AddServiceDefaults();
+        builder.AddAzureServiceBusClient(connectionName: "asb");
 
         builder.Services
-            .AddSingleton(inboundServiceBusOptions)
-            .ConfigureServiceBusClient(builder.Configuration)
+            .AddServiceBusInboundQueueHandlerOptions(builder.Configuration)
             .AddSingleton(x => TimeProvider.System)
             .AddHostedServiceBusEventListener<UserNotificationEvent, UserNotificationEventHandler>();
         
