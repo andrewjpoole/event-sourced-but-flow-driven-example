@@ -1,4 +1,4 @@
-﻿namespace WeatherApp.Infrastructure.MessageBus;
+﻿namespace WeatherApp.Infrastructure.Messaging;
 
 public class QueueOrTopicName
 {

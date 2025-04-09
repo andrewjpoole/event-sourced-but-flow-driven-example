@@ -4,7 +4,7 @@ using WeatherApp.Application.Orchestration;
 using WeatherApp.Application.Services;
 using WeatherApp.Infrastructure.ApiClients.WeatherModelingSystem;
 using WeatherApp.Infrastructure.LocationManager;
-using WeatherApp.Infrastructure.MessageBus;
+using WeatherApp.Infrastructure.Messaging;
 using WeatherApp.Infrastructure.Persistence;
 using WeatherApp.Infrastructure.Outbox;
 using WeatherApp.Infrastructure.ApiClientWrapper;

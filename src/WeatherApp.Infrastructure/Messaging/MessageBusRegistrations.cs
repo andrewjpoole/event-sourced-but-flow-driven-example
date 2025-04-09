@@ -4,7 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using WeatherApp.Application.Services;
 
-namespace WeatherApp.Infrastructure.MessageBus;
+namespace WeatherApp.Infrastructure.Messaging;
 
 public static class MessageBusRegistrations
 {
@@ -14,17 +14,6 @@ public static class MessageBusRegistrations
     {
         services.AddSingleton(typeof(IEventHandler<T>), typeof(THandler));
         services.AddHostedService<ServiceBusEventListener<T>>();
-
-        return services;
-    }
-
-    public static IServiceCollection ConfigureServiceBusClient(this IServiceCollection services, IConfiguration configuration)
-    {
-        services.AddAzureClients(builder =>
-        {
-            var serviceBusConnectionString = configuration.GetConnectionString("ServiceBus");
-            builder.AddServiceBusClient(serviceBusConnectionString);
-        });
 
         return services;
     }
@@ -45,8 +34,8 @@ public static class MessageBusRegistrations
 
     public static IServiceCollection AddServiceBusOutboundEntityOptions(this IServiceCollection services, IConfiguration configuration)
     {
-        var serviceBusOutboundEntityOptions = configuration.GetSection(ServiceBusOutboundEntityOptions.Name).Get<ServiceBusOutboundEntityOptions>() ??
-                                   throw new Exception($"A {nameof(ServiceBusOutboundEntityOptions)} config section is required.");
+        var serviceBusOutboundEntityOptions = configuration.GetSection(ServiceBusOutboundOptions.SectionName).Get<ServiceBusOutboundOptions>() ??
+                                   throw new Exception($"A {nameof(ServiceBusOutboundOptions)} config section is required.");
 
         var outboundServiceBusOptions = Options.Create(serviceBusOutboundEntityOptions);
         services.AddSingleton(outboundServiceBusOptions);
@@ -56,8 +45,8 @@ public static class MessageBusRegistrations
 
     public static IServiceCollection AddServiceBusInboundQueueHandlerOptions(this IServiceCollection services, IConfiguration configuration)
     {
-        var queueHandlerOptions = configuration.GetSection(ServiceBusInboundQueueHandlerOptions.Name).Get<ServiceBusInboundQueueHandlerOptions>() ??
-                                  throw new Exception($"A {nameof(ServiceBusInboundQueueHandlerOptions)} config section is required.");
+        var queueHandlerOptions = configuration.GetSection(ServiceBusInboundOptions.SectionName).Get<ServiceBusInboundOptions>() ??
+                                  throw new Exception($"A {nameof(ServiceBusInboundOptions)} config section is required.");
 
         var inboundServiceBusOptions = Options.Create(queueHandlerOptions);
         services.AddSingleton(inboundServiceBusOptions);

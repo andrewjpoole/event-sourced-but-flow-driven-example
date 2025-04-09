@@ -15,7 +15,7 @@ public static partial class LoggerMessages
 public static partial class OutboxLoggerMessages
 {
     [LoggerMessage(Message = "Found {OutboxItemCount} Outbox Item(s) to dispatch")]
-    public static partial void LogOutboxItemCount(this ILogger logger, int outboxItemCount, LogLevel level = LogLevel.Information);
+    public static partial void LogOutboxItemCount(this ILogger logger, int outboxItemCount, LogLevel level = LogLevel.Trace);
 
     [LoggerMessage(Level =LogLevel.Warning, Message = "Failed to send message for OutboxItemId: {OutboxItemId}")]
     public static partial void LogFailedToSendOutboxItem(this ILogger logger, Exception ex, long outboxItemId);

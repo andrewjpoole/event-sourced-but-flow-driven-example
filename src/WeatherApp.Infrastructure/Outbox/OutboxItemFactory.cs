@@ -1,12 +1,12 @@
 using System.Text.Json;
 using Microsoft.Extensions.Options;
-using WeatherApp.Infrastructure.MessageBus;
+using WeatherApp.Infrastructure.Messaging;
 
 namespace WeatherApp.Infrastructure.Outbox;
 
-public class OutboxItemFactory(IOptions<ServiceBusOutboundEntityOptions> options) : IOutboxItemFactory
+public class OutboxItemFactory(IOptions<ServiceBusOutboundOptions> options) : IOutboxItemFactory
 {
-    private readonly ServiceBusOutboundEntityOptions serviceBusOptions = options.Value;
+    private readonly ServiceBusOutboundOptions serviceBusOptions = options.Value;
 
     public OutboxItem Create<T>(T messageObject, string? messagingEntityName = null)
     {

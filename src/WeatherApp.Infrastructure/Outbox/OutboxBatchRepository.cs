@@ -44,6 +44,7 @@ public class OutboxBatchRepository : IOutboxBatchRepository
 
         var parameters = new DynamicParameters();
         parameters.Add("BatchSize", batchSize);
+
         return await dbTransactionWrapped.GetConnection().Query<OutboxBatchItem>(sql, parameters, dbTransactionWrapped);        
     }
 }

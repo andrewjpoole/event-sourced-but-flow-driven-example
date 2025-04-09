@@ -1,6 +1,6 @@
 using WeatherApp.Infrastructure.Persistence;
 using WeatherApp.Infrastructure.Outbox;
-using WeatherApp.Infrastructure.MessageBus;
+using WeatherApp.Infrastructure.Messaging;
 using WeatherApp.Domain.Logging;
 
 namespace WeatherApp.Outbox;
@@ -19,7 +19,7 @@ public class Program
             .AddDatabaseConnectionFactory()
             .AddSingleton(x => TimeProvider.System)
             .AddUniversalMessageSender(builder.Configuration)
-            .AddOutboxDispatcherService();
+            .AddOutboxDispatcherService(builder.Configuration);
 
         var app = builder.Build();
 

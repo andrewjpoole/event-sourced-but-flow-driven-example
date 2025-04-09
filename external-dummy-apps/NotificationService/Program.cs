@@ -1,6 +1,6 @@
 using WeatherApp.Application.Models.IntegrationEvents.NotificationEvents;
 using WeatherApp.Application.Services;
-using WeatherApp.Infrastructure.MessageBus;
+using WeatherApp.Infrastructure.Messaging;
 
 #pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
 

@@ -2,7 +2,7 @@ using System.Collections.Concurrent;
 using System.Text.Json;
 using Azure.Messaging.ServiceBus;
 
-namespace WeatherApp.Infrastructure.MessageBus;
+namespace WeatherApp.Infrastructure.Messaging;
 
 public class UniversalMessageSender : IUniversalMessageSender
 {

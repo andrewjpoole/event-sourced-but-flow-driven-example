@@ -71,9 +71,7 @@ public class CollectedWeatherDataOrchestrator(
         logger.LogInformation("Received ModelUpdatedIntegrationEvent for streamId: {StreamId}", integrationEvent.StreamId);
 
         await WeatherDataCollectionAggregate.Hydrate(eventPersistenceService, integrationEvent.StreamId)
-            //.Then(x => x.AppendModelUpdatedEvent())
             .Then(eventPersistenceService.AppendModelUpdatedEventAndCreateOutboxItem) // Appends domain event and persists outbox item in single transaction.
-            //.Then(notificationService.NotifyModelUpdated)
             .ThrowOnFailure(nameof(ModelUpdatedIntegrationEvent));
     }
 }

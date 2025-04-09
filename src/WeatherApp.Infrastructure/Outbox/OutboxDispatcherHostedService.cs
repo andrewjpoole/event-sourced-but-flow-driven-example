@@ -1,9 +1,10 @@
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using WeatherApp.Infrastructure.MessageBus;
+using WeatherApp.Infrastructure.Messaging;
 using WeatherApp.Infrastructure.Persistence;
 using WeatherApp.Domain.Logging;
+using System.Diagnostics;
 
 namespace WeatherApp.Infrastructure.Outbox;
 
@@ -56,6 +57,8 @@ public class OutboxDispatcherHostedService(
 
     public async Task ProcessOutboxBatchAsync(int batchSize, CancellationToken cancellationToken)
     {
+        
+
         using var connection = dbConnectionFactory.Create();
         var transaction = connection.BeginTransaction();
 

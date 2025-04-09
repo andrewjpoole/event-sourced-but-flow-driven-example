@@ -1,4 +1,6 @@
 using Projects;
+using WeatherApp.Infrastructure.Messaging;
+using WeatherApp.Infrastructure.Outbox;
 
 var builder = DistributedApplication.CreateBuilder(args);
 
@@ -6,7 +8,6 @@ var builder = DistributedApplication.CreateBuilder(args);
 var sql = builder.AddSqlServer("sql", port: 54782)
     .WithLifetime(ContainerLifetime.Persistent);
 
-var overridenConnectionsString = builder.AddConnectionString("sqloverriden").Resource;
 var db = sql.AddDatabase("WeatherAppDb", "WeatherAppDb");
 
 builder.AddSqlProject<WeatherAppDb>("weatherAppDbSqlProj")
@@ -14,8 +15,7 @@ builder.AddSqlProject<WeatherAppDb>("weatherAppDbSqlProj")
     {
         options.BlockOnPossibleDataLoss = false;
     })
-    .WithReference(db)
-    .WaitFor(db);
+    .WithReference(db).WaitFor(db);
 
 // ASB
 //var serviceBus = builder.AddConnectionString("asb").Resource; // existing namespace
@@ -32,58 +32,38 @@ var contributorPaymentsService = builder.AddProject<ContributorPaymentsService>(
 
 var weatherModelingService = builder.AddProject<WeatherDataModelingSystem>("weathermodelingservice")
     .WithReference(serviceBus)
-    .WithEnvironment("ServiceBusSettings__FullyQualifiedNamespace", "sbusdev001coachcandor")
-    .WithEnvironment($"ServiceBus__Outbound__Names__{nameof(Queues.ModelingDataAcceptedIntegrationEvent)}", Queues.ModelingDataAcceptedIntegrationEvent)
-    .WithEnvironment($"ServiceBus__Outbound__Names__{nameof(Queues.ModelingDataRejectedIntegrationEvent)}", Queues.ModelingDataRejectedIntegrationEvent)
-    .WithEnvironment($"ServiceBus__Outbound__Names__{nameof(Queues.ModelUpdatedIntegrationEvent)}", Queues.ModelUpdatedIntegrationEvent)
+    //.WithEnvironment("ServiceBusSettings__FullyQualifiedNamespace", "sbusdev001coachcandor")
+    .WithEnvironment($"{ServiceBusOutboundOptions.SectionName}__{nameof(ServiceBusOutboundOptions.Entities)}__{nameof(Queues.ModelingDataAcceptedIntegrationEvent)}", Queues.ModelingDataAcceptedIntegrationEvent)
+    .WithEnvironment($"{ServiceBusOutboundOptions.SectionName}__{nameof(ServiceBusOutboundOptions.Entities)}__{nameof(Queues.ModelingDataRejectedIntegrationEvent)}", Queues.ModelingDataRejectedIntegrationEvent)
+    .WithEnvironment($"{ServiceBusOutboundOptions.SectionName}__{nameof(ServiceBusOutboundOptions.Entities)}__{nameof(Queues.ModelUpdatedIntegrationEvent)}", Queues.ModelUpdatedIntegrationEvent)
     .WithExternalHttpEndpoints();
 
 builder.AddProject<NotificationService>("notificationservice")
-    .WithReference(serviceBus)
-    .WithEnvironment($"ServiceBus__Inbound__Names__{nameof(Queues.UserNotificationEvent)}", Queues.UserNotificationEvent);
+    .WithReference(serviceBus).WaitFor(serviceBus)
+    .WithEnvironment($"{ServiceBusInboundOptions.SectionName}__{nameof(ServiceBusInboundOptions.Entities)}__{nameof(Queues.UserNotificationEvent)}", Queues.UserNotificationEvent);
 
 // WeatherApp components
 builder.AddProject<WeatherApp_API>("api")
     .WithExternalHttpEndpoints()
     .WithReference(db).WaitFor(db)
     .WithReference(contributorPaymentsService)
-    .WithReference(weatherModelingService)
-    .WithEnvironment("WeatherModelingServiceOptions__MaxRetryCount", "3")
-    .WithEnvironment("ContributorPaymentServiceOptions__MaxRetryCount", "3");
+    .WithReference(weatherModelingService);
 
 builder.AddProject<WeatherApp_EventListener>("eventlistener")
     .WithReference(db).WaitFor(db)
-    .WithReference(serviceBus)
-    .WithEnvironment("ServiceBus__Inbound__InitialBackoffInMs", "2000")
-    .WithEnvironment("ServiceBus__Inbound__MaxConcurrentCalls", "1")
-    .WithEnvironment($"ServiceBus__Inbound__Names__{nameof(Queues.ModelingDataAcceptedIntegrationEvent)}", Queues.ModelingDataAcceptedIntegrationEvent)
-    .WithEnvironment($"ServiceBus__Inbound__Names__{nameof(Queues.ModelingDataRejectedIntegrationEvent)}", Queues.ModelingDataRejectedIntegrationEvent)
-    .WithEnvironment($"ServiceBus__Inbound__Names__{nameof(Queues.ModelUpdatedIntegrationEvent)}", Queues.ModelUpdatedIntegrationEvent)
-    .WithEnvironment($"ServiceBus__Outbound__Names__{nameof(Queues.UserNotificationEvent)}", Queues.UserNotificationEvent)
+    .WithReference(serviceBus).WaitFor(serviceBus)
+    .WithEnvironment($"{ServiceBusInboundOptions.SectionName}__{nameof(ServiceBusInboundOptions.InitialBackoffInMs)}", "2000")
+    .WithEnvironment($"{ServiceBusInboundOptions.SectionName}__{nameof(ServiceBusInboundOptions.MaxConcurrentCalls)}", "1")
+    .WithEnvironment($"{ServiceBusInboundOptions.SectionName}__{nameof(ServiceBusInboundOptions.Entities)}__{nameof(Queues.ModelingDataAcceptedIntegrationEvent)}", Queues.ModelingDataAcceptedIntegrationEvent)
+    .WithEnvironment($"{ServiceBusInboundOptions.SectionName}__{nameof(ServiceBusInboundOptions.Entities)}__{nameof(Queues.ModelingDataRejectedIntegrationEvent)}", Queues.ModelingDataRejectedIntegrationEvent)
+    .WithEnvironment($"{ServiceBusInboundOptions.SectionName}__{nameof(ServiceBusInboundOptions.Entities)}__{nameof(Queues.ModelUpdatedIntegrationEvent)}", Queues.ModelUpdatedIntegrationEvent)
+    .WithEnvironment($"{ServiceBusOutboundOptions.SectionName}__{nameof(ServiceBusOutboundOptions.Entities)}__{nameof(Queues.UserNotificationEvent)}", Queues.UserNotificationEvent)
     .WithReference(weatherModelingService)
-    .WithEnvironment("WeatherModelingServiceOptions__MaxRetryCount", "3")
-    .WithReference(contributorPaymentsService)
-    .WithEnvironment("ContributorPaymentServiceOptions__MaxRetryCount", "3");
+    .WithReference(contributorPaymentsService);
 
 builder.AddProject<WeatherApp_Outbox>("outbox")
     .WithReference(db).WaitFor(db)
-    .WithReference(serviceBus);
+    .WithReference(serviceBus).WaitFor(serviceBus)
+    .WithEnvironment($"{nameof(OutboxProcessorOptions)}__{nameof(OutboxProcessorOptions.IntervalBetweenBatchesInSeconds)}", "15");
 
 builder.Build().Run();
-
-
-public static class Queues
-{
-    public const string ModelingDataAcceptedIntegrationEvent = "weatherapp-modeling-data-accepted";
-    public const string ModelingDataRejectedIntegrationEvent = "weatherapp-modeling-data-rejected";
-    public const string ModelUpdatedIntegrationEvent = "weatherapp-model-updated";
-    public const string UserNotificationEvent = "weatherapp-user-notification";
-
-#if DEBUG
-    public static string Prefix = $"{Environment.MachineName}-";
-#else
-    public static string Prefix = string.Empty;
-#endif
-
-    public static string WithPrefix(this string queueName) => $"{Prefix}{queueName}";
-}

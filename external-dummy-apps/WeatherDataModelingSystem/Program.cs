@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using WeatherApp.Application.Models.IntegrationEvents.WeatherModelingEvents;
 using WeatherApp.Domain.Entities;
-using WeatherApp.Infrastructure.MessageBus;
+using WeatherApp.Infrastructure.Messaging;
 
 namespace WeatherDataModelingSystem;
 

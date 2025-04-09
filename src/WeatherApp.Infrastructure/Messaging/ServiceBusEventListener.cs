@@ -6,7 +6,7 @@ using Microsoft.Extensions.Options;
 using WeatherApp.Application.Exceptions;
 using WeatherApp.Application.Services;
 
-namespace WeatherApp.Infrastructure.MessageBus;
+namespace WeatherApp.Infrastructure.Messaging;
 
 public class ServiceBusEventListener<T> : IHostedService, IDisposable
     where T : class
@@ -23,7 +23,7 @@ public class ServiceBusEventListener<T> : IHostedService, IDisposable
 
     public ServiceBusEventListener(
         ServiceBusClient serviceBusClient,
-        IOptions<ServiceBusInboundQueueHandlerOptions> options,
+        IOptions<ServiceBusInboundOptions> options,
         IEventHandler<T> eventHandler,
         ILogger<ServiceBusEventListener<T>> logger)
     {

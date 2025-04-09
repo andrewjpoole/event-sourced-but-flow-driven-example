@@ -2,13 +2,13 @@ using System.Text.Json;
 using Azure.Messaging.ServiceBus;
 using Microsoft.Extensions.Options;
 
-namespace WeatherApp.Infrastructure.MessageBus;
+namespace WeatherApp.Infrastructure.Messaging;
 
 public class MessageSender<T> : IMessageSender<T>
 {
     private readonly ServiceBusSender serviceBusSender;
 
-    public MessageSender(ServiceBusClient serviceBusClient, IOptions<ServiceBusOutboundEntityOptions> options)
+    public MessageSender(ServiceBusClient serviceBusClient, IOptions<ServiceBusOutboundOptions> options)
     {
         var type = typeof(T);
         var entityNameFotTypeFromConfig = options.Value.ResolveQueueOrTopicNameFromConfig(type.Name);
@@ -25,8 +25,7 @@ public class MessageSender<T> : IMessageSender<T>
             ApplicationProperties =
             {
                 ["MessageType"] = typeof(T).FullName,
-                ["MessageId"] = Guid.NewGuid().ToString(),
-                ["CorrelationId"] = Guid.NewGuid().ToString()
+                ["MessageId"] = Guid.NewGuid().ToString()
             }
         };
         await serviceBusSender.SendMessageAsync(message, cancellationToken);

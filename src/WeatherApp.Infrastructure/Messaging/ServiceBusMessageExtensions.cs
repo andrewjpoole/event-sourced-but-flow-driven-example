@@ -2,7 +2,7 @@
 using Azure.Messaging.ServiceBus;
 using WeatherApp.Domain.EventSourcing;
 
-namespace WeatherApp.Infrastructure.MessageBus;
+namespace WeatherApp.Infrastructure.Messaging;
 
 public static class ServiceBusMessageExtensions
 {

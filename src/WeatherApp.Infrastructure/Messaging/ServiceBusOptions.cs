@@ -1,8 +1,8 @@
-﻿namespace WeatherApp.Infrastructure.MessageBus;
+﻿namespace WeatherApp.Infrastructure.Messaging;
 
 public class ServiceBusOptions
 {
-    public Dictionary<string, string> Names { get; set; } = new();
+    public Dictionary<string, string> Entities { get; set; } = new();
     public int InitialBackoffInMs { get; set; } = 2000;
     public int MaxConcurrentCalls { get; set; } = 1;
 
@@ -11,7 +11,7 @@ public class ServiceBusOptions
         if (string.IsNullOrEmpty(messageClassName))
             throw new ArgumentNullException(nameof(messageClassName));
 
-        var queueOrTopicExists = Names.TryGetValue(messageClassName, out var queueOrTopicName);
+        var queueOrTopicExists = Entities.TryGetValue(messageClassName, out var queueOrTopicName);
 
         if (!queueOrTopicExists)
             throw new Exception($"Can't find a queue or topic in config for the key {messageClassName}");
@@ -23,12 +23,12 @@ public class ServiceBusOptions
     }
 }
 
-public class ServiceBusInboundQueueHandlerOptions : ServiceBusOptions
+public class ServiceBusInboundOptions : ServiceBusOptions
 {
-    public const string Name = "ServiceBus:Inbound";
+    public const string SectionName = "ServiceBus:Inbound";
 }
 
-public class ServiceBusOutboundEntityOptions : ServiceBusOptions
+public class ServiceBusOutboundOptions : ServiceBusOptions
 {
-    public const string Name = "ServiceBus:Outbound";
+    public const string SectionName = "ServiceBus:Outbound";
 }

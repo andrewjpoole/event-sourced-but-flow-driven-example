@@ -38,6 +38,8 @@ public static class Extensions
         //     options.AllowedSchemes = ["https"];
         // });
 
+        AppContext.SetSwitch("Azure.Experimental.EnableActivitySource", true);
+
         return builder;
     }
 
