@@ -4,7 +4,7 @@ using WeatherApp.Infrastructure.Outbox;
 
 var builder = DistributedApplication.CreateBuilder(args);
 
-// Sql database
+// SQL database
 var sql = builder.AddSqlServer("sql", port: 54782)
     .WithLifetime(ContainerLifetime.Persistent);
 
@@ -31,8 +31,7 @@ var contributorPaymentsService = builder.AddProject<ContributorPaymentsService>(
     .WithExternalHttpEndpoints();
 
 var weatherModelingService = builder.AddProject<WeatherDataModelingSystem>("weathermodelingservice")
-    .WithReference(serviceBus)
-    //.WithEnvironment("ServiceBusSettings__FullyQualifiedNamespace", "sbusdev001coachcandor")
+    .WithReference(serviceBus).WaitFor(serviceBus)
     .WithEnvironment($"{ServiceBusOutboundOptions.SectionName}__{nameof(ServiceBusOutboundOptions.Entities)}__{nameof(Queues.ModelingDataAcceptedIntegrationEvent)}", Queues.ModelingDataAcceptedIntegrationEvent)
     .WithEnvironment($"{ServiceBusOutboundOptions.SectionName}__{nameof(ServiceBusOutboundOptions.Entities)}__{nameof(Queues.ModelingDataRejectedIntegrationEvent)}", Queues.ModelingDataRejectedIntegrationEvent)
     .WithEnvironment($"{ServiceBusOutboundOptions.SectionName}__{nameof(ServiceBusOutboundOptions.Entities)}__{nameof(Queues.ModelUpdatedIntegrationEvent)}", Queues.ModelUpdatedIntegrationEvent)

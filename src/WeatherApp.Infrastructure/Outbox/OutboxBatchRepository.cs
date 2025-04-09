@@ -30,6 +30,7 @@ public class OutboxBatchRepository : IOutboxBatchRepository
                 OI.[TypeName],
                 OI.[SerialisedData],
                 OI.[MessagingEntityName],
+                OI.[SerialisedTelemetry],
                 OI.[Created],
                 CAST(LS.[Status] AS INT) AS Status,                
                 LS.[NotBefore]

@@ -1,24 +1,25 @@
-using System.Data;
 using Dapper;
 using WeatherApp.Infrastructure.Persistence;
 using WeatherApp.Infrastructure.RetryableDapperConnection;
+using System.Diagnostics;
+using OpenTelemetry;
+using OpenTelemetry.Context.Propagation;
+using System.Text.Json;
 
 namespace WeatherApp.Infrastructure.Outbox;
 
-public class OutboxRepository : IOutboxRepository
+public class OutboxRepository(IDbConnectionFactory dbConnectionFactory) : IOutboxRepository
 {
-    private readonly IDbConnectionFactory dbConnectionFactory;
+    private readonly IDbConnectionFactory dbConnectionFactory = dbConnectionFactory;
 
-    public OutboxRepository(IDbConnectionFactory dbConnectionFactory)
-    {
-        this.dbConnectionFactory = dbConnectionFactory;
-    }
+    private static readonly ActivitySource Activity = new(nameof(OutboxRepository));
+    private static readonly TextMapPropagator Propagator = Propagators.DefaultTextMapPropagator;
 
     public async Task<long> Add(OutboxItem outboxItem, IDbTransactionWrapped? transaction = null)
     {
         const string sql = @"
-            INSERT INTO [dbo].[OutboxItems] ([TypeName], [SerialisedData], [MessagingEntityName], [Created])
-            VALUES (@TypeName, @SerialisedData, @MessagingEntityName, @Created);
+            INSERT INTO [dbo].[OutboxItems] ([TypeName], [SerialisedData], [MessagingEntityName], [SerialisedTelemetry], [Created])
+            VALUES (@TypeName, @SerialisedData, @MessagingEntityName, @SerialisedTelemetry, @Created);
             SELECT CAST(SCOPE_IDENTITY() as BIGINT);";
 
         var connection = transaction == null ? 
@@ -31,8 +32,21 @@ public class OutboxRepository : IOutboxRepository
         parameters.Add("@MessagingEntityName", outboxItem.MessagingEntityName);
         parameters.Add("@Created", outboxItem.Created);
 
+        using var activity = Activity.StartActivity("Outbox Item Insertion", ActivityKind.Producer);
+
+        KeyValuePair<string, string> telemetry = default;
+        if(activity != null)
+            Propagator.Inject(new PropagationContext(activity.Context, Baggage.Current), telemetry, (carrier, key, value) => 
+            {
+                telemetry = new KeyValuePair<string, string>(key, value);
+            });
+
+        activity?.SetTag("messaging.system", "outbox");
+
+        parameters.Add("@SerialisedTelemetry", JsonSerializer.Serialize(telemetry));
+
         return await connection.ExecuteAsync(sql, parameters, transaction);
-    }
+    }    
 
     public async Task AddScheduled(OutboxItem outboxItem, DateTimeOffset retryAfter)
     {
@@ -63,5 +77,5 @@ public class OutboxRepository : IOutboxRepository
         parameters.Add("@Created", outboxSentStatusUpdate.Created);
 
         await connection.ExecuteAsync(sql, parameters, transaction);
-    }
+    }    
 }

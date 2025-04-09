@@ -7,6 +7,7 @@ using Microsoft.Extensions.ServiceDiscovery;
 using OpenTelemetry;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Trace;
+using WeatherApp.Infrastructure.Outbox;
 
 namespace Microsoft.Extensions.Hosting;
 
@@ -64,7 +65,9 @@ public static class Extensions
                     .AddAspNetCoreInstrumentation()
                     // Uncomment the following line to enable gRPC instrumentation (requires the OpenTelemetry.Instrumentation.GrpcNetClient package)
                     //.AddGrpcClientInstrumentation()
-                    .AddHttpClientInstrumentation();
+                    .AddHttpClientInstrumentation()
+                    .AddSource(nameof(OutboxRepository))
+                    .AddSource(nameof(OutboxDispatcherHostedService));
             });
 
         builder.AddOpenTelemetryExporters();

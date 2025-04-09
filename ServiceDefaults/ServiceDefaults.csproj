@@ -19,4 +19,8 @@
     <PackageReference Include="OpenTelemetry.Instrumentation.Runtime" Version="1.11.1" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\src\WeatherApp.Infrastructure\WeatherApp.Infrastructure.csproj" />
+  </ItemGroup>
+
 </Project>

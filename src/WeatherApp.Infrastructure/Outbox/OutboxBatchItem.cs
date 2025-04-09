@@ -8,6 +8,7 @@ public record OutboxBatchItem
     string TypeName,
     string SerialisedData,
     string MessagingEntityName,
+    string SerialisedTelemetry,
     DateTimeOffset Created,
     OutboxSentStatus Status,
     DateTimeOffset? NotBefore
@@ -15,8 +16,8 @@ public record OutboxBatchItem
 )
 {
     [JsonConstructor]
-    public OutboxBatchItem(long id, string typeName, string serialisedData, string messagingEntityName, DateTimeOffset created, byte status, DateTimeOffset? notBefore)
-        : this(id, typeName, serialisedData, messagingEntityName, created, (OutboxSentStatus)status, notBefore)
+    public OutboxBatchItem(long id, string typeName, string serialisedData, string messagingEntityName, string serialisedTelemetry, DateTimeOffset created, byte status, DateTimeOffset? notBefore)
+        : this(id, typeName, serialisedData, messagingEntityName, serialisedTelemetry, created, (OutboxSentStatus)status, notBefore)
     {
     }
 }

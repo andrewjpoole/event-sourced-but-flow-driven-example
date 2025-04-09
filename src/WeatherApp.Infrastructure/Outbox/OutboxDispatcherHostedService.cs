@@ -5,6 +5,9 @@ using WeatherApp.Infrastructure.Messaging;
 using WeatherApp.Infrastructure.Persistence;
 using WeatherApp.Domain.Logging;
 using System.Diagnostics;
+using OpenTelemetry.Context.Propagation;
+using OpenTelemetry;
+using System.Text.Json;
 
 namespace WeatherApp.Infrastructure.Outbox;
 
@@ -24,6 +27,9 @@ public class OutboxDispatcherHostedService(
     private readonly IUniversalMessageSender messageSender = messageSender;
     private readonly TimeProvider timeProvider = timeProvider;
     private readonly OutboxProcessorOptions options = options.Value;
+
+    private static readonly ActivitySource Activity = new(nameof(OutboxDispatcherHostedService));
+    private static readonly TextMapPropagator Propagator = Propagators.DefaultTextMapPropagator;
     
     public Task StartAsync(CancellationToken cancellationToken)
     {
@@ -57,8 +63,6 @@ public class OutboxDispatcherHostedService(
 
     public async Task ProcessOutboxBatchAsync(int batchSize, CancellationToken cancellationToken)
     {
-        
-
         using var connection = dbConnectionFactory.Create();
         var transaction = connection.BeginTransaction();
 
@@ -69,6 +73,15 @@ public class OutboxDispatcherHostedService(
         {
             try
             {
+                // Hydrate the telemetry trace context.
+                var parentContext = Propagator.Extract(default, item.SerialisedTelemetry, (serialisedTelemetry, key) => 
+                {
+                    var keyValuePair = JsonSerializer.Deserialize<KeyValuePair<string, string>>(serialisedTelemetry);
+                    return new List<string> { keyValuePair.Value };
+                });
+                Baggage.Current = parentContext.Baggage;
+
+                using var activity = Activity.StartActivity("Dispatch Message", ActivityKind.Consumer, parentContext.ActivityContext);
                 await messageSender.SendAsync(item.SerialisedData, item.MessagingEntityName, cancellationToken);
                 await outboxRepository.AddSentStatus(OutboxSentStatusUpdate.CreateSent(item.Id));
                 logger.LogDispatchedOutboxItem(item.Id);
@@ -81,5 +94,5 @@ public class OutboxDispatcherHostedService(
         }
 
         transaction.Rollback();
-    }
+    }    
 }
