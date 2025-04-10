@@ -1,4 +1,5 @@
-﻿using Dapper;
+﻿using System.Diagnostics;
+using Dapper;
 using WeatherApp.Domain.EventSourcing;
 using WeatherApp.Infrastructure.RetryableDapperConnection;
 
@@ -6,6 +7,7 @@ namespace WeatherApp.Infrastructure.Persistence;
 
 public class EventRepositorySql(IDbConnectionFactory dbConnectionFactory, IDbQueryProvider dbQueryProvider) : IEventRepository
 {
+    private static readonly ActivitySource Activity = new(nameof(EventRepositorySql));
     public async Task<PersistedEventResult> InsertEvent(Event @event)
     {
         using var connection = dbConnectionFactory.Create();
@@ -60,6 +62,11 @@ public class EventRepositorySql(IDbConnectionFactory dbConnectionFactory, IDbQue
             dynamicParameters.Add(QueryParameters.Version, version);
             dynamicParameters.Add(QueryParameters.EventClassName, eventClassName);
             dynamicParameters.Add(QueryParameters.SerialisedEvent, serialisedEvent);
+
+            using var activity = Activity.StartActivity("Domain Event Insertion", ActivityKind.Producer);
+            activity?.SetTag("domain-event.streamId", streamId.ToString());
+            activity?.SetTag("domain-event.version", version.ToString());
+            activity?.SetTag("domain-event.eventclassName", eventClassName);
 
             dynamic? dataRow = await connection.QuerySingleOrDefault(
                 dbQueryProvider.InsertDomainEvent,

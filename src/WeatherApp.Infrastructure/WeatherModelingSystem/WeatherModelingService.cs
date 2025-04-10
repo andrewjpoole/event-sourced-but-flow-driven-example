@@ -2,6 +2,7 @@
 using WeatherApp.Application.Services;
 using WeatherApp.Domain.DomainEvents;
 using WeatherApp.Domain.Entities;
+using WeatherApp.Domain.Logging;
 using WeatherApp.Domain.Outcomes;
 using WeatherApp.Infrastructure.ApiClients.WeatherModelingSystem;
 using WeatherApp.Infrastructure.ApiClientWrapper;
@@ -33,8 +34,7 @@ public class WeatherModelingService(
         var submissionId = Guid.Parse(bodyContent);
         await weatherDataCollectionAggregate.AppendEvent(new SubmittedToModeling(submissionId));
 
-        logger.LogInformation("Weather data submitted to modeling service for location: {Location}, submissionId: {SubmissionId}", 
-            weatherDataCollectionAggregate.Location, submissionId);
+        logger.LogWeatherDataSubmittedToModelingService(weatherDataCollectionAggregate.Location, submissionId);
 
         return weatherDataCollectionAggregate;
     }

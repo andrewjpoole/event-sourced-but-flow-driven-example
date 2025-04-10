@@ -6,6 +6,6 @@ namespace WeatherApp.Application.Orchestration;
 
 public interface ISubmitWeatherDataCommandHandler
 {
-    Task<OneOf<WeatherDataCollectionResponse, Failure>> HandleSubmitWeatherDataCommand(string weatherDataLocation, CollectedWeatherDataModel weatherDataModel, 
+    Task<OneOf<WeatherDataCollectionResponse, Failure>> HandleSubmitWeatherDataCommand(string weatherDataLocation, string reference, CollectedWeatherDataModel weatherDataModel, 
         IWeatherDataValidator weatherDataValidator, ILocationManager locationManager);
 }

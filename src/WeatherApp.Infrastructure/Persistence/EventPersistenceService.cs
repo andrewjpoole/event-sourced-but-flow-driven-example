@@ -54,7 +54,10 @@ public class EventPersistenceService(
             transaction.Commit();    
 
             if(result.TryGetPersistedEvent(out var persistedEvent))
+            {
+                logger.LogPersistedDomainEventAndOutboxItem(@event.EventClassName, @event.StreamId, outboxItem.Id);
                 return persistedEvent;
+            }
 
             throw new Exception($"Unable to persist event. {result.Error}");
         }
@@ -68,7 +71,11 @@ public class EventPersistenceService(
 
     public async Task<OneOf<WeatherDataCollectionAggregate, Failure>> AppendModelUpdatedEventAndCreateOutboxItem(WeatherDataCollectionAggregate weatherDataCollectionAggregate)
     {
-        var userNotificationEvent = new UserNotificationEvent("Message here", timeProvider.GetUtcNow());
+        var userNotificationEvent = new UserNotificationEvent(
+            $"Dear user, your data has been submitted and included in our latest model", 
+            weatherDataCollectionAggregate.Reference,
+            timeProvider.GetUtcNow());
+
         var outboxItem = outboxItemFactory.Create(userNotificationEvent);
         
         var version = weatherDataCollectionAggregate.GetNextExpectedVersion();

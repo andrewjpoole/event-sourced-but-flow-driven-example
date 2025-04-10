@@ -5,6 +5,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using WeatherApp.Application.Exceptions;
 using WeatherApp.Application.Services;
+using WeatherApp.Domain.Logging;
 
 namespace WeatherApp.Infrastructure.Messaging;
 
@@ -43,7 +44,7 @@ public class ServiceBusEventListener<T> : IHostedService, IDisposable
     {
         try
         {
-            logger.LogInformation($"Starting service, with MaxConcurrentCalls: {maxConcurrentCalls}");
+            logger.LogServiceBusListenerStartup(queueOrTopicName);
 
             serviceBusProcessor = serviceBusClient.CreateProcessor(queueOrTopicName, new ServiceBusProcessorOptions
             {
@@ -55,17 +56,17 @@ public class ServiceBusEventListener<T> : IHostedService, IDisposable
             serviceBusProcessor.ProcessMessageAsync += MessageHandler;
             serviceBusProcessor.ProcessErrorAsync += ErrorHandler;
 
-            logger.LogInformation($"Starting to consume from Queue: {queueOrTopicName}");
+            logger.LogStartingToConsumeQueue(queueOrTopicName);
 
             await serviceBusProcessor.StartProcessingAsync(cancellationToken);
         }
         catch (Exception e)
         {
-            logger.LogError(e, "Exception thrown during startup");
+            logger.LogStartupException(e);
             throw;
         }
 
-        logger.LogTrace("Entering keep alive");
+        logger.LogEnteringKeepalive(queueOrTopicName);
     }
 
     public async Task StopAsync(CancellationToken cancellationToken)
@@ -94,18 +95,17 @@ public class ServiceBusEventListener<T> : IHostedService, IDisposable
         }
         catch (JsonException e)
         {
-            logger.LogError(
-                $"JsonReaderException thrown while fetching payload before processing message, json payload is invalid, expected message body to be {typeof(T).Name}, message will be dead lettered: {e}");
+            logger.LogJsonReaderException(typeof(T).Name, e);
             await args.DeadLetterMessageAsync(args.Message, e.Message);
         }
         catch (PermanentException e)
         {
-            logger.LogError($"PermanentException thrown while processing message, message will be dead lettered: {e}");
+            logger.LogPermanentException(e);
             await args.DeadLetterMessageAsync(args.Message, e.Message);
         }
         catch (Exception e)
         {
-            logger.LogError($"Error thrown while processing message: {e}");
+            logger.LogProcessingError(e);
 
             // Abandon so the message can be retried after a sensible delay
             await Task.Delay(GetCappedExponentialBackoffDelay(args.Message.DeliveryCount));
@@ -127,7 +127,7 @@ public class ServiceBusEventListener<T> : IHostedService, IDisposable
 
     private Task ErrorHandler(ProcessErrorEventArgs args)
     {
-        logger.LogError($"Error handling message. {args.Exception}");
+        logger.LogErrorHandler(args.Exception.Message);
 
         return Task.CompletedTask;
     }

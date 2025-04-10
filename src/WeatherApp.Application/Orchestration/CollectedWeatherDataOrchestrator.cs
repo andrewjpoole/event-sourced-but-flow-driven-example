@@ -7,6 +7,7 @@ using WeatherApp.Domain.Entities;
 using WeatherApp.Domain.EventSourcing;
 using WeatherApp.Domain.ServiceDefinitions;
 using Microsoft.Extensions.Logging;
+using WeatherApp.Domain.Logging;
 
 namespace WeatherApp.Application.Orchestration;
 
@@ -23,21 +24,22 @@ public class CollectedWeatherDataOrchestrator(
 {
     public Task<OneOf<WeatherDataCollectionResponse, Failure>> HandleSubmitWeatherDataCommand(
         string weatherDataLocation, 
+        string reference, 
         CollectedWeatherDataModel weatherDataModel, 
         IWeatherDataValidator weatherDataValidator, 
         ILocationManager locationManager)
     {
-        logger.LogInformation("Received weather data for location: {Location}", weatherDataLocation);
+        logger.LogReceivedWeatherData(reference, weatherDataLocation);
 
         if (weatherDataValidator.Validate(weatherDataModel, out var errors) == false)
             return Task.FromResult(OneOf<WeatherDataCollectionResponse, Failure>
                 .FromT1(new InvalidRequestFailure(errors)));
 
         var requestId = Guid.NewGuid();
-        logger.LogInformation("Weather data validation passed for location: {Location} RequestId: {RequestId}", requestId, weatherDataLocation);
+        logger.LogWeatherDataValidationPassed(weatherDataLocation, requestId);
 
         return WeatherDataCollectionAggregate.PersistOrHydrate(eventPersistenceService, requestId, 
-                Event.Create(new WeatherDataCollectionInitiated(weatherDataModel.ToEntity(), weatherDataLocation), requestId, 1))
+                Event.Create(new WeatherDataCollectionInitiated(weatherDataModel.ToEntity(), weatherDataLocation, reference), requestId, 1))
             .Then(locationManager.Locate)
             .Then(contributorPaymentService.CreatePendingPayment)
             .Then(weatherModelingService.Submit,   // call to service, async response via integration event 
@@ -47,7 +49,7 @@ public class CollectedWeatherDataOrchestrator(
     
     public async Task HandleEvent(ModelingDataRejectedIntegrationEvent dataRejectedIntegrationEvent)
     {
-        logger.LogInformation("Received ModelingDataRejectedIntegrationEvent for streamId: {StreamId}", dataRejectedIntegrationEvent.StreamId);
+        logger.LogReceivedModelingDataRejectedEvent(dataRejectedIntegrationEvent.StreamId);
 
         await WeatherDataCollectionAggregate.Hydrate(eventPersistenceService, dataRejectedIntegrationEvent.StreamId)
             .Then(x => x.AppendModelingDataRejectedEvent(dataRejectedIntegrationEvent.Reason))
@@ -57,7 +59,7 @@ public class CollectedWeatherDataOrchestrator(
 
     public async Task HandleEvent(ModelingDataAcceptedIntegrationEvent dataAcceptedIntegrationEvent)
     {
-        logger.LogInformation("Received ModelingDataAcceptedIntegrationEvent for streamId: {StreamId}", dataAcceptedIntegrationEvent.StreamId);
+        logger.LogReceivedModelingDataAcceptedEvent(dataAcceptedIntegrationEvent.StreamId);
 
         await WeatherDataCollectionAggregate.Hydrate(eventPersistenceService, dataAcceptedIntegrationEvent.StreamId)
             .Then(x => x.AppendModelingDataAcceptedEvent())
@@ -68,7 +70,7 @@ public class CollectedWeatherDataOrchestrator(
 
     public async Task HandleEvent(ModelUpdatedIntegrationEvent integrationEvent)
     {
-        logger.LogInformation("Received ModelUpdatedIntegrationEvent for streamId: {StreamId}", integrationEvent.StreamId);
+        logger.LogReceivedModelUpdatedEvent(integrationEvent.StreamId);
 
         await WeatherDataCollectionAggregate.Hydrate(eventPersistenceService, integrationEvent.StreamId)
             .Then(eventPersistenceService.AppendModelUpdatedEventAndCreateOutboxItem) // Appends domain event and persists outbox item in single transaction.

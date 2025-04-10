@@ -35,12 +35,19 @@ Content-Type: application/json
     ]
 }
 
+### Create random reference
+// @name randomWord
+GET https://random-word-api.herokuapp.com/word?length=6
+
+@randomReference = {{randomWord.response.body.$[0]}}{{$randomInt 0 99}}
+
 ### Test
 @windDirection = {{$randomInt 0 360}}
 POST {{baseUrl}}/test
 Content-Type: application/json
 
 {
+    "reference": "{{randomReference}}",
     "points": [
         {
             "id": "{{$guid}}",

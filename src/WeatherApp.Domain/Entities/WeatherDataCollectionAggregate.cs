@@ -25,6 +25,7 @@ public class WeatherDataCollectionAggregate : AggregateRootBase
     // Properties from events guaranteed to be present because they come from the initiated event...
     public CollectedWeatherData Data => PersistedEvents.To<WeatherDataCollectionInitiated>()!.Data;
     public string Location => PersistedEvents.To<WeatherDataCollectionInitiated>()!.Location;
+    public string Reference => PersistedEvents.To<WeatherDataCollectionInitiated>()!.reference;
 
     // Properties from events which may not yet have happened, null if not yet happened.
     public Guid? LocationId => PersistedEvents.To<LocationIdFound>()!.LocationId;

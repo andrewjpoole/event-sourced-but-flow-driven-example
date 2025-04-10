@@ -52,13 +52,14 @@ public class Program
             => CreateResponseFor(() => handler.HandleGetWeatherReport(region, date)));
 
         #region
-        app.MapPost("/v1/collected-weather-data/{location}", (
+        app.MapPost("/v1/collected-weather-data/{location}/{reference}", (
             [FromRoute] string location,
+            [FromRoute] string reference,
             [FromBody] CollectedWeatherDataModel data,
             [FromServices] ISubmitWeatherDataCommandHandler handler,
             [FromServices] IWeatherDataValidator weatherDataValidator,
             [FromServices] ILocationManager locationManager)
-            => CreateResponseFor(() => handler.HandleSubmitWeatherDataCommand(location, data, weatherDataValidator, locationManager)));
+            => CreateResponseFor(() => handler.HandleSubmitWeatherDataCommand(location, reference, data, weatherDataValidator, locationManager)));
         #endregion
 
         static async Task<IResult> CreateResponseFor<TSuccess>(Func<Task<OneOf<TSuccess, Failure>>> handleRequestFunc)

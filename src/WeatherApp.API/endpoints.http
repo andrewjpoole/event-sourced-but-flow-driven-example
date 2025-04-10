@@ -1,5 +1,6 @@
 @baseUrl = https://localhost:7220
-@streamId = {{$guid}}
+@fruits = ["Apple", "Banana", "Cherry", "Date", "Elderberry", "Plum", "Grape", "Kiwi", "Lemon", "Mango"]
+@randomReference = {{fruits[$randomInt 0 9]}}-{{$randomInt 0 99}}
 
 ### Health Check
 GET {{baseUrl}}/
@@ -7,8 +8,15 @@ GET {{baseUrl}}/
 ### Get weather forecoast
 GET {{baseUrl}}/v1/weather-forecast/Bristol/{{$datetime iso8601}}
 
+
+### Create random reference
+// @name randomWord
+GET https://random-word-api.herokuapp.com/word?length=6
+
+@randomReference = {{randomWord.response.body.$[0]}}{{$randomInt 0 99}}
+
 ### Post collected weather data
-POST {{baseUrl}}/v1/collected-weather-data/Bristol
+POST {{baseUrl}}/v1/collected-weather-data/Bristol/{{randomReference}}
 Content-Type: application/json
     
 {
@@ -21,4 +29,6 @@ Content-Type: application/json
             "humidityReadingInPercent": {{$randomInt 20 100}}
         }
     ]
-}  
+}
+
+

@@ -32,20 +32,25 @@ public class OutboxRepository(IDbConnectionFactory dbConnectionFactory) : IOutbo
         parameters.Add("@MessagingEntityName", outboxItem.MessagingEntityName);
         parameters.Add("@Created", outboxItem.Created);
 
-        using var activity = Activity.StartActivity("Outbox Item Insertion", ActivityKind.Producer);
+        using (var activity = Activity.StartActivity("Outbox Item Insertion", ActivityKind.Producer))
+        {
 
-        KeyValuePair<string, string> telemetry = default;
-        if(activity != null)
-            Propagator.Inject(new PropagationContext(activity.Context, Baggage.Current), telemetry, (carrier, key, value) => 
-            {
-                telemetry = new KeyValuePair<string, string>(key, value);
-            });
+            Dictionary<string, string> telemetryDictionary = new();
+            if(activity != null)
+                Propagator.Inject(new PropagationContext(activity.Context, Baggage.Current), telemetryDictionary, (carrier, key, value) => 
+                {
+                    carrier.Add(key, value);
+                });
 
-        activity?.SetTag("messaging.system", "outbox");
+            parameters.Add("@SerialisedTelemetry", JsonSerializer.Serialize(telemetryDictionary));
 
-        parameters.Add("@SerialisedTelemetry", JsonSerializer.Serialize(telemetry));
+            var insertedOutboxItemId = await connection.QuerySingleOrDefault<int>(sql, parameters, transaction);
+            
+            activity?.SetTag("outbox-item.TypeName", outboxItem.TypeName);
+            activity?.SetTag("outbox-item.Id", insertedOutboxItemId);
 
-        return await connection.ExecuteAsync(sql, parameters, transaction);
+            return insertedOutboxItemId;
+        }
     }    
 
     public async Task AddScheduled(OutboxItem outboxItem, DateTimeOffset retryAfter)
@@ -76,6 +81,12 @@ public class OutboxRepository(IDbConnectionFactory dbConnectionFactory) : IOutbo
         parameters.Add("@NotBefore", outboxSentStatusUpdate.NotBefore);
         parameters.Add("@Created", outboxSentStatusUpdate.Created);
 
-        await connection.ExecuteAsync(sql, parameters, transaction);
+        using (var activity = Activity.StartActivity("Outbox Item Sent Status Insertion", ActivityKind.Producer))
+        {
+            activity?.SetTag("outbox-item-sent-status.OutboxItemId", outboxSentStatusUpdate.OutboxItemId);
+            activity?.SetTag("outbox-item-sent-status.Status", outboxSentStatusUpdate.Status.ToString());
+
+            await connection.ExecuteAsync(sql, parameters, transaction);
+        }
     }    
 }

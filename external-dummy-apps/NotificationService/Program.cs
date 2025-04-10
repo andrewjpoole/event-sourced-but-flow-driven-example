@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using WeatherApp.Application.Models.IntegrationEvents.NotificationEvents;
 using WeatherApp.Application.Services;
 using WeatherApp.Infrastructure.Messaging;
@@ -27,9 +28,17 @@ public class Program
 
 public class UserNotificationEventHandler(ILogger<UserNotificationEventHandler> logger) : IEventHandler<UserNotificationEvent>
 {
+    private static readonly ActivitySource Activity = new(nameof(UserNotificationEventHandler));
     public async Task HandleEvent(UserNotificationEvent @event)
     {
-        logger.LogInformation("User Notification Sent! Body: {Body}", @event.Body);
+         using (var activity = Activity.StartActivity("User Notication Sent", ActivityKind.Producer))
+         {
+                activity?.SetTag("user-notification-event.body", @event.Body);
+                activity?.SetTag("user-notification-event.reference", @event.Reference);
+                activity?.SetTag("user-notification-event.timestamp", @event.Timestamp.ToString("o"));
+         }
+
+        logger.LogInformation("User Notification Sent! {Reference}\nBody: {Body}\n@{Timestamp}", @event.Body, @event.Reference, @event.Timestamp);
         return;
     }
 }

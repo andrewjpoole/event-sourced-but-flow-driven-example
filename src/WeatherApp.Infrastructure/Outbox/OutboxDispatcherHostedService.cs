@@ -76,8 +76,15 @@ public class OutboxDispatcherHostedService(
                 // Hydrate the telemetry trace context.
                 var parentContext = Propagator.Extract(default, item.SerialisedTelemetry, (serialisedTelemetry, key) => 
                 {
-                    var keyValuePair = JsonSerializer.Deserialize<KeyValuePair<string, string>>(serialisedTelemetry);
-                    return new List<string> { keyValuePair.Value };
+                    var telemetryDictionary = JsonSerializer.Deserialize<Dictionary<string, string>>(serialisedTelemetry);
+
+                    if (telemetryDictionary == null || telemetryDictionary.Count == 0)
+                        return Enumerable.Empty<string>();
+
+                    if(telemetryDictionary.TryGetValue(key, out var value))
+                        return new List<string> { telemetryDictionary[key] };
+
+                    return Enumerable.Empty<string>();
                 });
                 Baggage.Current = parentContext.Baggage;
 

@@ -8,6 +8,7 @@ using OpenTelemetry;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Trace;
 using WeatherApp.Infrastructure.Outbox;
+using WeatherApp.Infrastructure.Persistence;
 
 namespace Microsoft.Extensions.Hosting;
 
@@ -66,6 +67,8 @@ public static class Extensions
                     // Uncomment the following line to enable gRPC instrumentation (requires the OpenTelemetry.Instrumentation.GrpcNetClient package)
                     //.AddGrpcClientInstrumentation()
                     .AddHttpClientInstrumentation()
+                    .AddSource("UserNotificationEventHandler")
+                    .AddSource(nameof(EventRepositorySql))
                     .AddSource(nameof(OutboxRepository))
                     .AddSource(nameof(OutboxDispatcherHostedService));
             });
