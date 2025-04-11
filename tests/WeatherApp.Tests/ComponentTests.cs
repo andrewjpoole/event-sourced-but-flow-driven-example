@@ -30,13 +30,15 @@ public class ComponentTests(ComponentTestFixture testFixture) : IClassFixture<Co
         var (given, when, then) = testFixture.SetupHelpers();
 
         var testLocation = $"testLocation{Guid.NewGuid()}"[..20];
+        var testReference = $"testReference{Guid.NewGuid()}"[..5];
 
         given.WeHaveSomeCollectedWeatherData(out var weatherData)
+            .And.TheContributorPaymentsServicePendingEndpointWillReturn(HttpStatusCode.Accepted)
             .And.TheModelingServiceSubmitEndpointWillReturn(HttpStatusCode.Accepted)
             .And.TheServersAreStarted();
         
         when.InPhase("1 (initial API request)") 
-            .And.WeWrapTheCollectedWeatherDataInAnHttpRequestMessage(weatherData, testLocation, out var httpRequest)
+            .And.WeWrapTheCollectedWeatherDataInAnHttpRequestMessage(weatherData, testLocation, testReference, out var httpRequest)
             .And.WeSendTheMessageToTheApi(httpRequest, out var response);
 
         then.And.TheModelingServiceSubmitEndpointShouldHaveBeenCalled(times: 1)

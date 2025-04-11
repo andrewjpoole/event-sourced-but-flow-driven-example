@@ -76,7 +76,7 @@ public class EventPersistenceService(
             weatherDataCollectionAggregate.Reference,
             timeProvider.GetUtcNow());
 
-        var outboxItem = outboxItemFactory.Create(userNotificationEvent);
+        var outboxItem = outboxItemFactory.Create(userNotificationEvent, weatherDataCollectionAggregate.StreamId.ToString());
         
         var version = weatherDataCollectionAggregate.GetNextExpectedVersion();
         var @event = Event.Create<ModelUpdated>(new ModelUpdated(), weatherDataCollectionAggregate.StreamId, version);

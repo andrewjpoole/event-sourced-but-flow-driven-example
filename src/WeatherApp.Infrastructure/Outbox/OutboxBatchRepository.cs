@@ -27,6 +27,7 @@ public class OutboxBatchRepository : IOutboxBatchRepository
             )
             SELECT TOP (@BatchSize) 
                 OI.[Id],
+                OI.[AssociatedId],
                 OI.[TypeName],
                 OI.[SerialisedData],
                 OI.[MessagingEntityName],

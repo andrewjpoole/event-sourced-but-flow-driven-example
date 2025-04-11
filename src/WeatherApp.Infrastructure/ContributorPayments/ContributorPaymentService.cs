@@ -27,8 +27,11 @@ public class ContributorPaymentService(
             "GBP",
             $"Weather data collection payment for requestId: {weatherDataCollectionAggregate.StreamId}"
         );
-        
-        var response = await client.PostPendingPayment(contributorId, pendingPayment);
+
+        HttpResponseMessage? response = null;
+        try
+        {
+            response = await client.PostPendingPayment(contributorId, pendingPayment);
 
         if(response.IsSuccessStatusCode != true)
         {
@@ -36,6 +39,13 @@ public class ContributorPaymentService(
             logger.LogFailedContributerPaymentRequest("post pending", weatherDataCollectionAggregate.StreamId, pendingPayment);
             return OneOf<WeatherDataCollectionAggregate, Failure>.FromT1(new ContributorPaymentServiceFailure(bodyContent));
         }
+        }
+        catch (System.Exception)
+        {
+            
+            throw;
+        }
+        
 
         await weatherDataCollectionAggregate.AppendPendingContributorPaymentEvent(pendingPayment);
 

@@ -1,4 +1,7 @@
+using Moq;
+using WeatherApp.Application.Models.IntegrationEvents.NotificationEvents;
 using WeatherApp.Application.Models.IntegrationEvents.WeatherModelingEvents;
+using WeatherApp.Infrastructure.Messaging;
 using WeatherApp.Infrastructure.Persistence;
 using WeatherApp.Tests.AppHostFactories;
 using WeatherApp.Tests.Framework;
@@ -13,24 +16,27 @@ public class ComponentTestFixture : IDisposable
     public readonly ApiWebApplicationFactory ApiFactory;
     public readonly EventListenerWebApplicationFactory EventListenerFactory;
     public readonly NotificationServiceWebApplicationFactory NotificationServiceFactory;
-    public readonly OutboxApplicationFactory OutboxApplicationFactory;
+    //public readonly OutboxApplicationFactory OutboxApplicationFactory;
     
     public readonly MockServiceBus MockServiceBus;
 
     public EventRepositoryInMemory EventRepositoryInMemory = new();
 
+    public readonly Mock<HttpMessageHandler> MockContributorPaymentsServiceHttpMessageHandler = new();
+
     public ComponentTestFixture()
     {
-        ApiFactory = new() { SetSharedEventRepository = () => EventRepositoryInMemory };
+        ApiFactory = new(this) { SetSharedEventRepository = () => EventRepositoryInMemory };
         EventListenerFactory = new(this) { SetSharedEventRepository = () => EventRepositoryInMemory };
         NotificationServiceFactory = new();
-        OutboxApplicationFactory = new(this);
+        //OutboxApplicationFactory = new(this);
 
-        MockServiceBus = new MockServiceBus();
-        MockServiceBus.AddSenderFor<DummyIntegrationEvent>();
+        MockServiceBus = new MockServiceBus(entityName => EntityNames.GetTypeNameFromEntityName(entityName), type => EntityNames.GetEntityNameFromTypeName(type));
+        MockServiceBus.AddSenderFor<UserNotificationEvent>();
         MockServiceBus.AddProcessorFor<ModelingDataAcceptedIntegrationEvent>();
         MockServiceBus.AddProcessorFor<ModelingDataRejectedIntegrationEvent>();
         MockServiceBus.AddProcessorFor<ModelUpdatedIntegrationEvent>();
+        MockServiceBus.AddProcessorFor<UserNotificationEvent>();
     }
 
     public void Dispose()

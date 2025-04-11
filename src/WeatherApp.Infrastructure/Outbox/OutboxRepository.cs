@@ -18,8 +18,8 @@ public class OutboxRepository(IDbConnectionFactory dbConnectionFactory) : IOutbo
     public async Task<long> Add(OutboxItem outboxItem, IDbTransactionWrapped? transaction = null)
     {
         const string sql = @"
-            INSERT INTO [dbo].[OutboxItems] ([TypeName], [SerialisedData], [MessagingEntityName], [SerialisedTelemetry], [Created])
-            VALUES (@TypeName, @SerialisedData, @MessagingEntityName, @SerialisedTelemetry, @Created);
+            INSERT INTO [dbo].[OutboxItems] ([AssociatedId], [TypeName], [SerialisedData], [MessagingEntityName], [SerialisedTelemetry], [Created])
+            VALUES (@AssociatedId, @TypeName, @SerialisedData, @MessagingEntityName, @SerialisedTelemetry, @Created);
             SELECT CAST(SCOPE_IDENTITY() as BIGINT);";
 
         var connection = transaction == null ? 
@@ -27,6 +27,7 @@ public class OutboxRepository(IDbConnectionFactory dbConnectionFactory) : IOutbo
             transaction.GetConnection();
 
         var parameters = new DynamicParameters();
+        parameters.Add("@AssociatedId", outboxItem.AssociatedId);
         parameters.Add("@TypeName", outboxItem.TypeName);
         parameters.Add("@SerialisedData", outboxItem.SerialisedData);
         parameters.Add("@MessagingEntityName", outboxItem.MessagingEntityName);

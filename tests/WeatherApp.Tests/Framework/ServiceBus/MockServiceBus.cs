@@ -5,7 +5,7 @@ using Moq;
 
 namespace WeatherApp.Tests.Framework.ServiceBus;
 
-public class MockServiceBus
+public class MockServiceBus(Func<string, string> GetTypeNameFromEntityName, Func<Type, string> GetEntityNameFromType)
 {
     private readonly Dictionary<Type, TestableServiceBusProcessor> processors = new();
     private readonly Dictionary<Type, Mock<ServiceBusSender>> mockSenders = new();
@@ -15,17 +15,17 @@ public class MockServiceBus
         var client = new Mock<ServiceBusClient>();
 
         client.Setup(t => t.CreateProcessor(It.IsAny<string>(), It.IsAny<ServiceBusProcessorOptions>()))
-            .Returns((string queue, ServiceBusProcessorOptions _) => GetProcessorByDummyQueueName(queue));
+            .Returns((string queue, ServiceBusProcessorOptions _) => GetProcessorByQueueName(queue));
 
         client.Setup(t => t.CreateSender(It.IsAny<string>()))
-            .Returns<string>(GetSenderByDummyQueueName);
+            .Returns<string>(GetSenderByQueueName);
 
         services.AddSingleton(client.Object);
     }
 
     public void AddProcessorFor<T>()
     {
-        var processor = new TestableServiceBusProcessor(typeof(T).GetDummyQueueName());
+        var processor = new TestableServiceBusProcessor(GetEntityNameFromType(typeof(T)));
         processors.Add(typeof(T), processor);
     }
 
@@ -35,14 +35,14 @@ public class MockServiceBus
 
     public TestableServiceBusProcessor GetProcessorFor(Type type) => processors[type];
 
-    public TestableServiceBusProcessor GetProcessorByDummyQueueName(string dummyQueueName)
+    public TestableServiceBusProcessor GetProcessorByQueueName(string queueName)
     {
         var machineName = Environment.MachineName.ToLower();
 
-        if (dummyQueueName.StartsWith(machineName))
-            dummyQueueName = dummyQueueName.Replace($"{machineName}-", string.Empty);
+        if (queueName.StartsWith(machineName))
+            queueName = queueName.Replace($"{machineName}-", string.Empty);
 
-        var typeName = dummyQueueName.GetTypeNameFromDummyQueueName();
+        var typeName = GetTypeNameFromEntityName(queueName);
 
         foreach (var kvPair in processors)
         {
@@ -50,7 +50,7 @@ public class MockServiceBus
                 return kvPair.Value;
         }
 
-        throw new Exception($"Can't find a registered TestableServiceBusProcessor for {dummyQueueName}");
+        throw new Exception($"Can't find a registered TestableServiceBusProcessor for {queueName}");
     }
 
     public void ClearDeliveryAttemptsOnAllProcessors()
@@ -73,14 +73,14 @@ public class MockServiceBus
         return mockSenders.ContainsKey(typeOfT) == false ? null : mockSenders[typeOfT];
     }
 
-    public ServiceBusSender GetSenderByDummyQueueName(string dummyQueueName)
+    public ServiceBusSender GetSenderByQueueName(string queueName)
     {
         var machineName = Environment.MachineName.ToLower();
 
-        if (dummyQueueName.StartsWith(machineName))
-            dummyQueueName = dummyQueueName.Replace($"{machineName}-", string.Empty);
+        if (queueName.StartsWith(machineName))
+            queueName = queueName.Replace($"{machineName}-", string.Empty);
 
-        var typeName = dummyQueueName.GetTypeNameFromDummyQueueName();
+        var typeName = GetTypeNameFromEntityName(queueName);
 
         foreach (var kvPair in mockSenders)
         {
@@ -88,7 +88,7 @@ public class MockServiceBus
                 return kvPair.Value.Object;
         }
 
-        throw new Exception($"A Mock Sender was not found for the dummy queue name {dummyQueueName}");
+        throw new Exception($"A Mock Sender was not found for the queue name {queueName}");
     }
 
     public void ClearAllInvocationsOnAllSenders()
@@ -116,7 +116,11 @@ public class MockServiceBus
                 var message = sbm.Body.ToObjectFromJson<TMessageType>();
                 var applicationProperties = (Dictionary<string, object>?)sbm.ApplicationProperties;
 
-                var processor = GetProcessorFor<TMessageType>();
+                if (message == null)
+                    throw new Exception("unable to deserialise service bus message body");
+
+                var processor = GetProcessorFor<TMessageType>();               
+
                 processor.SendMessage(message, applicationProperties: applicationProperties).GetAwaiter().GetResult();
             });
     }

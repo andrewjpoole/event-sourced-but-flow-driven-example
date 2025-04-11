@@ -5,6 +5,7 @@ namespace WeatherApp.Infrastructure.Outbox;
 public record OutboxBatchItem
 (
     long Id,
+    string AssociatedId,
     string TypeName,
     string SerialisedData,
     string MessagingEntityName,
@@ -16,8 +17,8 @@ public record OutboxBatchItem
 )
 {
     [JsonConstructor]
-    public OutboxBatchItem(long id, string typeName, string serialisedData, string messagingEntityName, string serialisedTelemetry, DateTimeOffset created, byte status, DateTimeOffset? notBefore)
-        : this(id, typeName, serialisedData, messagingEntityName, serialisedTelemetry, created, (OutboxSentStatus)status, notBefore)
+    public OutboxBatchItem(long id, string associatedId, string typeName, string serialisedData, string messagingEntityName, string serialisedTelemetry, DateTimeOffset created, byte status, DateTimeOffset? notBefore)
+        : this(id, associatedId, typeName, serialisedData, messagingEntityName, serialisedTelemetry, created, (OutboxSentStatus)status, notBefore)
     {
     }
 }

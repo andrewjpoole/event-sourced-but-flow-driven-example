@@ -4,11 +4,12 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Moq;
 using WeatherApp.Infrastructure.ApiClients.WeatherModelingSystem;
+using WeatherApp.Infrastructure.ContributorPayments;
 using WeatherApp.Infrastructure.Persistence;
 
 namespace WeatherApp.Tests.AppHostFactories;
 
-public class ApiWebApplicationFactory : WebApplicationFactory<API.Program>
+public class ApiWebApplicationFactory(ComponentTestFixture fixture) : WebApplicationFactory<API.Program>
 {
     public HttpClient? HttpClient;
 
@@ -21,8 +22,8 @@ public class ApiWebApplicationFactory : WebApplicationFactory<API.Program>
     // whereas ConfigureWebHost is called too late just before builder.Build() is called.
     protected override IHost CreateHost(IHostBuilder builder)
     {
-        Environment.SetEnvironmentVariable("WeatherModelingServiceOptions__BaseUrl", Constants.WeatherModelingServiceBaseUrl);
-        Environment.SetEnvironmentVariable("WeatherModelingServiceOptions__MaxRetryCount", "3");
+        Environment.SetEnvironmentVariable("services__contributorpaymentsservice__https__0", Constants.BaseUrl);
+        Environment.SetEnvironmentVariable("services__weathermodelingservice__https__0", Constants.BaseUrl);
 
         builder
             .ConfigureServices(services =>
@@ -31,7 +32,10 @@ public class ApiWebApplicationFactory : WebApplicationFactory<API.Program>
                 loggerFactory.Setup(x => x.CreateLogger(It.IsAny<string>())).Returns(MockLogger.Object);
                 services.AddSingleton(loggerFactory.Object);
 
-                services.AddHttpClient(typeof(IWeatherModelingServiceClient).FullName!, client => client.BaseAddress = new Uri(Constants.WeatherModelingServiceBaseUrl))
+                services.AddHttpClient(typeof(IContributorPaymentServiceClient).FullName!, client => client.BaseAddress = new Uri(Constants.BaseUrl))
+                    .ConfigurePrimaryHttpMessageHandler(() => fixture.MockContributorPaymentsServiceHttpMessageHandler.Object);
+
+                services.AddHttpClient(typeof(IWeatherModelingServiceClient).FullName!, client => client.BaseAddress = new Uri(Constants.BaseUrl))
                     .ConfigurePrimaryHttpMessageHandler(() => MockWeatherModelingServiceHttpMessageHandler.Object);
 
                 if (SetSharedEventRepository is not null)

@@ -1,8 +1,13 @@
 using System.Net;
+using System.Net.Http;
+using System.Net.Http.Json;
+using System.Text.Json;
+using System.Web;
 using Azure.Messaging.ServiceBus;
 using Moq;
 using Moq.Contrib.HttpClient;
 using WeatherApp.Application.Models.Requests;
+using WeatherApp.Domain.ValueObjects;
 
 namespace WeatherApp.Tests.Framework;
 
@@ -32,7 +37,7 @@ public class Given(ComponentTestFixture fixture)
         fixture.ApiFactory.Start();
         fixture.NotificationServiceFactory.Start();
         fixture.EventListenerFactory.Start();
-        fixture.OutboxApplicationFactory.Start();
+        //fixture.OutboxApplicationFactory.Start();
 
         // Replace the httpClient in eventlistener's IoC container with the in-memory one from the NotificationServiceFactory.
         //fixture.EventListenerFactory.ClearHttpClients();
@@ -40,11 +45,69 @@ public class Given(ComponentTestFixture fixture)
         return this;
     }
 
+    public Given TheContributorPaymentsServicePendingEndpointWillReturn(HttpStatusCode statusCode)
+    {        
+        fixture.MockContributorPaymentsServiceHttpMessageHandler
+            .SetupRequest(HttpMethod.Post, 
+                r => r.RequestUri!.ToString().Contains("pending"))
+            .Returns(async (HttpRequestMessage request, CancellationToken _) => 
+            {                
+                var contributorId = GetSegmentFromPath(2, request);
+                var requestBody = await request.Content!.ReadFromJsonAsync<PendingContributorPayment>();
+                if (requestBody == null)
+                    throw new Exception("Request body was null");
+                var content = new StringContent(JsonSerializer.Serialize(new { ContributorId = Guid.Parse(contributorId), requestBody.PaymentId, Status = "Pending" }));
+                return new HttpResponseMessage(statusCode) { Content = content };
+            });
+        return this;
+    }
+
+    private string GetSegmentFromPath(int position, HttpRequestMessage request)
+    {
+        var splitPath = request.RequestUri!.AbsolutePath.Split('/', StringSplitOptions.RemoveEmptyEntries);
+        if (splitPath.Length <= position)
+            throw new Exception($"Path segment {position} was not found in the request path: {request.RequestUri.AbsolutePath}");
+        
+        return splitPath[position];
+    }
+
+    public Given TheContributorPaymentsServiceRevokeEndpointWillReturn(HttpStatusCode statusCode)
+    {        
+        fixture.MockContributorPaymentsServiceHttpMessageHandler
+            .SetupRequest(HttpMethod.Post, 
+                r => r.RequestUri!.ToString().StartsWith($"{Constants.BaseUrl}{Constants.ContributorPaymentsServiceUriStart}") 
+                && r.RequestUri!.ToString().Contains("revoke"))
+            .Returns(async (HttpRequestMessage request, CancellationToken ct) => 
+            {                
+                var contributorId = GetSegmentFromPath(2, request);
+                var paymentId = GetSegmentFromPath(4, request);
+                var content = new StringContent(JsonSerializer.Serialize(new { ContributorId = Guid.Parse(contributorId), PaymentId = paymentId, Status = "Revoked" }));
+                return new HttpResponseMessage(statusCode) { Content = content };
+            });
+        return this;
+    }
+
+    public Given TheContributorPaymentsServiceCommitEndpointWillReturn(HttpStatusCode statusCode)
+    {        
+        fixture.MockContributorPaymentsServiceHttpMessageHandler
+            .SetupRequest(HttpMethod.Post, 
+                r => r.RequestUri!.ToString().StartsWith($"{Constants.BaseUrl}{Constants.ContributorPaymentsServiceUriStart}") 
+                && r.RequestUri!.ToString().Contains("commit"))
+           .Returns(async (HttpRequestMessage request, CancellationToken ct) => 
+            {                
+                var contributorId = GetSegmentFromPath(2, request);
+                var paymentId = GetSegmentFromPath(4, request);
+                var content = new StringContent(JsonSerializer.Serialize(new { ContributorId = Guid.Parse(contributorId), PaymentId = paymentId, Status = "Committed" }));
+                return new HttpResponseMessage(statusCode) { Content = content };
+            });
+        return this;
+    }
+
     public Given TheModelingServiceSubmitEndpointWillReturn(HttpStatusCode statusCode)
     {
         var submissionId = Guid.NewGuid();
         fixture.ApiFactory.MockWeatherModelingServiceHttpMessageHandler
-            .SetupRequest(HttpMethod.Post, r => r.RequestUri!.ToString().StartsWith($"{Constants.WeatherModelingServiceBaseUrl}{Constants.WeatherModelingServiceSubmissionUri}"))
+            .SetupRequest(HttpMethod.Post, r => r.RequestUri!.ToString().StartsWith($"{Constants.BaseUrl}{Constants.WeatherModelingServiceSubmissionUri}"))
             .ReturnsResponse(statusCode, new StringContent(submissionId.ToString()));
         return this;
     }
@@ -67,6 +130,10 @@ public class Given(ComponentTestFixture fixture)
                 var applicationProperties = (Dictionary<string, object>?)sbm.ApplicationProperties;
 
                 var processor = fixture.MockServiceBus.GetProcessorFor<TMessageType>();
+
+                if(message == null)
+                    throw new Exception($"Message of type {typeof(TMessageType).Name} was null");
+
                 processor.SendMessage(message, applicationProperties: applicationProperties).GetAwaiter().GetResult();
             });
 

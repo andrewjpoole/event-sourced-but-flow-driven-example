@@ -8,7 +8,7 @@
 
 	<ItemGroup>
 		<PackageReference Include="Azure.Messaging.ServiceBus" Version="7.19.0" />
-		<PackageReference Include="Dapper" Version="2.1.66" />
+		<PackageReference Include="Dapper" Version="2.1.66" />		
 		<PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="9.0.4" />
 		<PackageReference Include="Microsoft.Extensions.Azure" Version="1.11.0" />		
 		<PackageReference Include="Polly" Version="8.5.2" />
@@ -22,6 +22,12 @@
 
 	<ItemGroup>
 	  <ProjectReference Include="..\WeatherApp.Application\WeatherApp.Application.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\WeatherApp.SourceGenerators\WeatherApp.SourceGenerators.csproj" 
+                      OutputItemType="Analyzer"
+                      ReferenceOutputAssembly="false" />
 	</ItemGroup>
 
 </Project>

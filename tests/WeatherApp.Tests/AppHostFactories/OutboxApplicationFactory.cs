@@ -3,9 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Moq;
-using WeatherApp.Application.Models.IntegrationEvents.WeatherModelingEvents;
-using WeatherApp.Infrastructure.Persistence;
-using WeatherApp.Tests.Framework.ServiceBus;
+using WeatherApp.Infrastructure.Outbox;
 
 namespace WeatherApp.Tests.AppHostFactories;
 
@@ -15,16 +13,14 @@ public class OutboxApplicationFactory(ComponentTestFixture fixture) : WebApplica
     public HttpClient? HttpClient;
 
     public readonly Mock<ILogger> MockLogger = new();
-    
-    //public Func<EventRepositoryInMemory>? SetSharedEventRepository = null;
+       
 
     // Using CreateHost here instead of ConfigureWebHost because CreateHost adds config just after WebApplication.CreateBuilder(args) is called
     // whereas ConfigureWebHost is called too late just before builder.Build() is called.
     protected override IHost CreateHost(IHostBuilder builder)
-    {
-        Environment.SetEnvironmentVariable("ServiceBus__Outbound__Names__ModelingDataAcceptedIntegrationEvent", typeof(DummyIntegrationEvent).GetDummyQueueName());                
-        Environment.SetEnvironmentVariable("ServiceBusSettings__FullyQualifiedNamespace", "component-test-servicebus-namespace");
+    {        
         Environment.SetEnvironmentVariable("ConnectionStrings__WeatherAppDb", "dummyConnectionString");
+        Environment.SetEnvironmentVariable($"{nameof(OutboxProcessorOptions)}__{nameof(OutboxProcessorOptions.IntervalBetweenBatchesInSeconds)}", "15");
 
         builder
             .ConfigureServices(services =>

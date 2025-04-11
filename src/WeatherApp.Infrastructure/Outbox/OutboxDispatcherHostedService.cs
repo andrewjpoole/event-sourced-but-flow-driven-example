@@ -28,18 +28,38 @@ public class OutboxDispatcherHostedService(
     private readonly TimeProvider timeProvider = timeProvider;
     private readonly OutboxProcessorOptions options = options.Value;
 
+    private CancellationTokenSource? cancellationTokenSource;
+    private Task? backgroundTask;
+
     private static readonly ActivitySource Activity = new(nameof(OutboxDispatcherHostedService));
     private static readonly TextMapPropagator Propagator = Propagators.DefaultTextMapPropagator;
     
     public Task StartAsync(CancellationToken cancellationToken)
     {
-        // Logic to start the outbox dispatcher service
-        while(cancellationToken.IsCancellationRequested == false)
+        logger.LogInformation("Starting OutboxDispatcherHostedService...");
+
+        cancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+
+        // Start the background task
+        backgroundTask = Task.Run(() => RunBackgroundTaskAsync(cancellationTokenSource.Token), cancellationTokenSource.Token);
+
+        return Task.CompletedTask;
+    }
+
+    public Task StopAsync(CancellationToken cancellationToken)
+    {
+        // Logic to stop the outbox dispatcher service
+        return Task.CompletedTask;
+    }
+
+    private async Task RunBackgroundTaskAsync(CancellationToken cancellationToken)
+    {
+        while (!cancellationToken.IsCancellationRequested)
         {
             try
             {
-                Task.Delay(TimeSpan.FromSeconds(options.IntervalBetweenBatchesInSeconds), cancellationToken).Wait(cancellationToken);
-                ProcessOutboxBatchAsync(options.BatchSize, cancellationToken).Wait(cancellationToken);
+                await Task.Delay(TimeSpan.FromSeconds(options.IntervalBetweenBatchesInSeconds), cancellationToken);
+                await ProcessOutboxBatchAsync(options.BatchSize, cancellationToken);
             }
             catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
             {
@@ -51,17 +71,10 @@ public class OutboxDispatcherHostedService(
                 logger.LogError(ex, "Error processing outbox batch");
             }
         }
-
-        return Task.CompletedTask;
     }
 
-    public Task StopAsync(CancellationToken cancellationToken)
-    {
-        // Logic to stop the outbox dispatcher service
-        return Task.CompletedTask;
-    }
 
-    public async Task ProcessOutboxBatchAsync(int batchSize, CancellationToken cancellationToken)
+    private async Task ProcessOutboxBatchAsync(int batchSize, CancellationToken cancellationToken)
     {
         using var connection = dbConnectionFactory.Create();
         var transaction = connection.BeginTransaction();

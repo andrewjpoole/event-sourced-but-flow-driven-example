@@ -23,7 +23,7 @@ public class Program
         app.MapPost("/v1/contributor-payments/{contributorId}/pending", (Guid contributorId, [FromBody] PendingContributorPayment payment) =>
         {
             logger.LogInformation("Received pending payment request for Contributor ID: {ContributorId} PaymentId: {PaymentId} Amount: {Amount}", contributorId, payment.PaymentId, payment.Amount);
-            return Results.Ok(new { ContributorId = contributorId, PaymentId = payment.PaymentId, Status = "Pending" });
+            return Results.Ok(new { ContributorId = contributorId, payment.PaymentId, Status = "Pending" });
         });
 
         app.MapPost("/v1/contributor-payments/{contributorId}/revoke/{paymentId}", (Guid contributorId, Guid paymentId) =>

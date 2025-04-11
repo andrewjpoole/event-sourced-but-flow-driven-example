@@ -8,7 +8,7 @@ public class OutboxItemFactory(IOptions<ServiceBusOutboundOptions> options) : IO
 {
     private readonly ServiceBusOutboundOptions serviceBusOptions = options.Value;
 
-    public OutboxItem Create<T>(T messageObject, string? messagingEntityName = null)
+    public OutboxItem Create<T>(T messageObject, string associatedId, string? messagingEntityName = null)
     {
         var type = typeof(T);
         if(messagingEntityName == null)
@@ -19,6 +19,7 @@ public class OutboxItemFactory(IOptions<ServiceBusOutboundOptions> options) : IO
 
         return new OutboxItem(
             OutboxConstants.NoIdYet,
+            associatedId,
             type.Name,
             JsonSerializer.Serialize(messageObject),
             messagingEntityName,
