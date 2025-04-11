@@ -1,54 +1,66 @@
-﻿using System.Collections.Immutable;
+using System.Collections.Immutable;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
 using System.Text;
-using System.Linq;
 
 [Generator]
-public class EntityNamesSourceGenerator : IIncrementalGenerator
+public class AutoGenerateImmutableDictionyFromConstantsGenerator : IIncrementalGenerator
 {
+
+private const string AttributeName = "AutoGenerateImmutableDictionyFromConstantsAttribute";
+
+public const string Attribute = @"
+namespace WeatherApp.SounrceGenerators;
+
+[AttributeUsage(AttributeTargets.Class, Inherited = false, AllowMultiple = false)]
+public sealed class AutoGenerateImmutableDictionyFromConstantsAttribute : Attribute
+{
+}
+";
+
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {
-        // Register a syntax provider to find the EntityNames class
-        var classDeclarations = context.SyntaxProvider
+        // Add the marker attribute to the compilation
+        context.RegisterPostInitializationOutput(ctx => ctx.AddSource(
+            "AutoGenerateImmutableDictionyFromConstantsAttribute.g.cs", 
+            SourceText.From(Attribute, Encoding.UTF8)));
+
+        // Register a syntax provider to find suitable classes
+        IncrementalValuesProvider<ClassInfo?> targets = context.SyntaxProvider
             .CreateSyntaxProvider(
-                predicate: static (node, _) => IsEntityNamesClass(node),
+                predicate: static (node, _) => IsSyntaxTargetForGeneration(node),
                 transform: static (context, _) => GetClassInfo(context))
             .Where(static classInfo => classInfo is not null);
-
-        // Combine all class declarations into a single collection
-        var combinedClassDeclarations = classDeclarations.Collect();
-
+       
         // Register the source output
-        context.RegisterSourceOutput(combinedClassDeclarations, static (context, classes) =>
-        {
-            foreach (var classInfo in classes)
-            {
-                if (classInfo is not null)
-                {
-                    var source = GeneratePartialClass(classInfo);
-                    context.AddSource($"{classInfo.ClassName}_Generated.cs", SourceText.From(source, Encoding.UTF8));
-                }
-            }
-        });
+        context.RegisterSourceOutput(targets,
+            static (spc, source) => Execute(source, spc));
     }
 
-    private static bool IsEntityNamesClass(SyntaxNode node)
+    private static void Execute(ClassInfo? classInfo, SourceProductionContext context)
     {
-        // Check if the node is a class declaration
-        return node is ClassDeclarationSyntax classDeclaration &&
-               classDeclaration.Identifier.Text == "EntityNames";
+        if(classInfo is null)
+            return;
+
+        var source = GeneratePartialClass(classInfo);
+        context.AddSource($"{classInfo.ClassName}_Generated.g.cs", SourceText.From(source, Encoding.UTF8));
     }
+
+    // Needs to be very fast, no linq.
+    static bool IsSyntaxTargetForGeneration(SyntaxNode node)
+    => node is ClassDeclarationSyntax m && m.AttributeLists.Count > 0;
+    
 
     private static ClassInfo? GetClassInfo(GeneratorSyntaxContext context)
     {
-        // Ensure the symbol is a class and matches the desired namespace
+        // Ensure the symbol is a class and has the desired attribute...
         if (context.Node is ClassDeclarationSyntax classDeclaration &&
             context.SemanticModel.GetDeclaredSymbol(classDeclaration) is INamedTypeSymbol classSymbol &&
-            classSymbol.Name == "EntityNames" &&
-            classSymbol.ContainingNamespace.ToDisplayString() == "WeatherApp.Infrastructure.Messaging")
+            classSymbol.GetAttributes().Any(attr =>
+                attr.AttributeClass?.Name == AttributeName))
         {
+            // Get the constants and build the dictionary...
             var constants = classSymbol.GetMembers()
                 .OfType<IFieldSymbol>()
                 .Where(f => f.IsConst && f.Type.SpecialType == SpecialType.System_String)
@@ -74,7 +86,7 @@ public class EntityNamesSourceGenerator : IIncrementalGenerator
         sb.AppendLine();
         sb.AppendLine($"public static partial class {classInfo.ClassName}");
         sb.AppendLine("{");
-        sb.AppendLine("    public static readonly IReadOnlyDictionary<string, string> EntityNameDictionary = new Dictionary<string, string>");
+        sb.AppendLine("    public static readonly IReadOnlyDictionary<string, string> ConstantsDictionary = new Dictionary<string, string>");
         sb.AppendLine("    {");
 
         foreach (var constant in classInfo.Constants)
@@ -85,7 +97,7 @@ public class EntityNamesSourceGenerator : IIncrementalGenerator
         sb.AppendLine("    }.ToImmutableDictionary();");
         sb.AppendLine("}");
         return sb.ToString();
-    }
+    }    
 
     private class ClassInfo
     {

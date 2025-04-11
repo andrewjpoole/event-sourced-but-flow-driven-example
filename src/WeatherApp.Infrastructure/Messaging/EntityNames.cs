@@ -1,5 +1,8 @@
+using WeatherApp.SounrceGenerators;
+
 namespace WeatherApp.Infrastructure.Messaging;
 
+[AutoGenerateImmutableDictionyFromConstants]
 public static partial class EntityNames
 {
     // Any constants defined here will be placed inside an ImmutableDictionary in a partial class by a source generator.
@@ -18,7 +21,7 @@ public static partial class EntityNames
 
     public static string GetEntityNameFromTypeName(Type type)
     {
-        if (EntityNameDictionary.TryGetValue(type.Name, out var entityName))        
+        if (ConstantsDictionary.TryGetValue(type.Name, out var entityName))        
             return entityName;        
 
         throw new ArgumentException($"Unknown type name: {type.Name}");
@@ -26,7 +29,7 @@ public static partial class EntityNames
 
     public static string GetTypeNameFromEntityName(string entityName)
     {
-        var typeName = EntityNameDictionary.FirstOrDefault(kvp => kvp.Value == entityName).Key;
+        var typeName = ConstantsDictionary.FirstOrDefault(kvp => kvp.Value == entityName).Key;
 
         if (typeName is not null)        
             return typeName;        
