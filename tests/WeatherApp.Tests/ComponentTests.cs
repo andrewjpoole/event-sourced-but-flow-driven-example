@@ -1,5 +1,5 @@
 using System.Net;
-using FluentAssertions;
+using NUnit.Framework;
 using WeatherApp.Application.Models;
 using WeatherApp.Application.Models.IntegrationEvents.WeatherModelingEvents;
 using WeatherApp.Application.Models.Requests;
@@ -7,9 +7,18 @@ using WeatherApp.Domain.DomainEvents;
 
 namespace WeatherApp.Tests;
 
-public class ComponentTests(ComponentTestFixture testFixture) : IClassFixture<ComponentTestFixture>
+[TestFixture]
+public class ComponentTests
 {
-    [Fact]
+    private ComponentTestFixture testFixture;
+
+    [SetUp]
+    public void Setup()
+    {
+        testFixture = new ComponentTestFixture();
+    }
+
+    [Test]
     public void Return_a_WeatherReport_given_valid_region_and_date()
     {
         var (given, when, then) = testFixture.SetupHelpers();
@@ -21,10 +30,10 @@ public class ComponentTests(ComponentTestFixture testFixture) : IClassFixture<Co
 
         then.TheResponseCodeShouldBe(response, HttpStatusCode.OK)
             .And.TheBodyShouldNotBeEmpty<WeatherReportResponse>(response, 
-                x => x.Summary.Should().NotBeEmpty());
+                x => Assert.That(x.Summary, Is.Not.Empty));
     }
 
-    [Fact]
+    [Test]
     public void e2e_flow_notifications_sent_when_ModelingDataAccepted()
     {
         var (given, when, then) = testFixture.SetupHelpers();
@@ -58,8 +67,14 @@ public class ComponentTests(ComponentTestFixture testFixture) : IClassFixture<Co
             .And.AnOutboxRecordWasInserted();
 
         then.InPhase("4 (Notification Service handles event dispached by outbox)")
-            .AfterSomeTimeHasPassed(5_000, 2_000)
+            .AfterSomeTimeHasPassed(2_000, 1_000)
             .And.TheMessageWasHandled<ModelUpdatedIntegrationEvent>()
             .And.TheNotificationServiceNotifiedTheUser(testLocation, testReference);
+    }
+
+    [TearDown]
+    public void TearDown()
+    {
+        testFixture.Dispose();
     }
 }

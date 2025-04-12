@@ -1,9 +1,7 @@
 using System.Net;
 using System.Text.Json;
 using Azure.Messaging.ServiceBus;
-using FluentAssertions;
-using Microsoft.Extensions.Logging;
-using Microsoft.VisualStudio.TestPlatform.CommunicationUtilities;
+using NUnit.Framework;
 using Moq;
 using Moq.Contrib.HttpClient;
 using WeatherApp.Domain.EventSourcing;
@@ -28,24 +26,22 @@ public class Then(ComponentTestFixture fixture)
 
     public Then TheResponseCodeShouldBe(HttpResponseMessage response, HttpStatusCode code)
     {
-        response.Should().NotBeNull();
-        response.StatusCode.Should().Be(code, $"In {fixture.CurrentPhase}, expected that the response code was {code}.");
+        Assert.That(response, Is.Not.Null);
+        Assert.That(response.StatusCode, Is.EqualTo(code), $"In {fixture.CurrentPhase}, expected that the response code was {code}.");        
         return this;
     }
 
     public Then TheBodyShouldBeEmpty(HttpResponseMessage response)
     {
         var body = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
-        body.Should().BeEmpty($"{fixture.CurrentPhase}expected that the response body would be empty.");
-
+        Assert.That(body, Is.Empty, $"{fixture.CurrentPhase}expected that the response body would be empty.");
         return this;
     }
 
     public Then TheBodyShouldNotBeEmpty(HttpResponseMessage response, out string body)
     {
         body = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
-        body.Should().NotBeEmpty($"{fixture.CurrentPhase}expected that the response body would not be empty.");
-
+        Assert.That(body, Is.Not.Empty, $"{fixture.CurrentPhase}expected that the response body would not be empty.");
         return this;
     }
 
@@ -91,7 +87,8 @@ public class Then(ComponentTestFixture fixture)
     {
         var typeOfT = typeof(T);
         var eventClassName = typeOfT.FullName ?? typeOfT.Name;
-        fixture.EventRepositoryInMemory?.PersistedEvents.Should().Contain(e => e.EventClassName == eventClassName,
+
+        Assert.That(fixture.EventRepositoryInMemory?.PersistedEvents, Has.Some.Matches<Event>(e => e.EventClassName == eventClassName),
             $"\n{fixture.CurrentPhase}expected an event of type {eventClassName} to have been persisted in the database.");
 
         return this;
@@ -132,9 +129,12 @@ public class Then(ComponentTestFixture fixture)
     public Then TheMessageWasHandled<TIntegrationEvent>() where TIntegrationEvent : class
     {
         var processor = fixture.MockServiceBus.GetProcessorFor<TIntegrationEvent>();
-        processor.MessageDeliveryAttempts.Count.Should().Be(1, $"{fixture.CurrentPhase}expected the NotificationService to have handled the event {typeof(TIntegrationEvent).Name}.");
-
-        processor.MessageDeliveryAttempts[0].WasCompleted.Should().BeTrue($"{fixture.CurrentPhase}expected the NotificationService to have handled the event {typeof(TIntegrationEvent).Name}.");
+        var deliveryCount = processor.MessageDeliveryAttempts.Count;
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(deliveryCount, Is.EqualTo(1), $"{fixture.CurrentPhase}expected the ServiceBusProcesser<{typeof(TIntegrationEvent).Name}> to have had a single delivery attempt, instead found {deliveryCount}.");
+            Assert.That(processor.MessageDeliveryAttempts[0].WasCompleted, Is.True, $"{fixture.CurrentPhase}expected the NotificationService to have handled the event {typeof(TIntegrationEvent).Name}.");
+        }
 
         return this;
     }
@@ -143,12 +143,15 @@ public class Then(ComponentTestFixture fixture)
     {
         var realSentNotifications = fixture.NotificationServiceFactory.RealSentNotifications;
 
-        realSentNotifications.Should().NotBeNull($"{fixture.CurrentPhase}expected the NotificationService to have instantiated it's SentNoticiations list.");
-        realSentNotifications.Count.Should().Be(1, $"{fixture.CurrentPhase}expected SentNotifications list to contain a single item.");
-        realSentNotifications[0].Reference.Should().Be(reference, $"{fixture.CurrentPhase}expected the SentNotification to have the reference {reference}.");
+        Assert.That(realSentNotifications, Is.Not.Null, $"{fixture.CurrentPhase}expected the NotificationService to have instantiated its SentNotifications list.");
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(realSentNotifications!.Count, Is.EqualTo(1), $"{fixture.CurrentPhase}expected SentNotifications list to contain a single item.");
+            Assert.That(realSentNotifications[0].Reference, Is.EqualTo(reference), $"{fixture.CurrentPhase}expected the SentNotification to have the reference {reference}.");
 
-        var expectedBody = "Dear user, your data has been submitted and included in our latest model";
-        realSentNotifications[0].Body.Should().Be(expectedBody, $"{fixture.CurrentPhase}expected the SentNotification to have expected body.");
+            var expectedBody = "Dear user, your data has been submitted and included in our latest model";
+            Assert.That(realSentNotifications[0].Body, Is.EqualTo(expectedBody), $"{fixture.CurrentPhase}expected the SentNotification to have the expected body.");
+        }
 
         return this;
     }
