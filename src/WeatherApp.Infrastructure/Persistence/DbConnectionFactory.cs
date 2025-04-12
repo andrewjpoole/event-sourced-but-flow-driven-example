@@ -12,7 +12,7 @@ public class DbConnectionFactory(
     IServiceScopeFactory serviceScopeFactory    
     ) : IDbConnectionFactory
 {
-    public RetryableConnection Create()
+    public IRetryableConnection Create()
     {
         try
         {

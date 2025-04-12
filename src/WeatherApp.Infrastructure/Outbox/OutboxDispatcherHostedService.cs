@@ -58,7 +58,7 @@ public class OutboxDispatcherHostedService(
         {
             try
             {
-                await Task.Delay(TimeSpan.FromSeconds(options.IntervalBetweenBatchesInSeconds), cancellationToken);
+                await Task.Delay(TimeSpan.FromSeconds(options.IntervalBetweenBatchesInSeconds), timeProvider, cancellationToken);
                 await ProcessOutboxBatchAsync(options.BatchSize, cancellationToken);
             }
             catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
@@ -69,6 +69,7 @@ public class OutboxDispatcherHostedService(
             catch (Exception ex)
             {
                 logger.LogError(ex, "Error processing outbox batch");
+                throw;
             }
         }
     }

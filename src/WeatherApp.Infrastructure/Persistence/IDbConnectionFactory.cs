@@ -4,5 +4,5 @@ namespace WeatherApp.Infrastructure.Persistence;
 
 public interface IDbConnectionFactory
 {
-    RetryableConnection Create();
+    IRetryableConnection Create();
 }

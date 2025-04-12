@@ -7,7 +7,7 @@ using Polly;
 
 namespace WeatherApp.Infrastructure.RetryableDapperConnection;
 
-public class RetryableConnection :IRetryableConnection
+public class RetryableConnection : IRetryableConnection
 {
     private readonly IDbConnection connection;
     private readonly ILogger logger;

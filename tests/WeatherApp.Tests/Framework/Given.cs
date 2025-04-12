@@ -37,11 +37,12 @@ public class Given(ComponentTestFixture fixture)
         fixture.ApiFactory.Start();
         fixture.NotificationServiceFactory.Start();
         fixture.EventListenerFactory.Start();
-        //fixture.OutboxApplicationFactory.Start();
+        fixture.OutboxApplicationFactory.Start();
 
         // Replace the httpClient in eventlistener's IoC container with the in-memory one from the NotificationServiceFactory.
         //fixture.EventListenerFactory.ClearHttpClients();
-        //fixture.EventListenerFactory.AddHttpClient(typeof(INotificationsClient).FullName!, fixture.NotificationServiceFactory.HttpClient!); 
+        //fixture.EventListenerFactory.AddHttpClient(typeof(INotificationsClient).FullName!, fixture.NotificationServiceFactory.HttpClient!);
+        
         return this;
     }
 
@@ -77,7 +78,7 @@ public class Given(ComponentTestFixture fixture)
             .SetupRequest(HttpMethod.Post, 
                 r => r.RequestUri!.ToString().StartsWith($"{Constants.BaseUrl}{Constants.ContributorPaymentsServiceUriStart}") 
                 && r.RequestUri!.ToString().Contains("revoke"))
-            .Returns(async (HttpRequestMessage request, CancellationToken ct) => 
+            .Returns((HttpRequestMessage request, CancellationToken ct) => 
             {                
                 var contributorId = GetSegmentFromPath(2, request);
                 var paymentId = GetSegmentFromPath(4, request);
@@ -93,7 +94,7 @@ public class Given(ComponentTestFixture fixture)
             .SetupRequest(HttpMethod.Post, 
                 r => r.RequestUri!.ToString().StartsWith($"{Constants.BaseUrl}{Constants.ContributorPaymentsServiceUriStart}") 
                 && r.RequestUri!.ToString().Contains("commit"))
-           .Returns(async (HttpRequestMessage request, CancellationToken ct) => 
+           .Returns((HttpRequestMessage request, CancellationToken ct) => 
             {                
                 var contributorId = GetSegmentFromPath(2, request);
                 var paymentId = GetSegmentFromPath(4, request);

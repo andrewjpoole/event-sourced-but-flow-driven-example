@@ -72,7 +72,7 @@ public class EventPersistenceService(
     public async Task<OneOf<WeatherDataCollectionAggregate, Failure>> AppendModelUpdatedEventAndCreateOutboxItem(WeatherDataCollectionAggregate weatherDataCollectionAggregate)
     {
         var userNotificationEvent = new UserNotificationEvent(
-            $"Dear user, your data has been submitted and included in our latest model", 
+            "Dear user, your data has been submitted and included in our latest model", 
             weatherDataCollectionAggregate.Reference,
             timeProvider.GetUtcNow());
 

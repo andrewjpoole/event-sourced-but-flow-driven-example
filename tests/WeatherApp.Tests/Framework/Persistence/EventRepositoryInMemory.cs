@@ -1,11 +1,15 @@
-﻿using WeatherApp.Domain.EventSourcing;
+using Moq;
+using WeatherApp.Domain.EventSourcing;
+using WeatherApp.Infrastructure.Persistence;
 using WeatherApp.Infrastructure.RetryableDapperConnection;
 
-namespace WeatherApp.Infrastructure.Persistence;
+namespace WeatherApp.Tests.e2eComponentTests.Framework.Persistence;
 
 public class EventRepositoryInMemory : IEventRepository
 {
     public List<PersistedEvent> PersistedEvents { get; } = [];
+
+    public List<FakeDbTransactionWrapped> Transactions { get; } = new();
     
     public Task<PersistedEventResult> InsertEvent(Event @event)
     {
@@ -32,14 +36,39 @@ public class EventRepositoryInMemory : IEventRepository
 
     public Task<PersistedEventResult> InsertEvent(Event @event, IDbTransactionWrapped transaction)
     {
-        throw new NotImplementedException();
+        return InsertEvent(@event);
     }
 
     public IDbTransactionWrapped BeginTransaction()
     {
-        throw new NotImplementedException();
+        var transaction = new FakeDbTransactionWrapped();
+        Transactions.Add(transaction);
+        return transaction;
     }
 }
 
+public class FakeDbTransactionWrapped : IDbTransactionWrapped
+{
+    public bool WasCommitted { get; private set; } = false;
+    public bool WasRolledBack { get; private set; } = false;
 
+    public void Commit()
+    {
+        WasCommitted = true;
+    }
 
+    public IRetryableConnection GetConnection()
+    {
+        return new Mock<IRetryableConnection>().Object;
+    }
+
+    public void Rollback()
+    {
+        WasRolledBack = true;
+    }
+
+    public System.Data.IDbTransaction ToIDbTransaction()
+    {
+        return new Mock<System.Data.IDbTransaction>().Object;
+    }
+}

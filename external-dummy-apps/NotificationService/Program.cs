@@ -16,6 +16,7 @@ public class Program
         builder.AddAzureServiceBusClient(connectionName: "asb");
 
         builder.Services
+            .AddSingleton<SentNotifications>()
             .AddServiceBusInboundQueueHandlerOptions(builder.Configuration)
             .AddSingleton(x => TimeProvider.System)
             .AddHostedServiceBusEventListener<UserNotificationEvent, UserNotificationEventHandler>();
@@ -26,22 +27,27 @@ public class Program
     }
 }
 
-public class UserNotificationEventHandler(ILogger<UserNotificationEventHandler> logger) : IEventHandler<UserNotificationEvent>
+public class UserNotificationEventHandler(ILogger<UserNotificationEventHandler> logger, SentNotifications sentNotifications) : IEventHandler<UserNotificationEvent>
 {
     private static readonly ActivitySource Activity = new(nameof(UserNotificationEventHandler));
     public async Task HandleEvent(UserNotificationEvent @event)
     {
          using (var activity = Activity.StartActivity("User Notication Sent", ActivityKind.Producer))
          {
-                activity?.SetTag("user-notification-event.body", @event.Body);
-                activity?.SetTag("user-notification-event.reference", @event.Reference);
-                activity?.SetTag("user-notification-event.timestamp", @event.Timestamp.ToString("o"));
-         }
+            activity?.SetTag("user-notification-event.body", @event.Body);
+            activity?.SetTag("user-notification-event.reference", @event.Reference);
+            activity?.SetTag("user-notification-event.timestamp", @event.Timestamp.ToString("o"));
 
-        logger.LogInformation("User Notification Sent! {Reference}\nBody: {Body}\n@{Timestamp}", @event.Body, @event.Reference, @event.Timestamp);
-        return;
+            sentNotifications.Add(@event);
+
+            logger.LogInformation("User Notification Sent! {Reference}\nBody: {Body}\n@{Timestamp}", @event.Body, @event.Reference, @event.Timestamp);
+        
+            return;
+        }
     }
 }
 
-
-
+public class SentNotifications : List<UserNotificationEvent>
+{
+    public SentNotifications() : base() {}    
+}

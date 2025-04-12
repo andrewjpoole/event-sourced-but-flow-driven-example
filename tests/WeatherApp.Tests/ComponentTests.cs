@@ -55,7 +55,11 @@ public class ComponentTests(ComponentTestFixture testFixture) : IClassFixture<Co
             .AMessageAppears(message: new ModelUpdatedIntegrationEvent(responseBody.RequestId));
 
         then.TheEventShouldHaveBeenPersisted<ModelUpdated>()
-            .And.ANotificationShouldHaveBeenSent(testLocation);
+            .And.AnOutboxRecordWasInserted();
 
+        then.InPhase("4 (Notification Service handles event dispached by outbox)")
+            .AfterSomeTimeHasPassed(5_000, 2_000)
+            .And.TheMessageWasHandled<ModelUpdatedIntegrationEvent>()
+            .And.TheNotificationServiceNotifiedTheUser(testLocation, testReference);
     }
 }

@@ -6,12 +6,16 @@ I use it to try things out, to demonstrate things in talks and to share with any
 
 ## Interesting things in this repo:
 
-- fluent method chaining to create super clear orchestration code
-- use of OneOf discriminated unions library to avoid use of exceptions for non-exception scenarios
-- e2e component tests (lots of cool stuff in here😁)
-- retryable Dapper db connection with transactions
-- event sourcing using a SQL table
-- (coming soon) integration tests which setup your local dev environment for you!
+- Fluent method chaining to create super clear orchestration code
+- Use of OneOf discriminated unions library to avoid use of exceptions for non-exception scenarios
+- E2e component tests (lots of cool stuff in here😁)
+    - Using FakeTimeProvider to control the time during tests
+- Retryable Dapper db connection with transactions
+- Event sourcing using a SQL table of domain events
+- Aspire providing a sublime local dev experience
+- OTEL tracing
+- Integration tests
+- A Source Generator which will take constants and place them in an immutable dictionary in a partial class, for classes decorated with an attribute, very handy for service bus Type -> entity name mapping 😊
 
 ## Scenario outline
 

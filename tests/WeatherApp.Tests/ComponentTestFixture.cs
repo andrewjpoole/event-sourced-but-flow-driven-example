@@ -1,9 +1,10 @@
+using Microsoft.Extensions.Time.Testing;
 using Moq;
 using WeatherApp.Application.Models.IntegrationEvents.NotificationEvents;
 using WeatherApp.Application.Models.IntegrationEvents.WeatherModelingEvents;
 using WeatherApp.Infrastructure.Messaging;
-using WeatherApp.Infrastructure.Persistence;
 using WeatherApp.Tests.AppHostFactories;
+using WeatherApp.Tests.e2eComponentTests.Framework.Persistence;
 using WeatherApp.Tests.Framework;
 using WeatherApp.Tests.Framework.ServiceBus;
 
@@ -15,28 +16,51 @@ public class ComponentTestFixture : IDisposable
 
     public readonly ApiWebApplicationFactory ApiFactory;
     public readonly EventListenerWebApplicationFactory EventListenerFactory;
+    public readonly OutboxApplicationFactory OutboxApplicationFactory;
     public readonly NotificationServiceWebApplicationFactory NotificationServiceFactory;
-    //public readonly OutboxApplicationFactory OutboxApplicationFactory;
+
+    public readonly FakeTimeProvider FakeTimeProvider;
     
     public readonly MockServiceBus MockServiceBus;
 
     public EventRepositoryInMemory EventRepositoryInMemory = new();
 
-    public readonly Mock<HttpMessageHandler> MockContributorPaymentsServiceHttpMessageHandler = new();
+    public OutboxRepositoryInMemory OutboxRepositoryInMemory = new();
+
+    public readonly Mock<HttpMessageHandler> MockContributorPaymentsServiceHttpMessageHandler = new(MockBehavior.Strict);
 
     public ComponentTestFixture()
     {
-        ApiFactory = new(this) { SetSharedEventRepository = () => EventRepositoryInMemory };
-        EventListenerFactory = new(this) { SetSharedEventRepository = () => EventRepositoryInMemory };
-        NotificationServiceFactory = new();
-        //OutboxApplicationFactory = new(this);
+        ApiFactory = new(this) 
+        { 
+            SetSharedEventRepository = () => EventRepositoryInMemory 
+        };
+        EventListenerFactory = new(this) 
+        { 
+            SetSharedEventRepository = () => EventRepositoryInMemory,
+            SetSharedOutboxRepositories = () => OutboxRepositoryInMemory
+        };
+        OutboxApplicationFactory = new(this) 
+        { 
+            SetSharedOutboxRepositories = () => OutboxRepositoryInMemory 
+        };
+        NotificationServiceFactory = new(this);
 
-        MockServiceBus = new MockServiceBus(entityName => EntityNames.GetTypeNameFromEntityName(entityName), type => EntityNames.GetEntityNameFromTypeName(type));
+        MockServiceBus = new MockServiceBus(
+            entityName => EntityNames.GetTypeNameFromEntityName(entityName), 
+            type => EntityNames.GetEntityNameFromTypeName(type));
+
         MockServiceBus.AddSenderFor<UserNotificationEvent>();
         MockServiceBus.AddProcessorFor<ModelingDataAcceptedIntegrationEvent>();
         MockServiceBus.AddProcessorFor<ModelingDataRejectedIntegrationEvent>();
         MockServiceBus.AddProcessorFor<ModelUpdatedIntegrationEvent>();
         MockServiceBus.AddProcessorFor<UserNotificationEvent>();
+
+        MockServiceBus.MessagesSentToSendersWillBeReceivedOnCorrespondingProcessors();
+        
+        FakeTimeProvider = new FakeTimeProvider();
+        FakeTimeProvider.SetUtcNow(TimeProvider.System.GetUtcNow());
+        FakeTimeProvider.AutoAdvanceAmount = TimeSpan.FromMilliseconds(100);
     }
 
     public void Dispose()
