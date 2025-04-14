@@ -105,7 +105,7 @@ public class WeatherDataCollectionAggregate : AggregateRootBase
 
     public async Task<OneOf<WeatherDataCollectionAggregate, Failure>> AppendCommittedContributorPaymentEvent(Guid paymentId)
     {
-        await AppendEvent(new PendingContributorPaymentRevoked(paymentId));
+        await AppendEvent(new PendingContributorPaymentCommitted(paymentId));
         return this;
     }
     

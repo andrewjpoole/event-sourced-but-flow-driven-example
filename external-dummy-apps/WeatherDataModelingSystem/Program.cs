@@ -37,7 +37,7 @@ public class Program
            {
                 logger.LogInformation("Received collected weather data for location: {Location}, submissionId: {SubmissionId}", location, streamId);
 
-                await Task.Delay(5_000); // Simulate some processing time
+                await Task.Delay(1_000); // Simulate some processing time
                 
                 var modelingDataAcceptedIntegrationEvent = new ModelingDataAcceptedIntegrationEvent(streamId);
                 await modelingDataAcceptedIntegrationEventSender.SendAsync(modelingDataAcceptedIntegrationEvent);
@@ -46,7 +46,7 @@ public class Program
                 // Don't await, but after some time simulate sending the ModelUpdatedEvent...
                 _ = Task.Run(async () => 
                 {
-                    await Task.Delay(10_000);
+                    await Task.Delay(3_000);
                     logger.LogInformation("Simulating model update for location: {Location}, submissionId: {SubmissionId}", location, streamId);
                     var modelUpdatedIntegrationEvent = new ModelUpdatedIntegrationEvent(streamId);
                     await modelUpdatedIntegrationEventSender.SendAsync(modelUpdatedIntegrationEvent);

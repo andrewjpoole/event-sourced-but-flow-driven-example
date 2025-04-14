@@ -1,6 +1,4 @@
 @baseUrl = https://localhost:7220
-@fruits = ["Apple", "Banana", "Cherry", "Date", "Elderberry", "Plum", "Grape", "Kiwi", "Lemon", "Mango"]
-@randomReference = {{fruits[$randomInt 0 9]}}-{{$randomInt 0 99}}
 
 ### Health Check
 GET {{baseUrl}}/

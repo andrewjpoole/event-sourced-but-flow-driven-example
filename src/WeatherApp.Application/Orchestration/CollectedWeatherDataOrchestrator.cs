@@ -8,6 +8,7 @@ using WeatherApp.Domain.EventSourcing;
 using WeatherApp.Domain.ServiceDefinitions;
 using Microsoft.Extensions.Logging;
 using WeatherApp.Domain.Logging;
+using System.Diagnostics;
 
 namespace WeatherApp.Application.Orchestration;
 
@@ -30,6 +31,13 @@ public class CollectedWeatherDataOrchestrator(
         ILocationManager locationManager)
     {
         logger.LogReceivedWeatherData(reference, weatherDataLocation);
+
+        var activity = Activity.Current;
+        if (activity != null)
+        {
+            activity.SetTag("weatherDataLocation", weatherDataLocation);
+            activity.SetTag("reference", reference);
+        }
 
         if (weatherDataValidator.Validate(weatherDataModel, out var errors) == false)
             return Task.FromResult(OneOf<WeatherDataCollectionResponse, Failure>
