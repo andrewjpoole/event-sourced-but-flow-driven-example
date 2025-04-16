@@ -28,6 +28,9 @@ public class Program
 
         app.MapGet("/", () => "Outbox Service is running!");
 
+        var pollingInterval = builder.Configuration.GetValue<int>("OutboxProcessorOptions:IntervalBetweenBatchesInSeconds");
+        logger.LogInformation("polling interval: {Interval}", pollingInterval);
+
         await app.RunAsync();
     }
 }

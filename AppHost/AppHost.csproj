@@ -26,7 +26,7 @@
     <ProjectReference Include="..\src\WeatherApp.API\WeatherApp.API.csproj" />
     <ProjectReference Include="..\src\WeatherApp.EventListener\WeatherApp.EventListener.csproj" />
     <ProjectReference Include="..\src\WeatherApp.Outbox\WeatherApp.Outbox.csproj" />
-    <ProjectReference Include="..\database\WeatherAppDb.sqlproj" />
+    <ProjectReference Include="..\database\WeatherAppDb.sqlproj"/>
   </ItemGroup>
   
   <ItemGroup>

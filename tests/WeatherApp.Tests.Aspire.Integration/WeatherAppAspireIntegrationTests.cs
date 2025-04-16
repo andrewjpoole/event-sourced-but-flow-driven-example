@@ -1,6 +1,7 @@
 using System.Text;
 using System.Text.Json;
 using Microsoft.Extensions.Logging;
+using WeatherApp.Tests.Aspire.Integration.Framework;
 
 namespace WeatherApp.Tests.Aspire.Integration;
 
@@ -51,12 +52,7 @@ public class WeatherAppAspireIntegrationTests
             logging.AddFilter(appHost.Environment.ApplicationName, LogLevel.Debug);
             logging.AddFilter("Aspire.", LogLevel.Debug);
         });
-
-        // appHost.Services.ConfigureHttpClientDefaults(clientBuilder =>
-        // {
-        //     clientBuilder.AddStandardResilienceHandler();
-        // });
-    
+            
         await using var app = await appHost.BuildAsync().WaitAsync(DefaultTimeout);
         await app.StartAsync().WaitAsync(DefaultTimeout);
     
@@ -68,17 +64,17 @@ public class WeatherAppAspireIntegrationTests
             ?? throw new InvalidOperationException("Queryable Trace Collector client is not available.");
 
         var location = "TestLocation";
-            var reference = "TestReference";
-            var collectedWeatherData = new CollectedWeatherDataModel(
-                new List<CollectedWeatherDataPointModel>
-                    {
-                        new CollectedWeatherDataPointModel(
-                            DateTimeOffset.UtcNow,
-                            10.5m,
-                            "N",
-                            25.3m,
-                            60.2m)
-                    });
+        var reference = "TestReference";
+        var collectedWeatherData = new CollectedWeatherDataModel(
+            new List<CollectedWeatherDataPointModel>
+                {
+                    new CollectedWeatherDataPointModel(
+                        DateTimeOffset.UtcNow,
+                        10.5m,
+                        "N",
+                        25.3m,
+                        60.2m)
+                });
 
         var body = new StringContent(
             JsonSerializer.Serialize(collectedWeatherData),
@@ -123,26 +119,39 @@ public class WeatherAppAspireIntegrationTests
         Assert.That(traces.Count(x => x.DisplayName == "Outbox Item Insertion"), Is.EqualTo(1), "There should be one Outbox Item Insertion trace.");
         
     }
-}
 
-public record CollectedWeatherDataPointModel(
-    DateTimeOffset time,
-    decimal WindSpeedInMetersPerSecond,
-    string WindDirection,
-    decimal TemperatureReadingInDegreesCelcius,
-    decimal HumidityReadingInPercent
-    );
+    [Test]
+    public void PostWeatherData_EventuallyResultsIn_AUserNotificationBeingSent2()
+    {
+        var (given, when, then) = (new Given(), new When(), new Then());
 
-public record CollectedWeatherDataModel(List<CollectedWeatherDataPointModel> Points);
+        given.WeHaveSetupTheAppHost(out var appHost)
+            .And.WeRunTheAppHost(appHost, out var app, DefaultTimeout)
+            .And.WeCreateAnHttpClientForTheQueryableTraceCollector(app, out var queryableTraceCollectorClient)
+            .And.WeClearAnyCollectedTraces(queryableTraceCollectorClient)
+            .And.WeCreateAnHtppClientForTheAPI(app, out var apiHttpClient, DefaultTimeout)
+            .And.WeHaveSomeCollectedWeatherData(out var location, out var reference, out var collectedWeatherData);
 
-public record WeatherReportResponse(string RequestedRegion, DateTime RequestedDate, Guid RequestId, int Temperature, string Summary);
+        when.WeWrapTheWeatherDataInAnHttpRequest(out var httpRequest, location, reference, collectedWeatherData)
+            .And.WeSendTheRequest(apiHttpClient, httpRequest, out var response); // will return once the synchronous call is done...
+    
+        then.TheResponseShouldBe(response, HttpStatusCode.OK)
+            .And.TheResponseShouldBeOfType<WeatherReportResponse>(response, out var responseBody);
+                
+        when.WeWaitWhilePollingForTheNotificationTrace(queryableTraceCollectorClient, 9, "User Notication Sent", out var traces);
+            
+        then.WeAssertAgainstTheTraces(traces, traces => 
+        {
+            traces.AssertContainsDomainEventInsertionTag("WeatherDataCollectionInitiated");
+            traces.AssertContainsDomainEventInsertionTag("SubmittedToModeling");
+            traces.AssertContainsDomainEventInsertionTag("ModelUpdated");
+            
+            traces.AssertContainsDisplayName("Outbox Item Insertion");
 
-public class TraceData
-{
-    public string Resource { get; set; } = string.Empty;
-    public string Source { get; set; } = string.Empty;
-    public string DisplayName { get; set; } = string.Empty;
-    public string TraceId { get; set; } = string.Empty;
-    public string SpanId { get; set; } = string.Empty;    
-    public Dictionary<string, object?> Tags { get; set; } = new();
+            traces.AssertContains(t => t.DisplayName == "User Notication Sent"
+                && t.ContainsTag("user-notification-event.body", x => x == "Dear user, your data has been submitted and included in our latest model")
+                && t.ContainsTag("user-notification-event.reference", x => x == reference), 
+                "Didn't find the expected user notification trace with the expected tags.");            
+        });        
+    }     
 }

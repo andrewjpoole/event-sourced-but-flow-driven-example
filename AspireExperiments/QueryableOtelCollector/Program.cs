@@ -28,12 +28,17 @@ public class Program
             return repository.GetTraces();
         });
 
+        app.MapGet("/traces/count", ([FromServices]CollectedData repository) => 
+        {
+            return repository.GetCountOfTraces();
+        });
+
         app.MapGet("/traces/{displayName}", ([FromServices]CollectedData repository, string displayName) => 
         {
             return repository.GetTracesByDisplayName(displayName);
-        });
+        });        
 
-        app.MapPost("/traces/clear", ([FromServices]CollectedData repository) => 
+        app.MapDelete("/traces", ([FromServices]CollectedData repository) => 
         {
             repository.Clear();
             return Results.Ok("Traces cleared.");
@@ -62,5 +67,10 @@ public class CollectedData
     public IEnumerable<TraceData> GetTracesByDisplayName(string displayName)
     {
         return activities.Where(a => a.DisplayName == displayName);
+    }
+
+    internal int GetCountOfTraces()
+    {
+        return activities.Count;
     }
 }
