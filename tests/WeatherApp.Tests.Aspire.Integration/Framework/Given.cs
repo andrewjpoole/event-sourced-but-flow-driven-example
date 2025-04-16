@@ -17,13 +17,11 @@ public class Given
         appHost.Resources.FirstOrDefault(x => x.Name == "outbox")?
             .Annotations.Add(new EnvironmentCallbackAnnotation("OutboxProcessorOptions__IntervalBetweenBatchesInSeconds", () => "2"));
 
-        // var subscription = appHost.Eventing.Subscribe<>((@event, ct) => 
+        // var subscription = appHost.Eventing.Subscribe<ResourceReadyEvent>((@event, ct) => 
         // {
-
+        //     return Task.CompletedTask;
         // });
-
-        //appHost.Resources[0].
-
+        
         var appName = appHost.Environment.ApplicationName;
         appHost.Services.AddLogging(logging =>
         {
