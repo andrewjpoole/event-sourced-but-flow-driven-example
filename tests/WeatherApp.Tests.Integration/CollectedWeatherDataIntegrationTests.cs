@@ -7,6 +7,8 @@ using Microsoft.Extensions.Configuration;
 
 namespace WeatherApp.Tests.Integration;
 
+// This test is left intentionally raw to show the steps, 
+// see WeatherAppAspireIntegrationTests.cs for a refactored example using a Given, When & Then framework.
 public class CollectedWeatherDataIntegrationTests
 {
     private HttpClient client = null!;
@@ -49,9 +51,10 @@ public class CollectedWeatherDataIntegrationTests
         var response = await client.PostAsJsonAsync(
             $"/v1/collected-weather-data/{location}/{reference}", collectedWeatherData);
 
-        // Assert
+        // Assert against the response for the synchronous part...
         Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
 
+        // Fetch the StreamId from the response and use it to fetch some domain events...
         var weatherReportResponse = await response.Content.ReadFromJsonAsync<WeatherReportResponse>();
         var streamId = weatherReportResponse?.RequestId;
 
@@ -62,6 +65,7 @@ public class CollectedWeatherDataIntegrationTests
         Assert.That(domainEvents, Is.Not.Null);
         Assert.That(domainEvents.Count(), Is.GreaterThan(0));
 
+        // Now poll the outbox table for the expected events...
         IEnumerable<dynamic>? outboxItems = default;
         for(var attempts = 0; attempts < 20; attempts++)
         {
@@ -78,6 +82,8 @@ public class CollectedWeatherDataIntegrationTests
         Assert.That(outboxItems, Is.Not.Null);
         Assert.That(outboxItems.Count(), Is.EqualTo(1));
         Assert.That(outboxItems.First().Status, Is.EqualTo("Pending"));
+
+        // But how can we assert that the NotificationService picked up the message? 
     }
 
     [TearDown]
@@ -87,18 +93,6 @@ public class CollectedWeatherDataIntegrationTests
         connection.Dispose();
     }
 }
-
-public record CollectedWeatherDataPointModel(
-    DateTimeOffset time,
-    decimal WindSpeedInMetersPerSecond,
-    string WindDirection,
-    decimal TemperatureReadingInDegreesCelcius,
-    decimal HumidityReadingInPercent
-    );
-
-public record CollectedWeatherDataModel(List<CollectedWeatherDataPointModel> Points);
-
-public record WeatherReportResponse(string RequestedRegion, DateTime RequestedDate, Guid RequestId, int Temperature, string Summary);
 
 /*
 In a terminal, cd into the AppHost directory and run `dotnet run`

@@ -6,7 +6,3 @@ public record CollectedWeatherDataPointModel(
     decimal TemperatureReadingInDegreesCelcius,
     decimal HumidityReadingInPercent
     );
-
-public record CollectedWeatherDataModel(List<CollectedWeatherDataPointModel> Points);
-
-public record WeatherReportResponse(string RequestedRegion, DateTime RequestedDate, Guid RequestId, int Temperature, string Summary);

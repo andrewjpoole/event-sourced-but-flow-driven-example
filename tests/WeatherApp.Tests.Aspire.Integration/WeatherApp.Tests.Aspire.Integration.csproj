@@ -16,6 +16,7 @@
     <PackageReference Include="NUnit.Analyzers" Version="4.3.0" />
     <PackageReference Include="NUnit3TestAdapter" Version="4.6.0" />
     <PackageReference Include="OpenTelemetry.Extensions.Hosting" Version="1.11.2" />
+    <PackageReference Include="Aspire.Dashboard" Version="8.0.0-preview.2.23619.3" />
   </ItemGroup>
 
   <ItemGroup>
