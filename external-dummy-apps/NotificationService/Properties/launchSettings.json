@@ -1,13 +1,5 @@
 ﻿{
-  "$schema": "https://json.schemastore.org/launchsettings.json",
-  "iisSettings": {
-    "windowsAuthentication": false,
-    "anonymousAuthentication": true,
-    "iisExpress": {
-      "applicationUrl": "http://localhost:47288",
-      "sslPort": 44370
-    }
-  },
+  "$schema": "https://json.schemastore.org/launchsettings.json",  
   "profiles": {
     "OneOf.Chaining.Examples.WebAPI": {
       "commandName": "Project",
@@ -19,25 +11,18 @@
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
     },
-    "IIS Express": {
-      "commandName": "IISExpress",
-      "launchBrowser": true,
-      "launchUrl": "",
-      "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
-      }
-    },
-    "Docker": {
+    "Container (Dockerfile)": {
       "commandName": "Docker",
-      "launchBrowser": false,
+      "launchBrowser": true,
       "launchUrl": "{Scheme}://{ServiceHost}:{ServicePort}",
       "environmentVariables": {
-        "ASPNETCORE_URLS": "https://+:443;http://+:80",
-        "ASPNETCORE_HTTPS_PORT": "7310"
+        "ASPNETCORE_HTTPS_PORTS": "8081",
+        "ASPNETCORE_HTTP_PORTS": "8080"
       },
+      "publishAllPorts": true,
       "httpPort": 5310,
-      "useSSL": true,
-      "sslPort": 7310
+      "sslPort": 7310,
+      "useSSL": true
     }
   }
 }

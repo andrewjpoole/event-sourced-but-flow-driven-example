@@ -1,21 +1,35 @@
-# Use the official .NET SDK chiselled image to build the application
-FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
+# See https://aka.ms/customizecontainer to learn how to customize your debug container and how Visual Studio uses this Dockerfile to build your images for faster debugging.
+
+# This stage is used when running from VS in fast mode (Default for Debug configuration)
+FROM mcr.microsoft.com/dotnet/aspnet:9.0-noble-chiseled-extra AS base
+USER $APP_UID
 WORKDIR /app
-
-COPY . .
-
-RUN dotnet restore
-
-RUN dotnet publish ./external-dummy-apps/WeatherDataModelingSystem/WeatherDataModelingSystem.csproj -c Release -o out
-
-# Use the official .NET runtime chiselled image to run the application
-FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS runtime
-WORKDIR /app
-COPY --from=build /app/out ./
-
-# Expose the default ports for ASP.NET Core
 EXPOSE 8080
-EXPOSE 443
+EXPOSE 8081
 
-# Set the entry point for the container
+
+# This stage is used to build the service project
+FROM mcr.microsoft.com/dotnet/sdk:9.0-noble AS build
+ARG BUILD_CONFIGURATION=Release
+WORKDIR /src
+COPY ["external-dummy-apps/WeatherDataModelingSystem/WeatherDataModelingSystem.csproj", "external-dummy-apps/WeatherDataModelingSystem/"]
+COPY ["ServiceDefaults/ServiceDefaults.csproj", "ServiceDefaults/"]
+COPY ["src/WeatherApp.Infrastructure/WeatherApp.Infrastructure.csproj", "src/WeatherApp.Infrastructure/"]
+COPY ["src/WeatherApp.Application/WeatherApp.Application.csproj", "src/WeatherApp.Application/"]
+COPY ["src/WeatherApp.Domain/WeatherApp.Domain.csproj", "src/WeatherApp.Domain/"]
+COPY ["src/WeatherApp.SourceGenerators/WeatherApp.SourceGenerators.csproj", "src/WeatherApp.SourceGenerators/"]
+RUN dotnet restore "./external-dummy-apps/WeatherDataModelingSystem/WeatherDataModelingSystem.csproj"
+COPY . .
+WORKDIR "/src/external-dummy-apps/WeatherDataModelingSystem"
+RUN dotnet build "./WeatherDataModelingSystem.csproj" -c $BUILD_CONFIGURATION -o /app/build
+
+# This stage is used to publish the service project to be copied to the final stage
+FROM build AS publish
+ARG BUILD_CONFIGURATION=Release
+RUN dotnet publish "./WeatherDataModelingSystem.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
+
+# This stage is used in production or when running from VS in regular mode (Default when not using the Debug configuration)
+FROM base AS final
+WORKDIR /app
+COPY --from=publish /app/publish .
 ENTRYPOINT ["dotnet", "WeatherDataModelingSystem.dll"]

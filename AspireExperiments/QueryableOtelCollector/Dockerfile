@@ -12,24 +12,24 @@ EXPOSE 8081
 FROM mcr.microsoft.com/dotnet/sdk:9.0-noble AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-COPY ["src/WeatherApp.API/WeatherApp.API.csproj", "src/WeatherApp.API/"]
+COPY ["AspireExperiments/QueryableOtelCollector/QueryableTraceCollector.csproj", "AspireExperiments/QueryableOtelCollector/"]
 COPY ["ServiceDefaults/ServiceDefaults.csproj", "ServiceDefaults/"]
 COPY ["src/WeatherApp.Infrastructure/WeatherApp.Infrastructure.csproj", "src/WeatherApp.Infrastructure/"]
 COPY ["src/WeatherApp.Application/WeatherApp.Application.csproj", "src/WeatherApp.Application/"]
 COPY ["src/WeatherApp.Domain/WeatherApp.Domain.csproj", "src/WeatherApp.Domain/"]
 COPY ["src/WeatherApp.SourceGenerators/WeatherApp.SourceGenerators.csproj", "src/WeatherApp.SourceGenerators/"]
-RUN dotnet restore "./src/WeatherApp.API/WeatherApp.API.csproj"
+RUN dotnet restore "./AspireExperiments/QueryableOtelCollector/QueryableTraceCollector.csproj"
 COPY . .
-WORKDIR "/src/src/WeatherApp.API"
-RUN dotnet build "./WeatherApp.API.csproj" -c $BUILD_CONFIGURATION -o /app/build
+WORKDIR "/src/AspireExperiments/QueryableOtelCollector"
+RUN dotnet build "./QueryableTraceCollector.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
 # This stage is used to publish the service project to be copied to the final stage
 FROM build AS publish
 ARG BUILD_CONFIGURATION=Release
-RUN dotnet publish "./WeatherApp.API.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
+RUN dotnet publish "./QueryableTraceCollector.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
 
 # This stage is used in production or when running from VS in regular mode (Default when not using the Debug configuration)
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "WeatherApp.API.dll"]
+ENTRYPOINT ["dotnet", "QueryableTraceCollector.dll"]
