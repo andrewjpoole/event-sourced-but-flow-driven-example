@@ -28,12 +28,7 @@ serviceBus.RunAsEmulator();
 
 // Aspire Experiments
 var queryabletracecollector = builder.AddProject<QueryableTraceCollector>("queryabletracecollector")
-    .WithExternalHttpEndpoints()
-    .WithEnvironment("Aspire:ServiceDiscovery:AllowedSchemes", "http,https")
-    .WithEnvironment("Aspire:ServiceDiscovery:DefaultScheme", "http")
-    .WithEnvironment("Aspire:ServiceDiscovery:DefaultPort", "80")
-    .WithEnvironment("Aspire:ServiceDiscovery:DefaultHost", "localhost")
-    .WithEnvironment("Aspire:ServiceDiscovery:DefaultPath", "/traces");
+    .WithExternalHttpEndpoints();
 
 // External Dummy Apps
 var contributorPaymentsService = builder.AddProject<ContributorPaymentsService>("contributorpaymentsservice")

@@ -4,7 +4,7 @@ public class ServiceBusOptions
 {
     public Dictionary<string, string> Entities { get; set; } = new();
     public int InitialBackoffInMs { get; set; } = 2000;
-    public int MaxConcurrentCalls { get; set; } = 1;
+    public int MaxConcurrentCalls { get; set; } = 1;    
 
     public string ResolveQueueOrTopicNameFromConfig(string messageClassName)
     {
@@ -25,10 +25,14 @@ public class ServiceBusOptions
 
 public class ServiceBusInboundOptions : ServiceBusOptions
 {
-    public const string SectionName = "ServiceBus:Inbound";
+    public const string SectionName = "ServiceBus__Inbound";
+
+    public static string RuntimeSectionName => SectionName.ToLowerInvariant().Replace("__", ":");
 }
 
 public class ServiceBusOutboundOptions : ServiceBusOptions
 {
-    public const string SectionName = "ServiceBus:Outbound";
+    public const string SectionName = "ServiceBus__Outbound";
+
+    public static string RuntimeSectionName => SectionName.ToLowerInvariant().Replace("__", ":");
 }

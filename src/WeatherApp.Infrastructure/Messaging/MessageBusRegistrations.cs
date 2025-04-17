@@ -33,8 +33,8 @@ public static class MessageBusRegistrations
     }
 
     public static IServiceCollection AddServiceBusOutboundEntityOptions(this IServiceCollection services, IConfiguration configuration)
-    {
-        var serviceBusOutboundEntityOptions = configuration.GetSection(ServiceBusOutboundOptions.SectionName).Get<ServiceBusOutboundOptions>() ??
+    {               
+        var serviceBusOutboundEntityOptions = configuration.GetSection(ServiceBusOutboundOptions.RuntimeSectionName).Get<ServiceBusOutboundOptions>() ??
                                    throw new Exception($"A {nameof(ServiceBusOutboundOptions)} config section is required.");
 
         var outboundServiceBusOptions = Options.Create(serviceBusOutboundEntityOptions);
@@ -45,7 +45,7 @@ public static class MessageBusRegistrations
 
     public static IServiceCollection AddServiceBusInboundQueueHandlerOptions(this IServiceCollection services, IConfiguration configuration)
     {
-        var queueHandlerOptions = configuration.GetSection(ServiceBusInboundOptions.SectionName).Get<ServiceBusInboundOptions>() ??
+        var queueHandlerOptions = configuration.GetSection(ServiceBusInboundOptions.RuntimeSectionName).Get<ServiceBusInboundOptions>() ??
                                   throw new Exception($"A {nameof(ServiceBusInboundOptions)} config section is required.");
 
         var inboundServiceBusOptions = Options.Create(queueHandlerOptions);

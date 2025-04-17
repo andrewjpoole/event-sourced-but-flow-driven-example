@@ -30,3 +30,20 @@ Content-Type: application/json
 }
 
 
+### post to test in azure
+@testBaseUrl = https://api.calmisland-f72e3c36.uksouth.azurecontainerapps.io/
+POST {{testBaseUrl}}/v1/collected-weather-data/Bristol/{{randomReference}}
+Content-Type: application/json
+    
+{
+    "points": [
+        {
+            "time": "{{$datetime iso8601}}",
+            "windSpeedInMetersPerSecond": {{$randomInt 0 69}}.{{$randomInt 0 99}},
+            "windDirection": "N",
+            "temperatureReadingInDegreesCelcius": {{$randomInt -15 40}}.{{$randomInt 0 99}},
+            "humidityReadingInPercent": {{$randomInt 20 100}}
+        }
+    ]
+}
+
