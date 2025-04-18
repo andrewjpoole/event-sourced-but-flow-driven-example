@@ -13,15 +13,11 @@ namespace WeatherApp.Tests.AppHostFactories;
 
 public class EventListenerWebApplicationFactory(ComponentTestFixture fixture) : WebApplicationFactory<EventListener.Program>
 {
-    private readonly ComponentTestFixture fixture = fixture;    
-
     public readonly Mock<ILogger> MockLogger = new();
     public Func<EventRepositoryInMemory>? SetSharedEventRepository = null;
     public Func<OutboxRepositoryInMemory>? SetSharedOutboxRepositories = null;
     public HttpClient? HttpClient;
-    
-    // Using CreateHost here instead of ConfigureWebHost because CreateHost adds config just after WebApplication.CreateBuilder(args) is called
-    // whereas ConfigureWebHost is called too late just before builder.Build() is called
+        
     protected override IHost CreateHost(IHostBuilder builder)
     {        
         Environment.SetEnvironmentVariable($"{ServiceBusInboundOptions.SectionName}__{nameof(ServiceBusInboundOptions.InitialBackoffInMs)}", "2000");
@@ -35,9 +31,7 @@ public class EventListenerWebApplicationFactory(ComponentTestFixture fixture) : 
         builder
             .ConfigureServices(services =>
             {
-                var loggerFactory = new Mock<ILoggerFactory>();
-                loggerFactory.Setup(x => x.CreateLogger(It.IsAny<string>())).Returns(MockLogger.Object);
-                services.AddSingleton(loggerFactory.Object);
+                services.AddMockLogger(MockLogger);
 
                 services.AddSingleton<TimeProvider>(fixture.FakeTimeProvider);
 

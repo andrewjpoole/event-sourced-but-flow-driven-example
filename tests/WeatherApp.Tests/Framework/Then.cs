@@ -118,7 +118,8 @@ public class Then(ComponentTestFixture fixture)
     public Then AfterSomeTimeHasPassed(int numberOfMsToAdvance = 2000, int numberOfMsToWait = 2000)
     {
         // Advance the time so the outbox processor wakes up to check for messages...
-        fixture.FakeTimeProvider.Advance(TimeSpan.FromMilliseconds(numberOfMsToAdvance)); // So cool!😁
+        fixture.FakeTimeProvider.Advance(TimeSpan.FromMilliseconds(numberOfMsToAdvance));
+        // So cool!😁
 
         // Wait for the outbox processor to process the messages. This is not ideal, but it works for now.
         Task.Delay(numberOfMsToWait).GetAwaiter().GetResult();

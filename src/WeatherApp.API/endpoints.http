@@ -7,11 +7,14 @@ GET {{baseUrl}}/
 GET {{baseUrl}}/v1/weather-forecast/Bristol/{{$datetime iso8601}}
 
 
-### Create random reference
+### Create random reference aJzdSBhDwxo1DQZsS69Pzw==TCu4yXoaUcs9Yfa5
 // @name randomWord
 GET https://random-word-api.herokuapp.com/word?length=6
 
 @randomReference = {{randomWord.response.body.$[0]}}{{$randomInt 0 99}}
+
+
+
 
 ### Post collected weather data
 POST {{baseUrl}}/v1/collected-weather-data/Bristol/{{randomReference}}
@@ -29,21 +32,4 @@ Content-Type: application/json
     ]
 }
 
-
-### post to test in azure
-@testBaseUrl = https://api.calmisland-f72e3c36.uksouth.azurecontainerapps.io/
-POST {{testBaseUrl}}/v1/collected-weather-data/Bristol/{{randomReference}}
-Content-Type: application/json
-    
-{
-    "points": [
-        {
-            "time": "{{$datetime iso8601}}",
-            "windSpeedInMetersPerSecond": {{$randomInt 0 69}}.{{$randomInt 0 99}},
-            "windDirection": "N",
-            "temperatureReadingInDegreesCelcius": {{$randomInt -15 40}}.{{$randomInt 0 99}},
-            "humidityReadingInPercent": {{$randomInt 20 100}}
-        }
-    ]
-}
 

@@ -19,31 +19,22 @@ public class ComponentTestFixture : IDisposable
     public readonly OutboxApplicationFactory OutboxApplicationFactory;
     public readonly NotificationServiceWebApplicationFactory NotificationServiceFactory;
 
-    public readonly FakeTimeProvider FakeTimeProvider;
-    
+    public readonly FakeTimeProvider FakeTimeProvider;    
     public readonly MockServiceBus MockServiceBus;
-
     public EventRepositoryInMemory EventRepositoryInMemory = new();
-
     public OutboxRepositoryInMemory OutboxRepositoryInMemory = new();
 
     public readonly Mock<HttpMessageHandler> MockContributorPaymentsServiceHttpMessageHandler = new(MockBehavior.Strict);
 
     public ComponentTestFixture()
     {
-        ApiFactory = new(this) 
-        { 
-            SetSharedEventRepository = () => EventRepositoryInMemory 
-        };
+        ApiFactory = new(this) { SetSharedEventRepository = () => EventRepositoryInMemory };
         EventListenerFactory = new(this) 
         { 
             SetSharedEventRepository = () => EventRepositoryInMemory,
             SetSharedOutboxRepositories = () => OutboxRepositoryInMemory
         };
-        OutboxApplicationFactory = new(this) 
-        { 
-            SetSharedOutboxRepositories = () => OutboxRepositoryInMemory 
-        };
+        OutboxApplicationFactory = new(this) { SetSharedOutboxRepositories = () => OutboxRepositoryInMemory };
         NotificationServiceFactory = new(this);
 
         MockServiceBus = new MockServiceBus(
