@@ -24,3 +24,13 @@ I use it to try things out, to demonstrate things in talks and to share with any
 ## Scenario Happy Path Sequence
 
 ![scenario happy path sequence](./notebooks/media/scenario-sequence.png)
+
+## Talks
+
+### Fluent Method Chaining in C# and orchestration code so clear your product owner can read it!
+
+[.Net London, November 2024, YouTube](https://www.youtube.com/watch?v=1Yf5zN_iR5Q)
+
+### How to fall in love with automated tests!
+
+[PDF from GoogleSlides](./notebooks/media/How%20to%20fall%20in%20love%20with%20automated%20tests!.pdf)
