@@ -30,7 +30,6 @@
     <ProjectReference Include="..\..\external-dummy-apps\NotificationService\NotificationService.csproj" />
     <ProjectReference Include="..\..\src\WeatherApp.API\WeatherApp.API.csproj" />
     <ProjectReference Include="..\..\src\WeatherApp.EventListener\WeatherApp.EventListener.csproj" />
-    <ProjectReference Include="..\..\src\WeatherApp.NotificationAPI\WeatherApp.NotificationAPI.csproj" />
     <ProjectReference Include="..\..\src\WeatherApp.Outbox\WeatherApp.Outbox.csproj" />
   </ItemGroup>
 

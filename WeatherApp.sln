@@ -45,9 +45,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WeatherApp.Tests.Integratio
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WeatherApp.TestResources", "tests\WeatherApp.TestResources\WeatherApp.TestResources.csproj", "{4827C861-459F-47FF-BDB0-CBCC5A40A9DF}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "AspireExperiments", "AspireExperiments", "{08DB238D-64B4-B573-E7B4-01E351EA0243}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "aspire-experiments", "aspire-experiments", "{08DB238D-64B4-B573-E7B4-01E351EA0243}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QueryableTraceCollector", "AspireExperiments\QueryableOtelCollector\QueryableTraceCollector.csproj", "{9FD988BC-4072-481D-8A89-CEFB3085782D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QueryableTraceCollector", "aspire-experiments\QueryableOtelCollector\QueryableTraceCollector.csproj", "{9FD988BC-4072-481D-8A89-CEFB3085782D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -19,7 +19,7 @@ public class Event
     public object? Value { get; protected set; }
     public string EventClassName { get; protected set; }
     public string SerialisedEvent { get; protected set; }
-    public Dictionary<string, object> AdditionalFields { get; protected set; }
+    public Dictionary<string, object>? AdditionalFields { get; protected set; }
 
     public static Event Create<T>(T value, Guid streamId, int version, Dictionary<string, object>? additionalFields = null) where T : IDomainEvent
     {

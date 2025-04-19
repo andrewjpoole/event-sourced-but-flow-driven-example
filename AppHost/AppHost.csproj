@@ -19,7 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\AspireExperiments\QueryableOtelCollector\QueryableTraceCollector.csproj" />
+    <ProjectReference Include="..\aspire-experiments\QueryableOtelCollector\QueryableTraceCollector.csproj" />
     <ProjectReference Include="..\external-dummy-apps\ContributorPaymentsService\ContributorPaymentsService.csproj" />
     <ProjectReference Include="..\external-dummy-apps\NotificationService\NotificationService.csproj" />
     <ProjectReference Include="..\external-dummy-apps\WeatherDataModelingSystem\WeatherDataModelingSystem.csproj" />

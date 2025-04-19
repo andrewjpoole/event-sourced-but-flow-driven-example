@@ -4,6 +4,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
 using System.Text;
 
+#pragma warning disable RS1038 // Compiler extensions should be implemented in assemblies with compiler-provided references
 [Generator]
 public class AutoGenerateImmutableDictionyFromConstantsGenerator : IIncrementalGenerator
 {
