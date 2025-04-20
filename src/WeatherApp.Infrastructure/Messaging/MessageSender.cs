@@ -11,8 +11,8 @@ public class MessageSender<T> : IMessageSender<T>
     public MessageSender(ServiceBusClient serviceBusClient, IOptions<ServiceBusOutboundOptions> options)
     {
         var type = typeof(T);
-        var entityNameFotTypeFromConfig = options.Value.ResolveQueueOrTopicNameFromConfig(type.Name);
-        var queueOrTopicName = new QueueOrTopicName(entityNameFotTypeFromConfig).Name;
+        var entityNameForTypeFromConfig = options.Value.ResolveQueueOrTopicNameFromConfig(type.Name);
+        var queueOrTopicName = new QueueOrTopicName(entityNameForTypeFromConfig).Name;
 
         serviceBusSender = serviceBusClient.CreateSender(queueOrTopicName);
     }
