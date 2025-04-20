@@ -20,10 +20,10 @@ builder.AddSqlProject<WeatherAppDb>("weatherAppDbSqlProj")
 // ASB
 //var serviceBus = builder.AddConnectionString("asb").Resource; // existing namespace
 var serviceBus = builder.AddAzureServiceBus("asb");
-var weatherAppModelingDataAcceptedQueue = serviceBus.AddServiceBusQueue(Queues.ModelingDataAcceptedIntegrationEvent.WithPrefix());
-var weatherAppModelingDataRejectedQueue = serviceBus.AddServiceBusQueue(Queues.ModelingDataRejectedIntegrationEvent.WithPrefix());
-var weatherAppModelUpdatedQueue = serviceBus.AddServiceBusQueue(Queues.ModelUpdatedIntegrationEvent.WithPrefix());
-var weatherAppUserNotificationQueue = serviceBus.AddServiceBusQueue(Queues.UserNotificationEvent.WithPrefix());
+var weatherAppModelingDataAcceptedQueue = serviceBus.AddServiceBusQueue(Queues.ModelingDataAcceptedIntegrationEvent);
+var weatherAppModelingDataRejectedQueue = serviceBus.AddServiceBusQueue(Queues.ModelingDataRejectedIntegrationEvent);
+var weatherAppModelUpdatedQueue = serviceBus.AddServiceBusQueue(Queues.ModelUpdatedIntegrationEvent);
+var weatherAppUserNotificationQueue = serviceBus.AddServiceBusQueue(Queues.UserNotificationEvent);
 serviceBus.RunAsEmulator();
 
 // Aspire Experiments

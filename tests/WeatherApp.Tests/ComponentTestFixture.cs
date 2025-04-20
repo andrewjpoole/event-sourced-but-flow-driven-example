@@ -20,7 +20,7 @@ public class ComponentTestFixture : IDisposable
     public readonly NotificationServiceWebApplicationFactory NotificationServiceFactory;
 
     public readonly FakeTimeProvider FakeTimeProvider;    
-    public readonly MockServiceBus MockServiceBus;
+    public readonly FakeServiceBus MockServiceBus;
     public EventRepositoryInMemory EventRepositoryInMemory = new();
     public OutboxRepositoryInMemory OutboxRepositoryInMemory = new();
 
@@ -37,7 +37,7 @@ public class ComponentTestFixture : IDisposable
         OutboxApplicationFactory = new(this) { SetSharedOutboxRepositories = () => OutboxRepositoryInMemory };
         NotificationServiceFactory = new(this);
 
-        MockServiceBus = new MockServiceBus(
+        MockServiceBus = new FakeServiceBus(
             entityName => EntityNames.GetTypeNameFromEntityName(entityName), 
             type => EntityNames.GetEntityNameFromTypeName(type));
 

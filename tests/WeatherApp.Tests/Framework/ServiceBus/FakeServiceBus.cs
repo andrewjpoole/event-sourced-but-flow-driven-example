@@ -5,7 +5,7 @@ using Moq;
 
 namespace WeatherApp.Tests.Framework.ServiceBus;
 
-public class MockServiceBus(Func<string, string> GetTypeNameFromEntityName, Func<Type, string> GetEntityNameFromType)
+public class FakeServiceBus(Func<string, string> GetTypeNameFromEntityName, Func<Type, string> GetEntityNameFromType)
 {
     private readonly Dictionary<Type, TestableServiceBusProcessor> processors = new();
     private readonly Dictionary<Type, Mock<ServiceBusSender>> mockSenders = new();

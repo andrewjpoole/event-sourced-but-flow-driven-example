@@ -11,14 +11,6 @@ public static partial class EntityNames
     public const string ModelUpdatedIntegrationEvent = "weatherapp-model-updated";
     public const string UserNotificationEvent = "weatherapp-user-notification";
 
-#if DEBUG
-    public static string Prefix = $"{Environment.MachineName}-";
-#else
-    public static string Prefix = string.Empty;
-#endif
-
-    public static string WithPrefix(this string queueName) => $"{Prefix}{queueName}";
-
     public static string GetEntityNameFromTypeName(Type type)
     {
         if (ConstantsDictionary.TryGetValue(type.Name, out var entityName))        
