@@ -7,7 +7,7 @@ public interface IEventPersistenceService
 {
     Task<PersistedEvent> PersistEvent(Event @event);
     Task<List<PersistedEvent>> PersistEvents(IEnumerable<Event> events);
-    Task<IEnumerable<PersistedEvent>> FetchEvents(Guid requestId);
+    Task<IEnumerable<PersistedEvent>> FetchEvents(Guid streamId);
 
     Task<OneOf<WeatherDataCollectionAggregate, Failure>> AppendModelUpdatedEventAndCreateOutboxItem(WeatherDataCollectionAggregate weatherDataCollectionAggregate);
 }

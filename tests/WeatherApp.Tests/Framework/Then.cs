@@ -5,6 +5,7 @@ using NUnit.Framework;
 using Moq;
 using Moq.Contrib.HttpClient;
 using WeatherApp.Domain.EventSourcing;
+using WeatherApp.Domain.DomainEvents;
 
 namespace WeatherApp.Tests.Framework;
 
@@ -35,6 +36,13 @@ public class Then(ComponentTestFixture fixture)
     {
         var body = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
         Assert.That(body, Is.Empty, $"{fixture.CurrentPhase}expected that the response body would be empty.");
+        return this;
+    }
+
+    public Then TheBodyShouldNotBeEmpty(HttpResponseMessage response)
+    {
+        var body = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
+        Assert.That(body, Is.Not.Empty, $"{fixture.CurrentPhase}expected that the response body would not be empty.");
         return this;
     }
 
@@ -94,9 +102,32 @@ public class Then(ComponentTestFixture fixture)
         return this;
     }
 
-    public Then AnOutboxRecordWasInserted()
+    public Then WeGetTheStreamIdFromTheInitialDomainEvent(Guid requestId, out Guid streamId)
     {
+        var initialisedPersistedEvent = fixture.EventRepositoryInMemory?.PersistedEvents.FirstOrDefault(
+            e => e.EventClassName == typeof(WeatherDataCollectionInitiated).FullName);
+        Assert.That(initialisedPersistedEvent, Is.Not.Null, $"{fixture.CurrentPhase}expected an event of type {typeof(WeatherDataCollectionInitiated).FullName} to have been persisted in the database.");
+
+        var initialisedEvent = initialisedPersistedEvent?.To<WeatherDataCollectionInitiated>();
+        Assert.That(initialisedEvent, Is.Not.Null, $"{fixture.CurrentPhase}expected an event of type {typeof(WeatherDataCollectionInitiated).FullName} to have been persisted in the database.");
+
+        Assert.That(initialisedEvent!.RequestId, Is.EqualTo(requestId), $"{fixture.CurrentPhase}expected the event to have a request id of {requestId}.");
+
+        streamId = initialisedPersistedEvent.StreamId;
+
+        return this;
+    }
+
+    public Then AnOutboxRecordWasInserted<T>()
+    {
+        var typeOfT = typeof(T);
+        var outboxClassName = (typeOfT.FullName ?? typeOfT.Name).Split('.').Last();
+
+        Assert.That(fixture.OutboxRepositoryInMemory.OutboxItems.Count, Is.EqualTo(1), $"{fixture.CurrentPhase}expected one outbox record to have been inserted.");
         
+        var outboxItemWithSentStatuses = fixture.OutboxRepositoryInMemory.OutboxItems.First().Value;        
+        
+        Assert.That(outboxItemWithSentStatuses.OutboxItem.TypeName, Is.EqualTo(outboxClassName), $"{fixture.CurrentPhase}expected the outbox item to have a MessagingEntityName of {outboxClassName}.");
 
         return this;
     }

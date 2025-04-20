@@ -4,7 +4,7 @@ using WeatherApp.Domain.ValueObjects;
 
 namespace WeatherApp.Domain.DomainEvents;
 
-public record WeatherDataCollectionInitiated(CollectedWeatherData Data, string Location, string reference) : IDomainEvent;
+public record WeatherDataCollectionInitiated(CollectedWeatherData Data, string Location, string Reference, Guid RequestId) : IDomainEvent;
 public record LocationIdFound(Guid LocationId) : IDomainEvent;
 public record SubmittedToModeling(Guid SubmissionId) : IDomainEvent;
 public record ModelingDataAccepted() : IDomainEvent;

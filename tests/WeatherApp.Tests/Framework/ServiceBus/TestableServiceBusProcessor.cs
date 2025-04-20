@@ -4,9 +4,9 @@ using WeatherApp.Domain.EventSourcing;
 
 namespace WeatherApp.Tests.Framework.ServiceBus;
 
-public class TestableServiceBusProcessor(string dummyQueueName) : ServiceBusProcessor
+public class TestableServiceBusProcessor(string entityName) : ServiceBusProcessor
 {
-    public string DummyQueueName { get; } = dummyQueueName;
+    public string EntityName { get; } = entityName;
     public List<TestableProcessMessageEventArgs> MessageDeliveryAttempts = [];
 
     public async Task SendMessageWithRetries<T>(T request, int maxDeliveryCount = 10) where T : class

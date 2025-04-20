@@ -7,9 +7,10 @@ public class When
 {
     public When And => this;
 
-    public When WeWrapTheWeatherDataInAnHttpRequest(out HttpRequestMessage request, string location, string reference, CollectedWeatherDataModel collectedWeatherData)
+    public When WeWrapTheWeatherDataInAnHttpRequest(out HttpRequestMessage request, string location, string reference, Guid requestId, CollectedWeatherDataModel collectedWeatherData)
     {
         request = new HttpRequestMessage(HttpMethod.Post, $"v1/collected-weather-data/{location}/{reference}");
+        request.Headers.Add("X-Request-Id", requestId.ToString());
         request.Content = new StringContent(JsonSerializer.Serialize(collectedWeatherData), Encoding.UTF8, "application/json");
         return this;
     }

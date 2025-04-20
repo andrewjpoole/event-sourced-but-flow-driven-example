@@ -25,7 +25,8 @@ public class CollectedWeatherDataOrchestrator(
 {
     public Task<OneOf<WeatherDataCollectionResponse, Failure>> HandleSubmitWeatherDataCommand(
         string weatherDataLocation, 
-        string reference, 
+        string reference,
+        Guid requestId,
         CollectedWeatherDataModel weatherDataModel, 
         IWeatherDataValidator weatherDataValidator, 
         ILocationManager locationManager)
@@ -42,12 +43,12 @@ public class CollectedWeatherDataOrchestrator(
         if (weatherDataValidator.Validate(weatherDataModel, out var errors) == false)
             return Task.FromResult(OneOf<WeatherDataCollectionResponse, Failure>
                 .FromT1(new InvalidRequestFailure(errors)));
-
-        var requestId = Guid.NewGuid();
+        
+        var streamId = Guid.NewGuid();
         logger.LogWeatherDataValidationPassed(weatherDataLocation, requestId);
 
-        return WeatherDataCollectionAggregate.PersistOrHydrate(eventPersistenceService, requestId, 
-                Event.Create(new WeatherDataCollectionInitiated(weatherDataModel.ToEntity(), weatherDataLocation, reference), requestId, 1))
+        return WeatherDataCollectionAggregate.PersistOrHydrate(eventPersistenceService, streamId, 
+                Event.Create(new WeatherDataCollectionInitiated(weatherDataModel.ToEntity(), weatherDataLocation, reference, requestId), streamId, 1))
             .Then(locationManager.Locate)
             .Then(contributorPaymentService.CreatePendingPayment)
             .Then(weatherModelingService.Submit,   // call to service, async response via integration event 

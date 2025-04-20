@@ -25,7 +25,7 @@ public class WeatherDataCollectionAggregate : AggregateRootBase
     // Properties from events guaranteed to be present because they come from the initiated event...
     public CollectedWeatherData Data => PersistedEvents.To<WeatherDataCollectionInitiated>()!.Data;
     public string Location => PersistedEvents.To<WeatherDataCollectionInitiated>()!.Location;
-    public string Reference => PersistedEvents.To<WeatherDataCollectionInitiated>()!.reference;
+    public string Reference => PersistedEvents.To<WeatherDataCollectionInitiated>()!.Reference;
 
     // Properties from events which may not yet have happened, null if not yet happened.
     public Guid? LocationId => PersistedEvents.To<LocationIdFound>()!.LocationId;
@@ -40,22 +40,22 @@ public class WeatherDataCollectionAggregate : AggregateRootBase
     public bool PendingPaymentRevoked => EventHasHappened<PendingContributorPaymentRevoked>();
     public bool PendingPaymentCommitted => EventHasHappened<PendingContributorPaymentCommitted>();
 
-    public static async Task<OneOf<WeatherDataCollectionAggregate, Failure>> Hydrate(IEventPersistenceService eventPersistenceService, Guid requestId)
+    public static async Task<OneOf<WeatherDataCollectionAggregate, Failure>> Hydrate(IEventPersistenceService eventPersistenceService, Guid streamId)
     {
-        var persistedEvents = (await eventPersistenceService.FetchEvents(requestId)).ToList();
+        var persistedEvents = (await eventPersistenceService.FetchEvents(streamId)).ToList();
 
         if (persistedEvents.Count == 0)
             throw new ExpectedEventsNotFoundException();
 
-        return new WeatherDataCollectionAggregate(requestId, persistedEvents, eventPersistenceService);
+        return new WeatherDataCollectionAggregate(streamId, persistedEvents, eventPersistenceService);
     }
 
-    public static async Task<OneOf<WeatherDataCollectionAggregate, Failure>> PersistOrHydrate(IEventPersistenceService eventPersistenceService, Guid requestId, Event initialEvent)
+    public static async Task<OneOf<WeatherDataCollectionAggregate, Failure>> PersistOrHydrate(IEventPersistenceService eventPersistenceService, Guid streamId, Event initialEvent)
     {
-        var existingPersistedEvents = (await eventPersistenceService.FetchEvents(requestId)).ToList();
+        var existingPersistedEvents = (await eventPersistenceService.FetchEvents(streamId)).ToList();
 
         if (existingPersistedEvents.Count != 0)
-            return new WeatherDataCollectionAggregate(requestId, existingPersistedEvents, eventPersistenceService);
+            return new WeatherDataCollectionAggregate(streamId, existingPersistedEvents, eventPersistenceService);
         
         var initialEvents = new List<Event>
         {
@@ -63,7 +63,7 @@ public class WeatherDataCollectionAggregate : AggregateRootBase
         };
         var persistedInitialEvents = await eventPersistenceService.PersistEvents(initialEvents);
 
-        var payment = new WeatherDataCollectionAggregate(requestId, persistedInitialEvents, eventPersistenceService);
+        var payment = new WeatherDataCollectionAggregate(streamId, persistedInitialEvents, eventPersistenceService);
         return payment;
     }
 

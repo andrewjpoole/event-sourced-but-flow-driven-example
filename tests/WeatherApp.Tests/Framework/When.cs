@@ -29,9 +29,10 @@ public class When(ComponentTestFixture fixture)
         throw new Exception($"Test Request from When.WeSendTheMessageToTheApi() {fixture.CurrentPhase} was not successful; {body}");
     }
 
-    public When WeWrapTheCollectedWeatherDataInAnHttpRequestMessage(CollectedWeatherDataModel collectedWeatherDataModel, string location, string reference, out HttpRequestMessage httpRequest)
+    public When WeWrapTheCollectedWeatherDataInAnHttpRequestMessage(CollectedWeatherDataModel collectedWeatherDataModel, string location, string reference, Guid requestId, out HttpRequestMessage httpRequest)
     {
         httpRequest = new HttpRequestMessage(HttpMethod.Post, $"{Constants.WeatherModelingServiceSubmissionUri}{location}/{reference}");
+        httpRequest.Headers.Add("x-request-id", requestId.ToString());
         httpRequest.Content = new StringContent(JsonSerializer.Serialize(collectedWeatherDataModel, GlobalJsonSerialiserSettings.Default), Encoding.UTF8, "application/json");
 
         return this;

@@ -1,5 +1,6 @@
 using Aspire.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.VisualStudio.TestPlatform.ObjectModel.DataCollection;
 
 namespace WeatherApp.Tests.Aspire.Integration.Framework;
 
@@ -60,10 +61,12 @@ public class Given
         return this;
     }    
 
-    public Given WeHaveSomeCollectedWeatherData(out string location, out string reference, out CollectedWeatherDataModel collectedWeatherData)
+    public Given WeHaveSomeCollectedWeatherData(out string location, out string reference, out Guid requestId, out CollectedWeatherDataModel collectedWeatherData)
     {
-        location = "TestLocation";
-        reference = "TestReference";
+        location = $"TestLocation{Random.Shared.Next(10,99)}";
+        reference = $"TestReference{Random.Shared.Next(10,99)}";
+        requestId = Guid.NewGuid();
+
         collectedWeatherData = new CollectedWeatherDataModel(
             new List<CollectedWeatherDataPointModel>
                 {

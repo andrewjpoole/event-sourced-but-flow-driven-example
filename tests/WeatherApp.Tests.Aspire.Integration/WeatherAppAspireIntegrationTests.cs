@@ -49,10 +49,10 @@ public class WeatherAppAspireIntegrationTests
             .And.WeCreateAnHttpClientForTheQueryableTraceCollector(app, out var queryableTraceCollectorClient)
             .And.WeClearAnyCollectedTraces(queryableTraceCollectorClient)
             .And.WeCreateAnHtppClientForTheAPI(app, out var apiHttpClient, DefaultTimeout)
-            .And.WeHaveSomeCollectedWeatherData(out var location, out var reference, out var collectedWeatherData);
+            .And.WeHaveSomeCollectedWeatherData(out var location, out var reference, out var requestId, out var collectedWeatherData);
 
-        when.WeWrapTheWeatherDataInAnHttpRequest(out var httpRequest, location, reference, collectedWeatherData)
-            .And.WeSendTheRequest(apiHttpClient, httpRequest, out var response); // will return once the synchronous call is done...
+        when.WeWrapTheWeatherDataInAnHttpRequest(out var httpRequest, location, reference, requestId, collectedWeatherData)
+            .And.WeSendTheRequest(apiHttpClient, httpRequest, out var response);
     
         then.TheResponseShouldBe(response, HttpStatusCode.OK)
             .And.TheResponseShouldBeOfType<WeatherReportResponse>(response, out var responseBody);

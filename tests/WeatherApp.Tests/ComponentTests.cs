@@ -1,6 +1,7 @@
 using System.Net;
 using NUnit.Framework;
 using WeatherApp.Application.Models;
+using WeatherApp.Application.Models.IntegrationEvents.NotificationEvents;
 using WeatherApp.Application.Models.IntegrationEvents.WeatherModelingEvents;
 using WeatherApp.Application.Models.Requests;
 using WeatherApp.Domain.DomainEvents;
@@ -39,7 +40,8 @@ public class ComponentTests
         var (given, when, then) = testFixture.SetupHelpers();
 
         var testLocation = $"testLocation{Guid.NewGuid()}"[..20];
-        var testReference = $"testReference{Guid.NewGuid()}"[..5];
+        var testReference = $"testRef{Guid.NewGuid()}"[..10];
+        var requestId = Guid.NewGuid();
 
         given.WeHaveSomeCollectedWeatherData(out var weatherData)
             .And.TheContributorPaymentsServicePendingEndpointWillReturn(HttpStatusCode.Accepted)
@@ -47,24 +49,25 @@ public class ComponentTests
             .And.TheServersAreStarted();
         
         when.InPhase("1 (initial API request)") 
-            .And.WeWrapTheCollectedWeatherDataInAnHttpRequestMessage(weatherData, testLocation, testReference, out var httpRequest)
+            .And.WeWrapTheCollectedWeatherDataInAnHttpRequestMessage(weatherData, testLocation, testReference, requestId, out var httpRequest)
             .And.WeSendTheMessageToTheApi(httpRequest, out var response);
 
         then.And.TheModelingServiceSubmitEndpointShouldHaveBeenCalled(times: 1)
             .And.TheEventShouldHaveBeenPersisted<SubmittedToModeling>()
             .And.TheResponseCodeShouldBe(response, HttpStatusCode.OK)
-            .And.TheBodyShouldNotBeEmpty<WeatherDataCollectionResponse>(response, out var responseBody);
+            .And.TheBodyShouldNotBeEmpty<WeatherDataCollectionResponse>(response)
+            .And.WeGetTheStreamIdFromTheInitialDomainEvent(requestId, out var streamId);
         
         when.InPhase("2 (1st ASB message back from modeling service)")
-            .AMessageAppears(message: new ModelingDataAcceptedIntegrationEvent(responseBody.RequestId));
+            .AMessageAppears(message: new ModelingDataAcceptedIntegrationEvent(streamId));
 
         then.TheEventShouldHaveBeenPersisted<ModelingDataAccepted>();
 
         when.InPhase("3 (2nd ASB message back from modeling service)")
-            .AMessageAppears(message: new ModelUpdatedIntegrationEvent(responseBody.RequestId));
+            .AMessageAppears(message: new ModelUpdatedIntegrationEvent(streamId));
 
         then.TheEventShouldHaveBeenPersisted<ModelUpdated>()
-            .And.AnOutboxRecordWasInserted();
+            .And.AnOutboxRecordWasInserted<UserNotificationEvent>();
 
         then.InPhase("4 (Notification Service handles event dispached by outbox)")
             .AfterSomeTimeHasPassed(2_000, 1_000)
