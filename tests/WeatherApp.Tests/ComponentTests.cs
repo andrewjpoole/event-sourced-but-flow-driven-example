@@ -1,4 +1,5 @@
 using System.Net;
+using Microsoft.AspNetCore.Http.HttpResults;
 using NUnit.Framework;
 using WeatherApp.Application.Models;
 using WeatherApp.Application.Models.IntegrationEvents.NotificationEvents;
@@ -38,25 +39,22 @@ public class ComponentTests
     public void e2e_flow_notifications_sent_when_ModelingDataAccepted()
     {
         var (given, when, then) = testFixture.SetupHelpers();
+        var cannedData = new CannedData();
 
-        var testLocation = $"testLocation{Guid.NewGuid()}"[..20];
-        var testReference = $"testRef{Guid.NewGuid()}"[..10];
-        var requestId = Guid.NewGuid();
-
-        given.WeHaveSomeCollectedWeatherData(out var weatherData)
+        given.WeHaveSomeCollectedWeatherData(cannedData, out var weatherData)
             .And.TheContributorPaymentsServicePendingEndpointWillReturn(HttpStatusCode.Accepted)
             .And.TheModelingServiceSubmitEndpointWillReturn(HttpStatusCode.Accepted)
             .And.TheServersAreStarted();
         
         when.InPhase("1 (initial API request)") 
-            .And.WeWrapTheCollectedWeatherDataInAnHttpRequestMessage(weatherData, testLocation, testReference, requestId, out var httpRequest)
+            .And.WeWrapTheCollectedWeatherDataInAnHttpRequestMessage(weatherData, cannedData, out var httpRequest)
             .And.WeSendTheMessageToTheApi(httpRequest, out var response);
 
         then.And.TheModelingServiceSubmitEndpointShouldHaveBeenCalled(times: 1)
             .And.TheEventShouldHaveBeenPersisted<SubmittedToModeling>()
             .And.TheResponseCodeShouldBe(response, HttpStatusCode.OK)
             .And.TheBodyShouldNotBeEmpty<WeatherDataCollectionResponse>(response)
-            .And.WeGetTheStreamIdFromTheInitialDomainEvent(requestId, out var streamId);
+            .And.WeGetTheStreamIdFromTheInitialDomainEvent(cannedData.RequestId, out var streamId);
         
         when.InPhase("2 (1st ASB message back from modeling service)")
             .AMessageAppears(message: new ModelingDataAcceptedIntegrationEvent(streamId));
@@ -72,25 +70,22 @@ public class ComponentTests
         then.InPhase("4 (Notification Service handles event dispached by outbox)")
             .AfterSomeTimeHasPassed(2_000, 1_000)
             .And.TheMessageWasHandled<ModelUpdatedIntegrationEvent>()
-            .And.TheNotificationServiceNotifiedTheUser(testLocation, testReference);
+            .And.TheNotificationServiceNotifiedTheUser(cannedData.Location, cannedData.Reference);
     }
 
     [Test]
     public void ApiPhase_EndsInConflict_IfExistingAggregateFound_WithSameRequestIdButDifferentReference()
     {
         var (given, when, then) = testFixture.SetupHelpers();
+        var cannedData = new CannedData();
 
-        var testLocation = $"testLocation{Guid.NewGuid()}"[..20];
-        var testReference = $"testRef{Guid.NewGuid()}"[..10];
-        var requestId = Guid.NewGuid();
-
-        given.WeHaveSomeCollectedWeatherData(out var weatherData)
+        given.WeHaveSomeCollectedWeatherData(cannedData, out var weatherData)
             .And.WeHaveResetEverything()
-            .And.ThereIsExistingData(CannedData.UpTo_WeatherDataCollectionInitiated(testLocation, "differentReference", requestId.ToString()))
+            .And.ThereIsExistingData(cannedData.UpTo_WeatherDataCollectionInitiated(reference: "differentReference"))
             .And.TheServersAreStarted();
         
         when.InPhase("1 (initial API request)") 
-            .And.WeWrapTheCollectedWeatherDataInAnHttpRequestMessage(weatherData, testLocation, testReference, requestId, out var httpRequest)
+            .And.WeWrapTheCollectedWeatherDataInAnHttpRequestMessage(weatherData, cannedData, out var httpRequest)
             .And.WeSendTheMessageToTheApi(httpRequest, out var response);
 
         then.And.TheModelingServiceSubmitEndpointShouldNotHaveBeenCalled()
@@ -101,22 +96,21 @@ public class ComponentTests
     public void ApiPhase_EndsInSameFailure_IfExistingAggregateFound_WhichEndedInAPermanentFailure()
     {
         var (given, when, then) = testFixture.SetupHelpers();
+        var cannedData = new CannedData();
 
-        var testLocation = $"testLocation{Guid.NewGuid()}"[..20];
-        var testReference = $"testRef{Guid.NewGuid()}"[..10];
-        var requestId = Guid.NewGuid();
-
-        given.WeHaveSomeCollectedWeatherData(out var weatherData)
+        given.WeHaveSomeCollectedWeatherData(cannedData, out var weatherData)
             .And.WeHaveResetEverything()
-            .And.ThereIsExistingData(CannedData.UpTo_WeatherDataCollectionInitiated(testLocation, "differentReference", requestId.ToString()))
+            .And.ThereIsExistingData(cannedData.UpTo_WeatherModelingServiceRejectionFailure())
             .And.TheServersAreStarted();
         
         when.InPhase("1 (initial API request)") 
-            .And.WeWrapTheCollectedWeatherDataInAnHttpRequestMessage(weatherData, testLocation, testReference, requestId, out var httpRequest)
+            .And.WeWrapTheCollectedWeatherDataInAnHttpRequestMessage(weatherData, cannedData, out var httpRequest)
             .And.WeSendTheMessageToTheApi(httpRequest, out var response);
 
         then.And.TheModelingServiceSubmitEndpointShouldNotHaveBeenCalled()
-            .And.TheResponseCodeShouldBe(response, HttpStatusCode.Conflict);
+            .And.TheResponseCodeShouldBe(response, HttpStatusCode.UnprocessableEntity)
+            .And.TheBodyShouldNotBeEmpty<string>(response, 
+                x => Assert.That(x, Is.EqualTo(cannedData.modelingDataRejectedReason)));
     }
 
     [TearDown]

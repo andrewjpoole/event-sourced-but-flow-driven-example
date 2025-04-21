@@ -1,8 +1,6 @@
 using System.Net;
-using System.Net.Http;
 using System.Net.Http.Json;
 using System.Text.Json;
-using System.Web;
 using Azure.Messaging.ServiceBus;
 using Moq;
 using Moq.Contrib.HttpClient;
@@ -22,13 +20,9 @@ public class Given(ComponentTestFixture fixture)
         return this;
     }
 
-    public Given WeHaveSomeCollectedWeatherData(out CollectedWeatherDataModel data)
+    public Given WeHaveSomeCollectedWeatherData(CannedData cannedData, out CollectedWeatherDataModel data)
     {
-        data = new CollectedWeatherDataModel([
-            CannedData.GetRandomCollectedWeatherDataModel(),
-            CannedData.GetRandomCollectedWeatherDataModel(),
-            CannedData.GetRandomCollectedWeatherDataModel()
-        ]);
+        data = cannedData.GetRandCollectedWeatherDataModel(3);
 
         return this;
     }

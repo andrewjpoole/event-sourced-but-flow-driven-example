@@ -37,14 +37,7 @@ public class Then(ComponentTestFixture fixture)
         var body = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
         Assert.That(body, Is.Empty, $"{fixture.CurrentPhase}expected that the response body would be empty.");
         return this;
-    }
-
-    public Then TheBodyShouldNotBeEmpty(HttpResponseMessage response)
-    {
-        var body = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
-        Assert.That(body, Is.Not.Empty, $"{fixture.CurrentPhase}expected that the response body would not be empty.");
-        return this;
-    }
+    }    
 
     public Then TheBodyShouldNotBeEmpty(HttpResponseMessage response, out string body)
     {
@@ -52,6 +45,21 @@ public class Then(ComponentTestFixture fixture)
         Assert.That(body, Is.Not.Empty, $"{fixture.CurrentPhase}expected that the response body would not be empty.");
         return this;
     }
+
+    public Then TheBodyShouldNotBeEmpty(HttpResponseMessage response)
+    {
+        TheBodyShouldNotBeEmpty(response, out var body);
+        Assert.That(body, Is.Not.Empty, $"{fixture.CurrentPhase}expected that the response body would not be empty.");
+        return this;
+    }
+
+    public Then TheBodyShouldNotBeEmpty(HttpResponseMessage response, Action<string>? assertAgainstBody = null)
+    {
+        TheBodyShouldNotBeEmpty(response, out var body);        
+        Assert.That(body, Is.Not.Empty, $"{fixture.CurrentPhase}expected that the response body would not be empty.");
+        assertAgainstBody?.Invoke(body);
+        return this;
+    }    
 
     public Then TheBodyShouldNotBeEmpty<T>(HttpResponseMessage response, out T bodyAsT)
     {
@@ -80,7 +88,7 @@ public class Then(ComponentTestFixture fixture)
 
         return this;
     }
-
+    
     public Then TheModelingServiceSubmitEndpointShouldHaveBeenCalled(int times = 1)
     {
         fixture.ApiFactory.MockWeatherModelingServiceHttpMessageHandler

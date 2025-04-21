@@ -1,6 +1,5 @@
 ﻿using WeatherApp.Domain.Entities;
 using WeatherApp.Domain.EventSourcing;
-using WeatherApp.Domain.Outcomes;
 using WeatherApp.Domain.ValueObjects;
 
 namespace WeatherApp.Domain.DomainEvents;
@@ -15,4 +14,3 @@ public record ModelUpdated() : IDomainEvent;
 public record PendingContributorPaymentPosted(PendingContributorPayment PendingContributorPayment) : IDomainEvent;
 public record PendingContributorPaymentRevoked(Guid PaymentId) : IDomainEvent;
 public record PendingContributorPaymentCommitted(Guid PaymentId) : IDomainEvent;
-public record PermanantlyFailed(Failure Failure) : IDomainEvent;

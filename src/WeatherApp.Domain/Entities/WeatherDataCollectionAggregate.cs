@@ -30,6 +30,7 @@ public class WeatherDataCollectionAggregate : AggregateRootBase
     // Properties from events which may not yet have happened, null if not yet happened.
     public Guid? LocationId => PersistedEvents.To<LocationIdFound>()!.LocationId;
     public PendingContributorPayment? PendingPayment => PersistedEvents.To<PendingContributorPaymentPosted>()?.PendingContributorPayment;
+    public string? ModelingDataRejectedReason => PersistedEvents.To<ModelingDataRejected>()?.Reason;
     public Guid? ModelingSubmissionId => PersistedEvents.To<SubmittedToModeling>()!.SubmissionId;
 
     // Flags from events, used to skip tasks which are already complete i.e. on retry.
@@ -76,30 +77,21 @@ public class WeatherDataCollectionAggregate : AggregateRootBase
         }
 
         // Existing Aggregate...
-        streamId = existingEventsByIdempotencyKeyList.Last().StreamId;        
+        streamId = existingEventsByIdempotencyKeyList.Last().StreamId;
+        var existingEvents = await eventPersistenceService.FetchEvents(streamId);     
         
         // Check if this a duplicate request or a new request using an existing idempotency key.
         var idempotencyCheckPassed = idempotencyCheck(existingEventsByIdempotencyKeyList);
 
         if(idempotencyCheckPassed)
         {
-            var existingAggregate = new WeatherDataCollectionAggregate(streamId, existingEventsByIdempotencyKeyList, eventPersistenceService);
-
-            // Check if there was already a PermanentFailure and return it.
-            var existingPermanentFailedEvent = existingEventsByIdempotencyKeyList.To<PermanantlyFailed>();
-            if(existingPermanentFailedEvent != null)
-            {                
-                return OneOf<WeatherDataCollectionAggregate, Failure>.FromT1(existingPermanentFailedEvent.Failure);
-            }
-
             // Return the existing aggregate for a retry.
+            var existingAggregate = new WeatherDataCollectionAggregate(streamId, existingEvents.ToList(), eventPersistenceService);            
             return existingAggregate;
         }
         else
         {
             var failure = new AlreadyProcessedFailure($"RequestId already processed and idempotency checks failed");
-            // var existingAggregate = new WeatherDataCollectionAggregate(streamId, existingEventsByIdempotencyKeyList, eventPersistenceService);
-            // await eventPersistenceService.PersistFailure(existingAggregate, failure);
 
             return OneOf<WeatherDataCollectionAggregate, Failure>
             .FromT1(failure);

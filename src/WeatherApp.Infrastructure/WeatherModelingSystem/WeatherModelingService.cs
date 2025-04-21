@@ -19,6 +19,13 @@ public class WeatherModelingService(
         // calls out to an external service which returns an Accepted response
         // the result will be communicated via a service bus message...
 
+        // If previously failed, just return the failure
+        if(weatherDataCollectionAggregate.ModelingDataRejected)
+        {
+            var reason = weatherDataCollectionAggregate.ModelingDataRejectedReason!;
+            return OneOf<WeatherDataCollectionAggregate, Failure>.FromT1(new WeatherModelingServiceRejectionFailure(reason));
+        }
+
         using var weatherModelingServiceClient = weatherModelingServiceClientWrapper.CreateClient();
 
         var response = await weatherModelingServiceClient.PostCollectedData(

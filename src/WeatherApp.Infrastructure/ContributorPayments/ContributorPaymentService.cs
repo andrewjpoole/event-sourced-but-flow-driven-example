@@ -16,6 +16,12 @@ public class ContributorPaymentService(
 
     public async Task<OneOf<WeatherDataCollectionAggregate, Failure>> CreatePendingPayment(WeatherDataCollectionAggregate weatherDataCollectionAggregate)
     {
+        if(weatherDataCollectionAggregate.PendingPayment != null)
+        {
+            logger.LogWarning("Skipping payment creation as a pending payment already exists for streamId: {StreamId}", weatherDataCollectionAggregate.StreamId);
+            return weatherDataCollectionAggregate;
+        }
+        
         using var client = clientWrapper.CreateClient();
 
         var paymentId = Guid.NewGuid();
@@ -40,9 +46,9 @@ public class ContributorPaymentService(
             return OneOf<WeatherDataCollectionAggregate, Failure>.FromT1(new ContributorPaymentServiceFailure(bodyContent));
         }
         }
-        catch (System.Exception)
+        catch (System.Exception ex)
         {
-            
+            logger.LogError(ex, "Error creating pending payment for streamId: {StreamId}", weatherDataCollectionAggregate.StreamId);
             throw;
         }
         
@@ -54,6 +60,12 @@ public class ContributorPaymentService(
 
     public async Task<OneOf<WeatherDataCollectionAggregate, Failure>> RevokePendingPayment(WeatherDataCollectionAggregate weatherDataCollectionAggregate)
     {
+        if(weatherDataCollectionAggregate.PendingPaymentRevoked)
+        {
+            logger.LogWarning("Skipping payment revocation as a pending payment has already been revoked for streamId: {StreamId}", weatherDataCollectionAggregate.StreamId);
+            return weatherDataCollectionAggregate;
+        }
+
         using var client = clientWrapper.CreateClient();
 
         var pendingPayment = weatherDataCollectionAggregate.PendingPayment ?? 

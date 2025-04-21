@@ -92,13 +92,7 @@ public class EventPersistenceService(
         weatherDataCollectionAggregate.AddPersistedEvent(persistedEvent);
 
         return weatherDataCollectionAggregate;
-    }
-
-    public async Task PersistFailure(WeatherDataCollectionAggregate aggregate, Failure failure)
-    {
-        var version = aggregate.GetNextExpectedVersion();
-        await PersistEvent(Event.Create(new PermanantlyFailed(failure), aggregate.StreamId, version));
-    }
+    }    
 }
 
 // public class WeatherAppEventPersistenceService(
