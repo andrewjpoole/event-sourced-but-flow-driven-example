@@ -23,7 +23,7 @@ public class CollectedWeatherDataOrchestrator(
         IEventHandler<ModelingDataRejectedIntegrationEvent>,
         IEventHandler<ModelUpdatedIntegrationEvent>
 {
-    public Task<OneOf<WeatherDataCollectionResponse, Failure>> HandleSubmitWeatherDataCommand(
+    public async Task<OneOf<WeatherDataCollectionResponse, Failure>> HandleSubmitWeatherDataCommand(
         string weatherDataLocation, 
         string reference,
         Guid requestId,
@@ -31,28 +31,32 @@ public class CollectedWeatherDataOrchestrator(
         IWeatherDataValidator weatherDataValidator, 
         ILocationManager locationManager)
     {
-        logger.LogReceivedWeatherData(reference, weatherDataLocation);
+        logger.LogReceivedWeatherData(reference, weatherDataLocation, requestId);
+        SetTelemetryTags(weatherDataLocation, reference, requestId);
 
-        var activity = Activity.Current;
-        if (activity != null)
-        {
-            activity.SetTag("weatherDataLocation", weatherDataLocation);
-            activity.SetTag("reference", reference);
-        }
+        if(weatherDataValidator.Validate(weatherDataModel, out var errors) == false)
+            return OneOf<WeatherDataCollectionResponse, Failure>
+                .FromT1(new InvalidRequestFailure(errors));
 
-        if (weatherDataValidator.Validate(weatherDataModel, out var errors) == false)
-            return Task.FromResult(OneOf<WeatherDataCollectionResponse, Failure>
-                .FromT1(new InvalidRequestFailure(errors)));
-        
-        var streamId = Guid.NewGuid();
         logger.LogWeatherDataValidationPassed(weatherDataLocation, requestId);
 
-        return WeatherDataCollectionAggregate.PersistOrHydrate(eventPersistenceService, streamId, 
-                Event.Create(new WeatherDataCollectionInitiated(weatherDataModel.ToEntity(), weatherDataLocation, reference, requestId), streamId, 1))
+        var idempotencyKey = requestId.ToString();
+        var idempotencyCheck = (List<PersistedEvent> existingEvents) => existingEvents.To<WeatherDataCollectionInitiated>()?.Reference == reference;
+
+        return await WeatherDataCollectionAggregate.PersistOrHydrate(eventPersistenceService, 
+            streamId => new List<Event> 
+            { 
+                Event.Create(new WeatherDataCollectionInitiated(
+                    weatherDataModel.ToEntity(), 
+                    weatherDataLocation, 
+                    reference, 
+                    idempotencyKey), 
+                    streamId, 1) 
+            }, idempotencyKey, existingEvents => idempotencyCheck(existingEvents))
             .Then(locationManager.Locate)
             .Then(contributorPaymentService.CreatePendingPayment)
             .Then(weatherModelingService.Submit,   // call to service, async response via integration event 
-                (c, f) => contributorPaymentService.RevokePendingPayment(c)) 
+                (c, f) => contributorPaymentService.RevokePendingPayment(c))
             .ToResult(WeatherDataCollectionResponse.FromWeatherDataCollection);
     }
     
@@ -85,4 +89,33 @@ public class CollectedWeatherDataOrchestrator(
             .Then(eventPersistenceService.AppendModelUpdatedEventAndCreateOutboxItem) // Appends domain event and persists outbox item in single transaction.
             .ThrowOnFailure(nameof(ModelUpdatedIntegrationEvent));
     }
+
+    private void SetTelemetryTags(string weatherDataLocation, string reference, Guid requestId)
+    {
+        var activity = Activity.Current;
+        if (activity != null)
+        {
+            activity.SetTag("weatherDataLocation", weatherDataLocation);
+            activity.SetTag("reference", reference);
+            activity.SetTag("requestId", requestId.ToString());
+        }
+    }
 }
+
+// public static class OneOfExtensions
+// {
+//     public static async Task<OneOf<WeatherDataCollectionAggregate, Failure>> PersistFailure(
+//         this Task<OneOf<WeatherDataCollectionAggregate, Failure>> currentResult, 
+//         IEventPersistenceService eventPersistenceService)
+//     {
+//         var result = await currentResult;
+//         if(result.IsT1)
+//         {
+//             var failure = result.AsT1;
+            
+//             await eventPersistenceService.PersistFailure(failure);
+//         }
+
+//         return result;
+//     }
+// }

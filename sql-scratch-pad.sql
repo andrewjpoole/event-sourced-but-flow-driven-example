@@ -10,6 +10,7 @@ SELECT TOP (1000) [Id]
       ,[EventClassName]
       ,[SerialisedEvent]
       ,[TimestampCreatedUtc]
+      ,[IdempotencyKey]
   FROM [WeatherAppDb].[dbo].[DomainEvents]
 
 -- Get all outbox records with their latest statuses

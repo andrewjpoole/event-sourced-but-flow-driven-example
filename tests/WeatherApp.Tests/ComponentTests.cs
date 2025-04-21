@@ -75,6 +75,50 @@ public class ComponentTests
             .And.TheNotificationServiceNotifiedTheUser(testLocation, testReference);
     }
 
+    [Test]
+    public void ApiPhase_EndsInConflict_IfExistingAggregateFound_WithSameRequestIdButDifferentReference()
+    {
+        var (given, when, then) = testFixture.SetupHelpers();
+
+        var testLocation = $"testLocation{Guid.NewGuid()}"[..20];
+        var testReference = $"testRef{Guid.NewGuid()}"[..10];
+        var requestId = Guid.NewGuid();
+
+        given.WeHaveSomeCollectedWeatherData(out var weatherData)
+            .And.WeHaveResetEverything()
+            .And.ThereIsExistingData(CannedData.UpTo_WeatherDataCollectionInitiated(testLocation, "differentReference", requestId.ToString()))
+            .And.TheServersAreStarted();
+        
+        when.InPhase("1 (initial API request)") 
+            .And.WeWrapTheCollectedWeatherDataInAnHttpRequestMessage(weatherData, testLocation, testReference, requestId, out var httpRequest)
+            .And.WeSendTheMessageToTheApi(httpRequest, out var response);
+
+        then.And.TheModelingServiceSubmitEndpointShouldNotHaveBeenCalled()
+            .And.TheResponseCodeShouldBe(response, HttpStatusCode.Conflict);
+    }
+
+    [Test]
+    public void ApiPhase_EndsInSameFailure_IfExistingAggregateFound_WhichEndedInAPermanentFailure()
+    {
+        var (given, when, then) = testFixture.SetupHelpers();
+
+        var testLocation = $"testLocation{Guid.NewGuid()}"[..20];
+        var testReference = $"testRef{Guid.NewGuid()}"[..10];
+        var requestId = Guid.NewGuid();
+
+        given.WeHaveSomeCollectedWeatherData(out var weatherData)
+            .And.WeHaveResetEverything()
+            .And.ThereIsExistingData(CannedData.UpTo_WeatherDataCollectionInitiated(testLocation, "differentReference", requestId.ToString()))
+            .And.TheServersAreStarted();
+        
+        when.InPhase("1 (initial API request)") 
+            .And.WeWrapTheCollectedWeatherDataInAnHttpRequestMessage(weatherData, testLocation, testReference, requestId, out var httpRequest)
+            .And.WeSendTheMessageToTheApi(httpRequest, out var response);
+
+        then.And.TheModelingServiceSubmitEndpointShouldNotHaveBeenCalled()
+            .And.TheResponseCodeShouldBe(response, HttpStatusCode.Conflict);
+    }
+
     [TearDown]
     public void TearDown()
     {

@@ -15,6 +15,13 @@ public class DbQueryProvider : IDbQueryProvider
         WHERE StreamId = {QueryParameters.StreamId}
         ORDER BY Id ASC;";
 
+    public const string FetchDomainEventByIdempotencyKeyQuery = @$"
+        SELECT Id, {nameof(QueryParameters.StreamId)}, {nameof(QueryParameters.Version)}, {nameof(QueryParameters.EventClassName)}, {nameof(QueryParameters.SerialisedEvent)}, TimestampCreatedUtc
+        FROM DomainEvents
+        WHERE IdempotencyKey = {QueryParameters.IdempotencyKey}
+        ORDER BY Id ASC;";
+
     public string InsertDomainEvent => InsertDomainEventQuery;
     public string FetchDomainEventsByStreamId => FetchDomainEventByStreamIdQuery;
+    public string FetchDomainEventByIdempotencyKey => FetchDomainEventByIdempotencyKeyQuery;
 }

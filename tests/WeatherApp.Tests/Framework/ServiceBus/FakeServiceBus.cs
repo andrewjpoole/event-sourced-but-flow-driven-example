@@ -61,6 +61,14 @@ public class FakeServiceBus(Func<string, string> GetTypeNameFromEntityName, Func
         }
     }
 
+    public void ClearInvocationsOnAllSenders()
+    {
+        foreach (var sender in mockSenders.Values)
+        {
+            sender.Invocations.Clear();
+        }
+    }
+
     public void AddSenderFor<T>()
     {
         var mockSender = new Mock<ServiceBusSender>();

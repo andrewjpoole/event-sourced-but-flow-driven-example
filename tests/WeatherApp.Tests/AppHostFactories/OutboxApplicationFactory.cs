@@ -30,7 +30,7 @@ public class OutboxApplicationFactory(ComponentTestFixture fixture) : WebApplica
 
                 services.AddSingleton<TimeProvider>(fixture.FakeTimeProvider);
 
-                fixture.MockServiceBus.WireUpSendersAndProcessors(services);
+                fixture.FakeServiceBus.WireUpSendersAndProcessors(services);
 
                 if (SetSharedOutboxRepositories is not null)
                 {

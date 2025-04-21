@@ -20,7 +20,7 @@ public class ComponentTestFixture : IDisposable
     public readonly NotificationServiceWebApplicationFactory NotificationServiceFactory;
 
     public readonly FakeTimeProvider FakeTimeProvider;    
-    public readonly FakeServiceBus MockServiceBus;
+    public readonly FakeServiceBus FakeServiceBus;
     public EventRepositoryInMemory EventRepositoryInMemory = new();
     public OutboxRepositoryInMemory OutboxRepositoryInMemory = new();
 
@@ -37,17 +37,17 @@ public class ComponentTestFixture : IDisposable
         OutboxApplicationFactory = new(this) { SetSharedOutboxRepositories = () => OutboxRepositoryInMemory };
         NotificationServiceFactory = new(this);
 
-        MockServiceBus = new FakeServiceBus(
+        FakeServiceBus = new FakeServiceBus(
             entityName => EntityNames.GetTypeNameFromEntityName(entityName), 
             type => EntityNames.GetEntityNameFromTypeName(type));
 
-        MockServiceBus.AddSenderFor<UserNotificationEvent>();
-        MockServiceBus.AddProcessorFor<ModelingDataAcceptedIntegrationEvent>();
-        MockServiceBus.AddProcessorFor<ModelingDataRejectedIntegrationEvent>();
-        MockServiceBus.AddProcessorFor<ModelUpdatedIntegrationEvent>();
-        MockServiceBus.AddProcessorFor<UserNotificationEvent>();
+        FakeServiceBus.AddSenderFor<UserNotificationEvent>();
+        FakeServiceBus.AddProcessorFor<ModelingDataAcceptedIntegrationEvent>();
+        FakeServiceBus.AddProcessorFor<ModelingDataRejectedIntegrationEvent>();
+        FakeServiceBus.AddProcessorFor<ModelUpdatedIntegrationEvent>();
+        FakeServiceBus.AddProcessorFor<UserNotificationEvent>();
 
-        MockServiceBus.MessagesSentToSendersWillBeReceivedOnCorrespondingProcessors();
+        FakeServiceBus.MessagesSentToSendersWillBeReceivedOnCorrespondingProcessors();
         
         FakeTimeProvider = new FakeTimeProvider();
         FakeTimeProvider.SetUtcNow(TimeProvider.System.GetUtcNow());

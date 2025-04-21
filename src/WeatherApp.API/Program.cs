@@ -72,7 +72,8 @@ public class Program
                     invalidRequestFailure => Results.BadRequest(invalidRequestFailure.ToValidationProblemDetails()),
                     unsupportedRegionFailure => Results.UnprocessableEntity(unsupportedRegionFailure.ToProblemDetails()),
                     modelingServiceRejectionFailure => Results.UnprocessableEntity(modelingServiceRejectionFailure.Message),
-                    contributorPaymentServiceFailure => Results.UnprocessableEntity(contributorPaymentServiceFailure.Message)
+                    contributorPaymentServiceFailure => Results.UnprocessableEntity(contributorPaymentServiceFailure.Message),
+                    alreadyProcessedFailure => Results.Conflict(alreadyProcessedFailure.Message)
                 ));
         }
         

@@ -7,7 +7,7 @@ public class PersistedEvent(long id,
                             int version, 
                             string eventClassName, 
                             string serialisedEvent, 
-                            DateTime timestampCreatedUtc, 
+                            DateTimeOffset timestampCreatedUtc, 
                             Dictionary<string, object>? additionalFields = null)
     : Event(streamId, 
             version, 
@@ -16,7 +16,7 @@ public class PersistedEvent(long id,
             additionalFields)
 {
     public long Id { get; } = id;
-    public DateTime TimestampCreatedUtc { get; } = timestampCreatedUtc;
+    public DateTimeOffset TimestampCreatedUtc { get; } = timestampCreatedUtc;
 
     public T To<T>()
     {

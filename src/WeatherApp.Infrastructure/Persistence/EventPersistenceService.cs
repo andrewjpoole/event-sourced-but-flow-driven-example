@@ -38,9 +38,15 @@ public class EventPersistenceService(
         throw new Exception($"Unable to persist events. {result.Error}");
     }
 
-    public async Task<IEnumerable<PersistedEvent>> FetchEvents(Guid requestId)
+    public async Task<IEnumerable<PersistedEvent>> FetchEvents(Guid streamId)
     {
-        var persistedEvents = await eventRepository.FetchEvents(requestId);
+        var persistedEvents = await eventRepository.FetchEvents(streamId);
+        return persistedEvents;
+    }
+
+    public async Task<IEnumerable<PersistedEvent>> FindExistingEventsByIdempotencyKey(string idempotencyKey)
+    {
+        var persistedEvents = await eventRepository.FindExistingEventsByIdempotencyKey(idempotencyKey);
         return persistedEvents;
     }
 
@@ -79,14 +85,20 @@ public class EventPersistenceService(
         var outboxItem = outboxItemFactory.Create(userNotificationEvent, weatherDataCollectionAggregate.StreamId.ToString());
         
         var version = weatherDataCollectionAggregate.GetNextExpectedVersion();
-        var @event = Event.Create<ModelUpdated>(new ModelUpdated(), weatherDataCollectionAggregate.StreamId, version);
+        var @event = Event.Create(new ModelUpdated(), weatherDataCollectionAggregate.StreamId, version);
         
         var persistedEvent = await AtomicallyPersistDomainEventAndCreateOutboxRecord<ModelUpdated>(@event, outboxItem);
 
         weatherDataCollectionAggregate.AddPersistedEvent(persistedEvent);
 
         return weatherDataCollectionAggregate;
-    }    
+    }
+
+    public async Task PersistFailure(WeatherDataCollectionAggregate aggregate, Failure failure)
+    {
+        var version = aggregate.GetNextExpectedVersion();
+        await PersistEvent(Event.Create(new PermanantlyFailed(failure), aggregate.StreamId, version));
+    }
 }
 
 // public class WeatherAppEventPersistenceService(

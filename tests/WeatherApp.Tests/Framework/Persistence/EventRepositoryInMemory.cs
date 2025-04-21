@@ -1,4 +1,4 @@
-using Moq;
+using WeatherApp.Domain.DomainEvents;
 using WeatherApp.Domain.EventSourcing;
 using WeatherApp.Infrastructure.Persistence;
 using WeatherApp.Infrastructure.RetryableDapperConnection;
@@ -34,6 +34,24 @@ public class EventRepositoryInMemory : IEventRepository
         return Task.FromResult(PersistedEvents.Where(pe => pe.StreamId == streamId));
     }
 
+    public Task<IEnumerable<PersistedEvent>> FindExistingEventsByIdempotencyKey(string idempotencyKey)
+    {
+        List<PersistedEvent> matchingInitiatedEvents = [];
+
+        var allExistingInitiatedEvents = PersistedEvents.Where(
+            pe => pe.EventClassName == typeof(WeatherDataCollectionInitiated).FullName).ToList();
+
+        foreach (var initiatedEvent in allExistingInitiatedEvents)
+        {
+            var @event = initiatedEvent.To<WeatherDataCollectionInitiated>();
+            if (@event.IdempotencyKey == idempotencyKey)
+            {
+                matchingInitiatedEvents.Add(initiatedEvent);
+            }
+        }
+        return Task.FromResult((IEnumerable<PersistedEvent>)matchingInitiatedEvents);
+    }
+
     public Task<PersistedEventResult> InsertEvent(Event @event, IDbTransactionWrapped transaction)
     {
         return InsertEvent(@event);
@@ -45,30 +63,13 @@ public class EventRepositoryInMemory : IEventRepository
         Transactions.Add(transaction);
         return transaction;
     }
-}
 
-public class FakeDbTransactionWrapped : IDbTransactionWrapped
-{
-    public bool WasCommitted { get; private set; } = false;
-    public bool WasRolledBack { get; private set; } = false;
-
-    public void Commit()
+    public void InsertExistingEvents(List<Event> domainEvents, TimeProvider timeProvider)
     {
-        WasCommitted = true;
-    }
-
-    public IRetryableConnection GetConnection()
-    {
-        return new Mock<IRetryableConnection>().Object;
-    }
-
-    public void Rollback()
-    {
-        WasRolledBack = true;
-    }
-
-    public System.Data.IDbTransaction ToIDbTransaction()
-    {
-        return new Mock<System.Data.IDbTransaction>().Object;
+        foreach (var @event in domainEvents)
+        {
+            var newPersistedEvent = new PersistedEvent(PersistedEvents.Count, @event.StreamId, @event.Version, @event.EventClassName, @event.SerialisedEvent, timeProvider.GetUtcNow());
+            PersistedEvents.Add(newPersistedEvent);
+        }
     }
 }

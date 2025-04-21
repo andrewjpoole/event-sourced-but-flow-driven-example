@@ -91,6 +91,9 @@ public class Then(ComponentTestFixture fixture)
         return this;
     }
 
+    public Then TheModelingServiceSubmitEndpointShouldNotHaveBeenCalled() => 
+        TheModelingServiceSubmitEndpointShouldHaveBeenCalled(0);
+
     public Then TheEventShouldHaveBeenPersisted<T>()
     {
         var typeOfT = typeof(T);
@@ -111,7 +114,7 @@ public class Then(ComponentTestFixture fixture)
         var initialisedEvent = initialisedPersistedEvent?.To<WeatherDataCollectionInitiated>();
         Assert.That(initialisedEvent, Is.Not.Null, $"{fixture.CurrentPhase}expected an event of type {typeof(WeatherDataCollectionInitiated).FullName} to have been persisted in the database.");
 
-        Assert.That(initialisedEvent!.RequestId, Is.EqualTo(requestId), $"{fixture.CurrentPhase}expected the event to have a request id of {requestId}.");
+        Assert.That(initialisedEvent!.IdempotencyKey, Is.EqualTo(requestId.ToString()), $"{fixture.CurrentPhase}expected the event to have a request id of {requestId}.");
 
         streamId = initialisedPersistedEvent.StreamId;
 
@@ -160,7 +163,7 @@ public class Then(ComponentTestFixture fixture)
 
     public Then TheMessageWasHandled<TIntegrationEvent>() where TIntegrationEvent : class
     {
-        var processor = fixture.MockServiceBus.GetProcessorFor<TIntegrationEvent>();
+        var processor = fixture.FakeServiceBus.GetProcessorFor<TIntegrationEvent>();
         var deliveryCount = processor.MessageDeliveryAttempts.Count;
         using (Assert.EnterMultipleScope())
         {

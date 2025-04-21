@@ -98,10 +98,26 @@ public class EventRepositorySql(IDbConnectionFactory dbConnectionFactory, IDbQue
         var persistedEvents = rows.Select(r => (PersistedEvent)PersistedEventMapper.MapFromDynamic(r));
         return persistedEvents;
     }
+    
+    public async Task<IEnumerable<PersistedEvent>> FindExistingEventsByIdempotencyKey(string idempotencyKey)
+    {
+        using var connection = dbConnectionFactory.Create();
+
+        var dynamicParameters = new DynamicParameters();
+        dynamicParameters.Add(QueryParameters.IdempotencyKey, idempotencyKey);
+
+        var rows = await connection.QueryAsync(dbQueryProvider.FetchDomainEventByIdempotencyKey, dynamicParameters);
+
+        if (rows == null || !rows.Any())        
+            return []; 
+
+        var persistedEvents = rows.Select(r => (PersistedEvent)PersistedEventMapper.MapFromDynamic(r));
+        return persistedEvents;
+    }
 
     public IDbTransactionWrapped BeginTransaction()
     {
         var connection = dbConnectionFactory.Create();
         return connection.BeginTransaction();
-    }
+    }    
 }

@@ -22,11 +22,7 @@ public class When(ComponentTestFixture fixture)
 
         response = fixture.ApiFactory.HttpClient.SendAsync(httpRequest).GetAwaiter().GetResult();
 
-        if(response.IsSuccessStatusCode)
-            return this;
-
-        var body = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
-        throw new Exception($"Test Request from When.WeSendTheMessageToTheApi() {fixture.CurrentPhase} was not successful; {body}");
+        return this;
     }
 
     public When WeWrapTheCollectedWeatherDataInAnHttpRequestMessage(CollectedWeatherDataModel collectedWeatherDataModel, string location, string reference, Guid requestId, out HttpRequestMessage httpRequest)
@@ -40,7 +36,7 @@ public class When(ComponentTestFixture fixture)
 
     public When AMessageAppears<T>(T message) where T : class
     {
-        var processor = fixture.MockServiceBus.GetProcessorFor<T>();
+        var processor = fixture.FakeServiceBus.GetProcessorFor<T>();
         processor.SendMessage(message).GetAwaiter().GetResult();
 
         return this;

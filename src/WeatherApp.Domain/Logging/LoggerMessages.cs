@@ -29,7 +29,12 @@ public static partial class OutboxLoggerMessages
 
 public static partial class OrchestrationLoggerMessages
 {
-    [LoggerMessage(Level =LogLevel.Error, Message = "Failed to persist domain event and create outbox item {StreamId}")]
+    
+    [LoggerMessage(Level = LogLevel.Warning, Message = "Failed idempotency checks, found existing aggregate(s) with stream Id(s): {existingStreamIds} for requestId: {RequestId} and Reference: {Reference}")]
+    public static partial void LogFailedIdempotencyChecks(this ILogger logger, Guid requestId, string reference, string existingStreamIds);
+    
+    
+    [LoggerMessage(Level = LogLevel.Error, Message = "Failed to persist domain event and create outbox item {StreamId}")]
     public static partial void LogFailedToPersistDomainEventAndOutboxItem(this ILogger logger, Exception ex, Guid streamId);
     
 
@@ -45,8 +50,8 @@ public static partial class OrchestrationLoggerMessages
     public static partial void LogOrchestrationUPdate(this ILogger logger, Guid streamId, string update);
 
 
-     [LoggerMessage(Level = LogLevel.Information, Message = "Received weather data for reference {Reference} @ location: {Location}")]
-    public static partial void LogReceivedWeatherData(this ILogger logger, string reference, string location);
+     [LoggerMessage(Level = LogLevel.Information, Message = "Received weather data for reference {Reference} @ location: {Location} with {RequestId}")]
+    public static partial void LogReceivedWeatherData(this ILogger logger, string reference, string location, Guid requestId);
 
 
     [LoggerMessage(Level = LogLevel.Information, Message = "Weather data validation passed for location: {Location} RequestId: {RequestId}")]

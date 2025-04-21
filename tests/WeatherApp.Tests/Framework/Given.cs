@@ -7,6 +7,7 @@ using Azure.Messaging.ServiceBus;
 using Moq;
 using Moq.Contrib.HttpClient;
 using WeatherApp.Application.Models.Requests;
+using WeatherApp.Domain.EventSourcing;
 using WeatherApp.Domain.ValueObjects;
 
 namespace WeatherApp.Tests.Framework;
@@ -24,11 +25,29 @@ public class Given(ComponentTestFixture fixture)
     public Given WeHaveSomeCollectedWeatherData(out CollectedWeatherDataModel data)
     {
         data = new CollectedWeatherDataModel([
-            CannedData.GetRandCollectedWeatherDataModel(),
-            CannedData.GetRandCollectedWeatherDataModel(),
-            CannedData.GetRandCollectedWeatherDataModel()
+            CannedData.GetRandomCollectedWeatherDataModel(),
+            CannedData.GetRandomCollectedWeatherDataModel(),
+            CannedData.GetRandomCollectedWeatherDataModel()
         ]);
 
+        return this;
+    }
+
+    public Given WeHaveResetEverything()
+    {        
+        fixture.FakeServiceBus.ClearDeliveryAttemptsOnAllProcessors();
+        fixture.FakeServiceBus.ClearInvocationsOnAllSenders();
+        fixture.MockContributorPaymentsServiceHttpMessageHandler.Reset();
+        fixture.ApiFactory.MockWeatherModelingServiceHttpMessageHandler.Reset();
+        fixture.EventRepositoryInMemory.PersistedEvents.Clear();
+        fixture.OutboxRepositoryInMemory.OutboxItems.Clear();
+
+        return this;
+    }
+
+    public Given ThereIsExistingData(List<Event> existingData)
+    {
+        fixture.EventRepositoryInMemory.InsertExistingEvents(existingData, fixture.FakeTimeProvider);
         return this;
     }
 
@@ -38,10 +57,6 @@ public class Given(ComponentTestFixture fixture)
         fixture.NotificationServiceFactory.Start();
         fixture.EventListenerFactory.Start();
         fixture.OutboxApplicationFactory.Start();
-
-        // Replace the httpClient in eventlistener's IoC container with the in-memory one from the NotificationServiceFactory.
-        //fixture.EventListenerFactory.ClearHttpClients();
-        //fixture.EventListenerFactory.AddHttpClient(typeof(INotificationsClient).FullName!, fixture.NotificationServiceFactory.HttpClient!);
         
         return this;
     }
@@ -116,10 +131,10 @@ public class Given(ComponentTestFixture fixture)
     public Given MessagesSentWillBeReceived<TMessageType>() where TMessageType : class
     {
         // If there is no TestableServiceBusProcessor for the given TMessageType then just return.
-        if (fixture.MockServiceBus.HasProcessorFor<TMessageType>() == false)
+        if (fixture.FakeServiceBus.HasProcessorFor<TMessageType>() == false)
             return this;
 
-        var senderMock = fixture.MockServiceBus.GetSenderFor<TMessageType>();
+        var senderMock = fixture.FakeServiceBus.GetSenderFor<TMessageType>();
         // If there is no senderMock for the given TMessageType then just return.
         if (senderMock == null)
             return this;
@@ -130,7 +145,7 @@ public class Given(ComponentTestFixture fixture)
                 var message = sbm.Body.ToObjectFromJson<TMessageType>();
                 var applicationProperties = (Dictionary<string, object>?)sbm.ApplicationProperties;
 
-                var processor = fixture.MockServiceBus.GetProcessorFor<TMessageType>();
+                var processor = fixture.FakeServiceBus.GetProcessorFor<TMessageType>();
 
                 if(message == null)
                     throw new Exception($"Message of type {typeof(TMessageType).Name} was null");

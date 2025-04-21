@@ -7,6 +7,4 @@ public class InvalidRequestFailure(IDictionary<string, string[]> validationError
     public InvalidRequestFailure(string message) : this(new Dictionary<string, string[]>{{"model", new[] {message}}})
     {
     }
-
-
 }

@@ -31,7 +31,7 @@ public class NotificationServiceWebApplicationFactory(ComponentTestFixture fixtu
 
                 services.AddSingleton<TimeProvider>(fixture.FakeTimeProvider);
 
-                fixture.MockServiceBus.WireUpSendersAndProcessors(services);
+                fixture.FakeServiceBus.WireUpSendersAndProcessors(services);
             })
             // As the NotificationService is a worker service using the generic Host, 
             // we need to add a WebHost in order to test it with Microsoft.AspNetCore.Mvc.Testing.

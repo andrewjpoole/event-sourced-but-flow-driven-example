@@ -50,21 +50,60 @@ public class WeatherDataCollectionAggregate : AggregateRootBase
         return new WeatherDataCollectionAggregate(streamId, persistedEvents, eventPersistenceService);
     }
 
-    public static async Task<OneOf<WeatherDataCollectionAggregate, Failure>> PersistOrHydrate(IEventPersistenceService eventPersistenceService, Guid streamId, Event initialEvent)
+    public static async Task<OneOf<WeatherDataCollectionAggregate, Failure>> PersistOrHydrate(
+        IEventPersistenceService eventPersistenceService, 
+        Func<Guid, List<Event>> provideInitialEvents, 
+        string idempotencyKey, 
+        Func<List<PersistedEvent>, bool> idempotencyCheck)
     {
-        var existingPersistedEvents = (await eventPersistenceService.FetchEvents(streamId)).ToList();
+        // Idempotency
+        // 1. take idempotencyKey and use it to lookup existing events.
+        // 2. if none are found create a new aggregate and persist the initial event.
+        // 3. if some are found, check if the idempotencyCheck passes. If it does, return the existing aggregate/Failure.
+        //    - may need to record domain events for permanent Failures in the API flow, so same result can be returned.
+        // 4. if idempotencyCheck fails, return a conflict failure.
+        Guid streamId;
+        var existingEventsByIdempotencyKey = await eventPersistenceService.FindExistingEventsByIdempotencyKey(idempotencyKey);
+        var existingEventsByIdempotencyKeyList = existingEventsByIdempotencyKey.ToList();
 
-        if (existingPersistedEvents.Count != 0)
-            return new WeatherDataCollectionAggregate(streamId, existingPersistedEvents, eventPersistenceService);
-        
-        var initialEvents = new List<Event>
+        // New Aggregate...
+        if(existingEventsByIdempotencyKey.Count() == 0)
         {
-            initialEvent
-        };
-        var persistedInitialEvents = await eventPersistenceService.PersistEvents(initialEvents);
+            streamId = Guid.NewGuid();
+            var initialEvents = provideInitialEvents(streamId);
+            var persistedInitialEvents = await eventPersistenceService.PersistEvents(initialEvents);            
+            return new WeatherDataCollectionAggregate(streamId, persistedInitialEvents, eventPersistenceService);
+        }
 
-        var payment = new WeatherDataCollectionAggregate(streamId, persistedInitialEvents, eventPersistenceService);
-        return payment;
+        // Existing Aggregate...
+        streamId = existingEventsByIdempotencyKeyList.Last().StreamId;        
+        
+        // Check if this a duplicate request or a new request using an existing idempotency key.
+        var idempotencyCheckPassed = idempotencyCheck(existingEventsByIdempotencyKeyList);
+
+        if(idempotencyCheckPassed)
+        {
+            var existingAggregate = new WeatherDataCollectionAggregate(streamId, existingEventsByIdempotencyKeyList, eventPersistenceService);
+
+            // Check if there was already a PermanentFailure and return it.
+            var existingPermanentFailedEvent = existingEventsByIdempotencyKeyList.To<PermanantlyFailed>();
+            if(existingPermanentFailedEvent != null)
+            {                
+                return OneOf<WeatherDataCollectionAggregate, Failure>.FromT1(existingPermanentFailedEvent.Failure);
+            }
+
+            // Return the existing aggregate for a retry.
+            return existingAggregate;
+        }
+        else
+        {
+            var failure = new AlreadyProcessedFailure($"RequestId already processed and idempotency checks failed");
+            // var existingAggregate = new WeatherDataCollectionAggregate(streamId, existingEventsByIdempotencyKeyList, eventPersistenceService);
+            // await eventPersistenceService.PersistFailure(existingAggregate, failure);
+
+            return OneOf<WeatherDataCollectionAggregate, Failure>
+            .FromT1(failure);
+        }
     }
 
     public async Task<OneOf<WeatherDataCollectionAggregate, Failure>> AppendSubmissionCompleteEvent()

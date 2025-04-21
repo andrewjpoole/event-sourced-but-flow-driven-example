@@ -38,7 +38,7 @@ public class EventListenerWebApplicationFactory(ComponentTestFixture fixture) : 
                 services.AddHttpClient(typeof(IContributorPaymentServiceClient).FullName!, client => client.BaseAddress = new Uri(Constants.BaseUrl))
                     .ConfigurePrimaryHttpMessageHandler(() => fixture.MockContributorPaymentsServiceHttpMessageHandler.Object);
 
-                fixture.MockServiceBus.WireUpSendersAndProcessors(services);
+                fixture.FakeServiceBus.WireUpSendersAndProcessors(services);
                 
                 if (SetSharedEventRepository is not null)
                     services.AddSingleton<IEventRepository>(_ => SetSharedEventRepository());
