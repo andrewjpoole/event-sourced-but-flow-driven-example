@@ -10,7 +10,7 @@ public class TestableServiceBusProcessor(string entityName) : ServiceBusProcesso
     
     public string EntityName { get; } = entityName;
 
-    public async Task PresentMessageWithRetries<T>(T request, int maxDeliveryCount = 10) where T : class
+    public async Task PresentMessageWithRetries<T>(T message, int maxDeliveryCount = 10) where T : class
     {
         for (var attempt = 1; attempt <= maxDeliveryCount; attempt++)
         {
@@ -21,13 +21,13 @@ public class TestableServiceBusProcessor(string entityName) : ServiceBusProcesso
                     return;
             }
 
-            await PresentMessage(request, attempt);
+            await PresentMessage(message, attempt);
         }
     }
 
-    public async Task PresentMessage<T>(T request, int deliveryCount = 1, Dictionary<string, object>? applicationProperties = null) where T : class
+    public async Task PresentMessage<T>(T message, int deliveryCount = 1, Dictionary<string, object>? applicationProperties = null) where T : class
     {
-        var args = CreateMessageArgs(request, deliveryCount, applicationProperties);
+        var args = CreateMessageArgs(message, deliveryCount, applicationProperties);
         MessageDeliveryAttempts.Add((TestableMessageEventArgs)args);
         await base.OnProcessMessageAsync(args);
     }
