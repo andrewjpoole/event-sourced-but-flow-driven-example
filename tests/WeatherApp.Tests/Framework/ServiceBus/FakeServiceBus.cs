@@ -143,13 +143,12 @@ public class FakeServiceBus(Func<string, string> GetTypeNameFromEntityName, Func
             mockSender.Value.Setup(x => x.SendMessageAsync(It.IsAny<ServiceBusMessage>(), It.IsAny<CancellationToken>()))
                 .Callback<ServiceBusMessage, CancellationToken>((sbm, ctx) =>
                 {
-                    var message = JsonSerializer.Deserialize(sbm.Body, mockSender.Key) ??
-                                  throw new Exception("unable to deserialise service bus message body");
+                    var message = JsonSerializer.Deserialize(sbm.Body, mockSender.Key) ?? throw new Exception("unable to deserialise service bus message body");
 
-                    var applicationProperties = (Dictionary<string, object>?)sbm.ApplicationProperties;
+                    var props = (Dictionary<string, object>?)sbm.ApplicationProperties;
 
                     var processor = GetProcessorFor(mockSender.Key);
-                    processor.PresentMessage(message, applicationProperties: applicationProperties).GetAwaiter().GetResult();
+                    processor.PresentMessage(message, applicationProperties: props).GetAwaiter().GetResult();
                 });
         }
     }
