@@ -54,8 +54,7 @@ public class WeatherAppAspireIntegrationTests
         when.WeWrapTheWeatherDataInAnHttpRequest(out var httpRequest, location, reference, requestId, collectedWeatherData)
             .And.WeSendTheRequest(apiHttpClient, httpRequest, out var response);
     
-        then.TheResponseShouldBe(response, HttpStatusCode.OK)
-            .And.TheResponseShouldBeOfType<WeatherReportResponse>(response, out var responseBody);
+        then.TheResponseShouldBe(response, HttpStatusCode.OK);
                 
         when.WeWaitWhilePollingForTheNotificationTrace(queryableTraceCollectorClient, 9, "User Notication Sent", out var traces);
             

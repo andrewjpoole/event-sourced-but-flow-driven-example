@@ -24,19 +24,7 @@ public class Program
         });
 
         app.MapGet("/traces", ([FromServices]CollectedData repository) => 
-        {
-            return repository.GetTraces();
-        });
-
-        app.MapGet("/traces/count", ([FromServices]CollectedData repository) => 
-        {
-            return repository.GetCountOfTraces();
-        });
-
-        app.MapGet("/traces/{displayName}", ([FromServices]CollectedData repository, string displayName) => 
-        {
-            return repository.GetTracesByDisplayName(displayName);
-        });        
+            repository.GetTraces());        
 
         app.MapDelete("/traces", ([FromServices]CollectedData repository) => 
         {
@@ -62,15 +50,5 @@ public class CollectedData
 
     public IReadOnlyCollection<TraceData> GetTraces() => activities.ToArray();
 
-    public void Clear() => activities.Clear();
-
-    public IEnumerable<TraceData> GetTracesByDisplayName(string displayName)
-    {
-        return activities.Where(a => a.DisplayName == displayName);
-    }
-
-    internal int GetCountOfTraces()
-    {
-        return activities.Count;
-    }
+    public void Clear() => activities.Clear();    
 }

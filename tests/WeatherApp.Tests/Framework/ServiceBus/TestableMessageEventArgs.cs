@@ -2,7 +2,7 @@ using Azure.Messaging.ServiceBus;
 
 namespace WeatherApp.Tests.Framework.ServiceBus;
 
-public class TestableProcessMessageEventArgs(ServiceBusReceivedMessage message) 
+public class TestableMessageEventArgs(ServiceBusReceivedMessage message) 
     : ProcessMessageEventArgs(message, null, CancellationToken.None)
 {
     public bool WasCompleted;

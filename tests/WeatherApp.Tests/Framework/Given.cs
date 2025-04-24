@@ -144,7 +144,7 @@ public class Given(ComponentTestFixture fixture)
                 if(message == null)
                     throw new Exception($"Message of type {typeof(TMessageType).Name} was null");
 
-                processor.SendMessage(message, applicationProperties: applicationProperties).GetAwaiter().GetResult();
+                processor.PresentMessage(message, applicationProperties: applicationProperties).GetAwaiter().GetResult();
             });
 
         return this;

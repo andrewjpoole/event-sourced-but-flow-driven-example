@@ -6,10 +6,11 @@ namespace WeatherApp.Tests.Framework.ServiceBus;
 
 public class TestableServiceBusProcessor(string entityName) : ServiceBusProcessor
 {
+    public List<TestableMessageEventArgs> MessageDeliveryAttempts = [];
+    
     public string EntityName { get; } = entityName;
-    public List<TestableProcessMessageEventArgs> MessageDeliveryAttempts = [];
 
-    public async Task SendMessageWithRetries<T>(T request, int maxDeliveryCount = 10) where T : class
+    public async Task PresentMessageWithRetries<T>(T request, int maxDeliveryCount = 10) where T : class
     {
         for (var attempt = 1; attempt <= maxDeliveryCount; attempt++)
         {
@@ -20,32 +21,30 @@ public class TestableServiceBusProcessor(string entityName) : ServiceBusProcesso
                     return;
             }
 
-            await SendMessage(request, attempt);
+            await PresentMessage(request, attempt);
         }
     }
 
-    public async Task SendMessage<T>(T request, int deliveryCount = 1, Dictionary<string, object>? applicationProperties = null) where T : class
+    public async Task PresentMessage<T>(T request, int deliveryCount = 1, Dictionary<string, object>? applicationProperties = null) where T : class
     {
         var args = CreateMessageArgs(request, deliveryCount, applicationProperties);
-        MessageDeliveryAttempts.Add((TestableProcessMessageEventArgs)args);
+        MessageDeliveryAttempts.Add((TestableMessageEventArgs)args);
         await base.OnProcessMessageAsync(args);
     }
 
-    public async Task SendMessage(string json)
+    public async Task PresentMessage(string json)
     {
         var message = ServiceBusModelFactory.ServiceBusReceivedMessage(
             body: BinaryData.FromString(json));
 
-        var args = new TestableProcessMessageEventArgs(message);
+        var args = new TestableMessageEventArgs(message);
 
         MessageDeliveryAttempts.Add(args);
         await base.OnProcessMessageAsync(args);
     }
 
-    public override Task StartProcessingAsync(CancellationToken cancellationToken = default)
-    {
-        return Task.CompletedTask;
-    }
+    public override Task StartProcessingAsync(CancellationToken cancellationToken = default) 
+        => Task.CompletedTask;
 
     public static ProcessMessageEventArgs CreateMessageArgs<T>(T payload, int deliveryCount = 1, Dictionary<string, object>? applicationProperties = null) where T : class
     {
@@ -57,14 +56,13 @@ public class TestableServiceBusProcessor(string entityName) : ServiceBusProcesso
             { "origin", "ComponentTests" }
         };
 
-        var message = ServiceBusModelFactory.ServiceBusReceivedMessage(
-            body: BinaryData.FromString(payloadJson),
-            correlationId: correlationId,
-            properties: applicationProperties,
-            deliveryCount: deliveryCount);
+        var message = ServiceBusModelFactory
+            .ServiceBusReceivedMessage(
+                body: BinaryData.FromString(payloadJson),
+                correlationId: correlationId,
+                properties: applicationProperties,
+                deliveryCount: deliveryCount);
 
-        var args = new TestableProcessMessageEventArgs(message);
-
-        return args;
+        return new TestableMessageEventArgs(message);
     }
 }

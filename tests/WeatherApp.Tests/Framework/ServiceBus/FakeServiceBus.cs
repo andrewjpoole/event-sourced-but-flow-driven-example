@@ -129,7 +129,7 @@ public class FakeServiceBus(Func<string, string> GetTypeNameFromEntityName, Func
 
                 var processor = GetProcessorFor<TMessageType>();               
 
-                processor.SendMessage(message, applicationProperties: applicationProperties).GetAwaiter().GetResult();
+                processor.PresentMessage(message, applicationProperties: applicationProperties).GetAwaiter().GetResult();
             });
     }
 
@@ -149,7 +149,7 @@ public class FakeServiceBus(Func<string, string> GetTypeNameFromEntityName, Func
                     var applicationProperties = (Dictionary<string, object>?)sbm.ApplicationProperties;
 
                     var processor = GetProcessorFor(mockSender.Key);
-                    processor.SendMessage(message, applicationProperties: applicationProperties).GetAwaiter().GetResult();
+                    processor.PresentMessage(message, applicationProperties: applicationProperties).GetAwaiter().GetResult();
                 });
         }
     }

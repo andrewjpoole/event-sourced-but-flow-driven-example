@@ -152,7 +152,9 @@ public class Then(ComponentTestFixture fixture)
 
     public Then AMessageWasSent(Mock<ServiceBusSender> senderMock, Func<ServiceBusMessage, bool> match, int times = 1)
     {
-        senderMock.Verify(x => x.SendMessageAsync(It.Is<ServiceBusMessage>(m => match(m)), It.IsAny<CancellationToken>()), Times.Exactly(times));
+        senderMock.Verify(x => x.SendMessageAsync(
+            It.Is<ServiceBusMessage>(m => match(m)), 
+            It.IsAny<CancellationToken>()), Times.Exactly(times));
 
         return this;
     }
