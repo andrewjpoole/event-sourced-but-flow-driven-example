@@ -33,4 +33,4 @@ I use it to try things out, to demonstrate things in talks and to share with any
 
 ### How to fall in love with automated tests!
 
-[PDF from GoogleSlides](./notebooks/media/How%20to%20fall%20in%20love%20with%20automated%20tests!.pdf)
+[PDF of slides from DDDSouthWest 2025](./notebooks/media/How%20to%20fall%20in%20love%20with%20automated%20tests!.pdf)
