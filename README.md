@@ -14,23 +14,23 @@ I use it to try things out, to demonstrate things in talks and to share with any
 - Event sourcing using a SQL table of domain events [here](./src/WeatherApp.Domain/EventSourcing/)
 - Aspire providing a sublime local dev experience [appHost here](./AppHost/Program.cs)
 - OTEL tracing [here](./src/WeatherApp.Infrastructure/Outbox/OutboxDispatcherHostedService.cs#107)
-- Integration tests with Aspire [here](./tests/WeatherApp.Tests.Aspire.Integration/WeatherAppAspireIntegrationTests.cs#43)
+- Integration tests with Aspire [here](./tests/WeatherApp.Tests.Aspire.Integration/WeatherAppAspireIntegrationTests.cs#43) Using trace data for assertions - lots more to come on this!
 - A Source Generator which will take constants and place them in an immutable dictionary in a partial class, for classes decorated with an attribute, very handy for service bus Type -> entity name mapping 😊 [here](./src/WeatherApp.SourceGenerators/AutoGenerateImmutableDictionyFromConstantsGenerator.cs)
 
 ## Scenario outline
 
-![scenario components](./notebooks/media/complex-scenario.png)
+![scenario components](./media/complex-scenario.png)
 
 ## Scenario Happy Path Sequence
 
-![scenario happy path sequence](./notebooks/media/scenario-sequence.png)
+![scenario happy path sequence](./media/scenario-sequence.png)
 
 ## Talks
 
 ### Fluent Method Chaining in C# and orchestration code so clear your product owner can read it!
 
-[.Net London, November 2024, YouTube](https://www.youtube.com/watch?v=1Yf5zN_iR5Q)
+[London .Net User Group, November 2024, YouTube](https://www.youtube.com/watch?v=1Yf5zN_iR5Q)
 
 ### How to fall in love with automated tests!
 
-[PDF of slides from DDDSouthWest 2025](./notebooks/media/How%20to%20fall%20in%20love%20with%20automated%20tests!.pdf)
+[PDF of slides from DDDSouthWest 2025](./media/How%20to%20fall%20in%20love%20with%20automated%20tests!.pdf)
