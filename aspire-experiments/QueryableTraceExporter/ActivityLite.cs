@@ -1,5 +1,3 @@
-using System.Diagnostics;
-
 namespace Microsoft.Extensions.Hosting;
 
 public class ActivityLite

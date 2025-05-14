@@ -1,22 +1,17 @@
 ﻿using System.Diagnostics;
 using System.Text.Json;
-using Microsoft.Extensions.Configuration;
 using OpenTelemetry;
 
 namespace Microsoft.Extensions.Hosting;
 
-public class QueryableTraceCollectorExporter(string appName, IConfiguration config, List<string>? allowedActivityDisplayNames = null) : BaseExporter<Activity>
+public class QueryableTraceCollectorExporter(string appName, IServiceProvider services, List<string>? allowedActivityDisplayNames = null) : BaseExporter<Activity>
 {
     public override ExportResult Export(in Batch<Activity> batch)
-    {
-        var baseAddress = config["services:queryabletracecollector:http:0"];
-        if(baseAddress == null)
-            return ExportResult.Success; // just return if the relationship is not specified in AppHost.
-
-        using var client = new HttpClient
-        {
-            BaseAddress = new(baseAddress)
-        };
+    {        
+        var httpClientFactory = services.GetService(typeof(IHttpClientFactory)) as IHttpClientFactory 
+            ?? throw new Exception("IHttpClientFactory not found in DI container.");
+            
+        using var client = httpClientFactory.CreateClient("QueryableTraceCollector");
         
         var traceDataCollection = new List<ActivityLite>();
         foreach (var activity in batch)
@@ -46,7 +41,6 @@ public class QueryableTraceCollectorExporter(string appName, IConfiguration conf
 
         var request = new HttpRequestMessage(HttpMethod.Post, "/traces")
         {
-            Headers = {{ "X-Api-Key", config["QueryableTraceCollectorApiKey"] ?? "123456789" }},
             Content = new StringContent(JsonSerializer.Serialize(traceDataCollection), System.Text.Encoding.UTF8, "application/json")
         };
         
