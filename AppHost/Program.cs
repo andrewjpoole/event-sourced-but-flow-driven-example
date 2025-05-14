@@ -18,6 +18,7 @@ builder.AddSqlProject<WeatherAppDb>("weatherAppDbSqlProj")
     .WithReference(db).WaitFor(db);
 
 // ASB
+// if (builder.ExecutionContext.IsPublishMode || builder.Environment.IsProduction()) {}
 //var serviceBus = builder.AddConnectionString("asb").Resource; // existing namespace
 var serviceBus = builder.AddAzureServiceBus("asb");
 var weatherAppModelingDataAcceptedQueue = serviceBus.AddServiceBusQueue(Queues.ModelingDataAcceptedIntegrationEvent);
@@ -27,24 +28,30 @@ var weatherAppUserNotificationQueue = serviceBus.AddServiceBusQueue(Queues.UserN
 serviceBus.RunAsEmulator();
 
 // Aspire Experiments
-var queryabletracecollector = builder.AddProject<QueryableTraceCollector>("queryabletracecollector")
-    .WithExternalHttpEndpoints();
+// var queryabletracecollector = builder.AddProject<QueryableTraceCollector>("queryabletracecollector")
+//     .WithExternalHttpEndpoints();
+var queryabletracecollector = builder.AddQueryableTraceCollector("queryabletracecollector", "123456789")
+    .WithExternalHttpEndpoints()
+    .ExcludeFromManifest();
 
 // External Dummy Apps
 var contributorPaymentsService = builder.AddProject<ContributorPaymentsService>("contributorpaymentsservice")
-    .WithExternalHttpEndpoints();
+    .WithExternalHttpEndpoints()
+    .ExcludeFromManifest();
 
 var weatherModelingService = builder.AddProject<WeatherDataModelingSystem>("weathermodelingservice")
     .WithReference(serviceBus).WaitFor(serviceBus)
     .WithEnvironment($"{ServiceBusOutboundOptions.SectionName}__{nameof(ServiceBusOutboundOptions.Entities)}__{nameof(Queues.ModelingDataAcceptedIntegrationEvent)}", Queues.ModelingDataAcceptedIntegrationEvent)
     .WithEnvironment($"{ServiceBusOutboundOptions.SectionName}__{nameof(ServiceBusOutboundOptions.Entities)}__{nameof(Queues.ModelingDataRejectedIntegrationEvent)}", Queues.ModelingDataRejectedIntegrationEvent)
     .WithEnvironment($"{ServiceBusOutboundOptions.SectionName}__{nameof(ServiceBusOutboundOptions.Entities)}__{nameof(Queues.ModelUpdatedIntegrationEvent)}", Queues.ModelUpdatedIntegrationEvent)
-    .WithExternalHttpEndpoints();
+    .WithExternalHttpEndpoints()
+    .ExcludeFromManifest();
 
 builder.AddProject<NotificationService>("notificationservice")
     .WithReference(serviceBus).WaitFor(serviceBus)
     .WithReference(queryabletracecollector)
-    .WithEnvironment($"{ServiceBusInboundOptions.SectionName}__{nameof(ServiceBusInboundOptions.Entities)}__{nameof(Queues.UserNotificationEvent)}", Queues.UserNotificationEvent);
+    .WithEnvironment($"{ServiceBusInboundOptions.SectionName}__{nameof(ServiceBusInboundOptions.Entities)}__{nameof(Queues.UserNotificationEvent)}", Queues.UserNotificationEvent)
+    .ExcludeFromManifest();
 
 // WeatherApp components
 builder.AddProject<WeatherApp_API>("api")

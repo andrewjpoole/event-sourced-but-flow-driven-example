@@ -1,11 +1,8 @@
-using System.Diagnostics;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.ServiceDiscovery;
 using OpenTelemetry;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Trace;
@@ -77,7 +74,7 @@ public static class Extensions
 
         builder.AddOpenTelemetryExporters();
 
-        builder.Services.AddQueryableOtelCollectorExporter(builder.Configuration);
+        builder.Services.AddQueryableOtelCollectorExporter(builder.Configuration, ["Outbox Item Insertion", "User Notication Sent", "Domain Event Insertion"]);
 
         return builder;
     }
@@ -99,20 +96,7 @@ public static class Extensions
         //}
 
         return builder;
-    }
-
-    public static IServiceCollection AddQueryableOtelCollectorExporter(this IServiceCollection services, IConfiguration config)
-    {
-        // todo return early if not local?
-        var appName = Path.GetFileName(Process.GetCurrentProcess().MainModule?.FileName.Replace(".exe", string.Empty) ?? "Unknown");
-        var exporter = new QueryableTraceCollectorExporter(appName, config, ["Outbox Item Insertion", "User Notication Sent", "Domain Event Insertion"]);
-        services.AddOpenTelemetry().WithTracing(traceBuilder =>
-        {                        
-            traceBuilder.AddProcessor(new SimpleActivityExportProcessor(exporter));
-        });        
-
-        return services;
-    }
+    }    
 
     public static TBuilder AddDefaultHealthChecks<TBuilder>(this TBuilder builder) where TBuilder : IHostApplicationBuilder
     {

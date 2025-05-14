@@ -20,6 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\aspire-experiments\QueryableTraceExporter\QueryableTraceExporter.csproj" />
     <ProjectReference Include="..\src\WeatherApp.Infrastructure\WeatherApp.Infrastructure.csproj" />
   </ItemGroup>
 

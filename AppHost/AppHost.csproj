@@ -18,19 +18,21 @@
     <PackageReference Include="CommunityToolkit.Aspire.Hosting.SqlDatabaseProjects" Version="9.3.0" />
   </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\aspire-experiments\QueryableOtelCollector\QueryableTraceCollector.csproj" />
+  <ItemGroup>    
+    <ProjectReference Include="..\aspire-experiments\QueryableTraceCollector\QueryableTraceCollector.csproj" />    
+    <ProjectReference Include="..\aspire-experiments\QueryableTraceExporter\QueryableTraceExporter.csproj" />
     <ProjectReference Include="..\external-dummy-apps\ContributorPaymentsService\ContributorPaymentsService.csproj" />
     <ProjectReference Include="..\external-dummy-apps\NotificationService\NotificationService.csproj" />
     <ProjectReference Include="..\external-dummy-apps\WeatherDataModelingSystem\WeatherDataModelingSystem.csproj" />
     <ProjectReference Include="..\src\WeatherApp.API\WeatherApp.API.csproj" />
     <ProjectReference Include="..\src\WeatherApp.EventListener\WeatherApp.EventListener.csproj" />
     <ProjectReference Include="..\src\WeatherApp.Outbox\WeatherApp.Outbox.csproj" />
-    <ProjectReference Include="..\database\WeatherAppDb.sqlproj"/>
+    <ProjectReference Include="..\database\WeatherAppDb.sqlproj" />
   </ItemGroup>
   
   <ItemGroup>
     <ProjectReference Include="..\src\WeatherApp.Infrastructure\WeatherApp.Infrastructure.csproj" IsAspireProjectResource="false" />
+    <ProjectReference Include="..\aspire-experiments\QueryableTraceCollector\QueryableTraceCollector.csproj" IsAspireProjectResource="false" />
   </ItemGroup>
 
 </Project>

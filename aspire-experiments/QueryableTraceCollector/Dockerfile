@@ -12,15 +12,11 @@ EXPOSE 8081
 FROM mcr.microsoft.com/dotnet/sdk:9.0-noble AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-COPY ["AspireExperiments/QueryableOtelCollector/QueryableTraceCollector.csproj", "AspireExperiments/QueryableOtelCollector/"]
-COPY ["ServiceDefaults/ServiceDefaults.csproj", "ServiceDefaults/"]
-COPY ["src/WeatherApp.Infrastructure/WeatherApp.Infrastructure.csproj", "src/WeatherApp.Infrastructure/"]
-COPY ["src/WeatherApp.Application/WeatherApp.Application.csproj", "src/WeatherApp.Application/"]
-COPY ["src/WeatherApp.Domain/WeatherApp.Domain.csproj", "src/WeatherApp.Domain/"]
-COPY ["src/WeatherApp.SourceGenerators/WeatherApp.SourceGenerators.csproj", "src/WeatherApp.SourceGenerators/"]
-RUN dotnet restore "./AspireExperiments/QueryableOtelCollector/QueryableTraceCollector.csproj"
+COPY ["aspire-experiments/QueryableTraceCollector/QueryableTraceCollector.csproj", "aspire-experiments/QueryableTraceCollector/"]
+COPY ["aspire-experiments/QueryableTraceExporter/QueryableTraceExporter.csproj", "aspire-experiments/QueryableTraceExporter/"]
+RUN dotnet restore "./aspire-experiments/QueryableTraceCollector/QueryableTraceCollector.csproj"
 COPY . .
-WORKDIR "/src/AspireExperiments/QueryableOtelCollector"
+WORKDIR "/src/aspire-experiments/QueryableTraceCollector"
 RUN dotnet build "./QueryableTraceCollector.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
 # This stage is used to publish the service project to be copied to the final stage
