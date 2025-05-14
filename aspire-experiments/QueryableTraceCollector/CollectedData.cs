@@ -1,6 +1,6 @@
 using System.Collections.Concurrent;
 
-namespace WeatherApp.Aspire.Integration;
+namespace Aspire.QueryableTraceCollector.Integration;
 
 public class CollectedData(ILogger<CollectedData> logger)
 {

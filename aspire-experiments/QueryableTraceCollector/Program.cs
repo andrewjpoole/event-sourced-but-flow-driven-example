@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 
-namespace WeatherApp.Aspire.Integration;
+namespace Aspire.QueryableTraceCollector.Integration;
 
 public class Program
 {
@@ -30,7 +30,7 @@ public class Program
 
             if (!context.Request.Headers.TryGetValue("X-Api-Key", out var extractedApiKey))
             {
-                logger.LogWarning("API Key is missing, expected in Request Header named X-Api-Key.");
+                logger.LogWarning("API Key is missing, expected a Request Header named X-Api-Key.");
                 context.Response.StatusCode = 401;
                 await context.Response.WriteAsync("API Key is missing.");
                 return;
@@ -71,4 +71,3 @@ public class Program
         app.Run();
     }
 }
-

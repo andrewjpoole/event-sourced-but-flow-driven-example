@@ -1,5 +1,5 @@
 using Aspire.Hosting.ApplicationModel;
-using WeatherApp.Aspire.Integration;
+using Aspire.QueryableTraceCollector.Integration;
 
 namespace Aspire.Hosting;
 
