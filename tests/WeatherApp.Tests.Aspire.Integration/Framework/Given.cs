@@ -1,4 +1,6 @@
+using System.Configuration;
 using Aspire.Hosting;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestPlatform.ObjectModel.DataCollection;
 
@@ -41,9 +43,12 @@ public class Given
         return this;
     }
 
-    public Given WeCreateAnHttpClientForTheQueryableTraceCollector(DistributedApplication app, out HttpClient client)
+    public Given WeCreateAnHttpClientForTheQueryableTraceCollector(DistributedApplication app, IConfiguration config, out HttpClient client)
     {
+        var apiKey = config["QueryableTraceCollectorApiKey"];
+
         client = app.CreateHttpClient("queryabletracecollector");
+        client.DefaultRequestHeaders.Add("X-Api-Key", apiKey);
         app.ResourceNotifications.WaitForResourceHealthyAsync("queryabletracecollector").Wait();
         return this;
     }

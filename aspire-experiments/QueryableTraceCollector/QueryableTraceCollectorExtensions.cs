@@ -33,6 +33,6 @@ public static class QueryableTraceCollectorResourceExtensions
                     .WithImage("andrewjpoole/queryabletracecollector")
                     .WithImageRegistry( "docker.io")
                     .WithHttpEndpoint(port: httpPort, targetPort: 8080)
-                    .WithArgs($"--api-key {apiKey}");
+                    .WithEnvironment("ApiKey", apiKey);
     }
 }

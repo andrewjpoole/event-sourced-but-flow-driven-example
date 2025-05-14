@@ -46,7 +46,7 @@ public class QueryableTraceCollectorExporter(string appName, IConfiguration conf
 
         var request = new HttpRequestMessage(HttpMethod.Post, "/traces")
         {
-            Headers = {{ "X-Api-Key", config["ApiKey"] ?? "123456789" }},
+            Headers = {{ "X-Api-Key", config["QueryableTraceCollectorApiKey"] ?? "123456789" }},
             Content = new StringContent(JsonSerializer.Serialize(traceDataCollection), System.Text.Encoding.UTF8, "application/json")
         };
         

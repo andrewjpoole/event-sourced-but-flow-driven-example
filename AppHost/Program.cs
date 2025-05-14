@@ -27,10 +27,9 @@ var weatherAppModelUpdatedQueue = serviceBus.AddServiceBusQueue(Queues.ModelUpda
 var weatherAppUserNotificationQueue = serviceBus.AddServiceBusQueue(Queues.UserNotificationEvent);
 serviceBus.RunAsEmulator();
 
-// Aspire Experiments
-// var queryabletracecollector = builder.AddProject<QueryableTraceCollector>("queryabletracecollector")
-//     .WithExternalHttpEndpoints();
-var queryabletracecollector = builder.AddQueryableTraceCollector("queryabletracecollector", "123456789")
+// Queryable Trace Collector for integration test assertions against collected trace data
+var queryableTraceCollectorApiKey = builder.Configuration["QueryableTraceCollectorApiKey"] ?? "123456789";
+var queryabletracecollector = builder.AddQueryableTraceCollector("queryabletracecollector", queryableTraceCollectorApiKey)
     .WithExternalHttpEndpoints()
     .ExcludeFromManifest();
 
@@ -50,6 +49,7 @@ var weatherModelingService = builder.AddProject<WeatherDataModelingSystem>("weat
 builder.AddProject<NotificationService>("notificationservice")
     .WithReference(serviceBus).WaitFor(serviceBus)
     .WithReference(queryabletracecollector)
+    .WithEnvironment("QueryableTraceCollectorApiKey", queryableTraceCollectorApiKey)
     .WithEnvironment($"{ServiceBusInboundOptions.SectionName}__{nameof(ServiceBusInboundOptions.Entities)}__{nameof(Queues.UserNotificationEvent)}", Queues.UserNotificationEvent)
     .ExcludeFromManifest();
 
@@ -59,7 +59,8 @@ builder.AddProject<WeatherApp_API>("api")
     .WithReference(db).WaitFor(db)
     .WithReference(contributorPaymentsService)
     .WithReference(weatherModelingService)
-    .WithReference(queryabletracecollector);
+    .WithReference(queryabletracecollector)
+    .WithEnvironment("QueryableTraceCollectorApiKey", queryableTraceCollectorApiKey);
 
 builder.AddProject<WeatherApp_EventListener>("eventlistener")
     .WithReference(db).WaitFor(db)
@@ -72,12 +73,14 @@ builder.AddProject<WeatherApp_EventListener>("eventlistener")
     .WithEnvironment($"{ServiceBusOutboundOptions.SectionName}__{nameof(ServiceBusOutboundOptions.Entities)}__{nameof(Queues.UserNotificationEvent)}", Queues.UserNotificationEvent)
     .WithReference(weatherModelingService)
     .WithReference(contributorPaymentsService)
-    .WithReference(queryabletracecollector);
+    .WithReference(queryabletracecollector)
+    .WithEnvironment("QueryableTraceCollectorApiKey", queryableTraceCollectorApiKey);
 
 builder.AddProject<WeatherApp_Outbox>("outbox")
     .WithReference(db).WaitFor(db)
     .WithReference(serviceBus).WaitFor(serviceBus)
     .WithEnvironment($"{nameof(OutboxProcessorOptions)}__{nameof(OutboxProcessorOptions.IntervalBetweenBatchesInSeconds)}", "15")
-    .WithReference(queryabletracecollector);
+    .WithReference(queryabletracecollector)
+    .WithEnvironment("QueryableTraceCollectorApiKey", queryableTraceCollectorApiKey);
 
 builder.Build().Run();

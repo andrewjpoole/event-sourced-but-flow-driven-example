@@ -46,7 +46,7 @@ public class WeatherAppAspireIntegrationTests
 
         given.WeHaveSetupTheAppHost(out var appHost)
             .And.WeRunTheAppHost(appHost, out var app, DefaultTimeout)
-            .And.WeCreateAnHttpClientForTheQueryableTraceCollector(app, out var queryableTraceCollectorClient)
+            .And.WeCreateAnHttpClientForTheQueryableTraceCollector(app, appHost.Configuration, out var queryableTraceCollectorClient)
             .And.WeClearAnyCollectedTraces(queryableTraceCollectorClient)
             .And.WeCreateAnHtppClientForTheAPI(app, out var apiHttpClient, DefaultTimeout)
             .And.WeHaveSomeCollectedWeatherData(out var location, out var reference, out var requestId, out var collectedWeatherData);
