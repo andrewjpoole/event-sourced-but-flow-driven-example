@@ -9,7 +9,7 @@ public class Program
         var builder = WebApplication.CreateBuilder(args);
 
         builder.Services
-            .AddSingleton(new CollectedData());
+            .AddSingleton<CollectedData>();
         
         var app = builder.Build();
 
@@ -30,6 +30,7 @@ public class Program
 
             if (!context.Request.Headers.TryGetValue("X-Api-Key", out var extractedApiKey))
             {
+                logger.LogWarning("API Key is missing, expected in Request Header named X-Api-Key.");
                 context.Response.StatusCode = 401;
                 await context.Response.WriteAsync("API Key is missing.");
                 return;
@@ -37,6 +38,7 @@ public class Program
             
             if (apiKey.Equals(extractedApiKey) != true)
             {
+                logger.LogWarning("Unauthorized client, provided ApiKey {ProvvidedApiKey}, required ApiKey {RequiredApiKey}.", extractedApiKey, apiKey);
                 context.Response.StatusCode = 403;
                 await context.Response.WriteAsync("Unauthorized client.");
                 return;
@@ -48,7 +50,7 @@ public class Program
         app.MapGet("/", () => "Queryable Trace Collector is running!");
 
         app.MapPost("/traces", ([FromServices]CollectedData repository, List<ActivityLite> data) => 
-        {
+        {            
             repository.Import(data);
             return Results.Ok("Trace data batch added.");
         });

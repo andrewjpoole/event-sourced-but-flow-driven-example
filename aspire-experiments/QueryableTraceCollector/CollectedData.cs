@@ -2,7 +2,7 @@ using System.Collections.Concurrent;
 
 namespace WeatherApp.Aspire.Integration;
 
-public class CollectedData
+public class CollectedData(ILogger<CollectedData> logger)
 {
     private readonly ConcurrentBag<ActivityLite> activities = new();
 
@@ -10,6 +10,7 @@ public class CollectedData
     {
         foreach (var activity in batch)
         {
+            logger.LogInformation(activity.ToString());
             activities.Add(activity);
         }
     }

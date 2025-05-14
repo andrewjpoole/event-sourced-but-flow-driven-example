@@ -18,9 +18,7 @@
     <PackageReference Include="CommunityToolkit.Aspire.Hosting.SqlDatabaseProjects" Version="9.3.0" />
   </ItemGroup>
 
-  <ItemGroup>    
-    <ProjectReference Include="..\aspire-experiments\QueryableTraceCollector\QueryableTraceCollector.csproj" />    
-    <ProjectReference Include="..\aspire-experiments\QueryableTraceExporter\QueryableTraceExporter.csproj" />
+  <ItemGroup> 
     <ProjectReference Include="..\external-dummy-apps\ContributorPaymentsService\ContributorPaymentsService.csproj" />
     <ProjectReference Include="..\external-dummy-apps\NotificationService\NotificationService.csproj" />
     <ProjectReference Include="..\external-dummy-apps\WeatherDataModelingSystem\WeatherDataModelingSystem.csproj" />
@@ -33,6 +31,7 @@
   <ItemGroup>
     <ProjectReference Include="..\src\WeatherApp.Infrastructure\WeatherApp.Infrastructure.csproj" IsAspireProjectResource="false" />
     <ProjectReference Include="..\aspire-experiments\QueryableTraceCollector\QueryableTraceCollector.csproj" IsAspireProjectResource="false" />
+    <ProjectReference Include="..\aspire-experiments\QueryableTraceExporter\QueryableTraceExporter.csproj" IsAspireProjectResource="false"/>
   </ItemGroup>
 
 </Project>
