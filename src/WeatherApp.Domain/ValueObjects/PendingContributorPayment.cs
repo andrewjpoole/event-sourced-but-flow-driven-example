@@ -10,7 +10,7 @@ public record PendingContributorPayment
 
     public PendingContributorPayment(Guid contributorId, Guid paymentId, decimal amount, string currency, string description)
     {
-        // todo add rules here...
+        // Add rules here...
 
         ContributorId = contributorId;
         PaymentId = paymentId;

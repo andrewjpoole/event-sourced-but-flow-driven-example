@@ -11,7 +11,6 @@ public class GetWeatherReportRequestHandler(
     IWeatherForecastGenerator weatherForecastGenerator)
     : IGetWeatherReportRequestHandler
 {
-    // ToDo:now replace the details for an aggregate
     public async Task<OneOf<WeatherReportResponse, Failure>> HandleGetWeatherReport(
         string requestedRegion, DateTime requestedDate)
     {
