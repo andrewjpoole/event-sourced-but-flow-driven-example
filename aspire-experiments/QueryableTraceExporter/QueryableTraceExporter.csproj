@@ -4,12 +4,37 @@
     <TargetFramework>net9.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <PackageId>Aspire.QueryableTraceCollector.Client</PackageId>
+    <Version>1.0.0</Version>
+    <PackageReleaseNotes>	 	
+		1.0.0 initial version
+	  </PackageReleaseNotes>
+    <Authors>Andrew Poole</Authors>
+    <Description>Client package for QueryableTraceCollector which is a minimal API for collecting and querying OpenTelemetry traces, separately from the Aspire Dashboard, especially for integration test assertions.</Description>
+    <PackageTags>Testing, Integration Tests, OpenTelemetry, Tracing, Queryable</PackageTags>
+    <RepositoryUrl>https://github.com/andrewjpoole/event-sourced-but-flow-driven-example</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/andrewjpoole/event-sourced-but-flow-driven-example/blob/main/aspire-experiments/QueryableTraceCollector/README.md</PackageProjectUrl>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" Version="1.11.2" />
     <PackageReference Include="OpenTelemetry.Extensions.Hosting" Version="1.11.2" />
     <PackageReference Include="Microsoft.Extensions.Http" Version="9.0.5" />
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" />
   </ItemGroup>
+
+  <ItemGroup>
+		<None Include="..\QueryableTraceCollector\README.md">
+			<Pack>True</Pack>
+			<PackagePath></PackagePath>
+		</None>
+	</ItemGroup>
 
 </Project>

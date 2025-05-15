@@ -7,6 +7,24 @@
     <UserSecretsId>0983537a-155d-48b8-afc9-d62125d2c274</UserSecretsId>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
     <DockerfileContext>..\..</DockerfileContext>
+
+    <IsPackable>true</IsPackable>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <PackageId>Aspire.Hosting.QueryableTraceCollector</PackageId>
+    <Version>1.0.0</Version>
+    <PackageReleaseNotes>	 	
+		1.0.0 initial version
+	  </PackageReleaseNotes>
+    <Authors>Andrew Poole</Authors>
+    <Description>A minimal API for collecting and querying OpenTelemetry traces, separately from the Aspire Dashboard, especially for integration test assertions.</Description>
+    <PackageTags>Testing, Integration Tests, OpenTelemetry, Tracing, Queryable</PackageTags>
+    <RepositoryUrl>https://github.com/andrewjpoole/event-sourced-but-flow-driven-example</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/andrewjpoole/event-sourced-but-flow-driven-example/blob/main/aspire-experiments/QueryableTraceCollector/README.md</PackageProjectUrl>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
 
   <ItemGroup>
@@ -14,10 +32,18 @@
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.21.0" />
     <PackageReference Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" Version="1.11.2" />
     <PackageReference Include="OpenTelemetry.Extensions.Hosting" Version="1.11.2" />
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\QueryableTraceExporter\QueryableTraceExporter.csproj" />
-  </ItemGroup> 
+  </ItemGroup>
+
+  <ItemGroup>
+		<None Include=".\README.md">
+			<Pack>True</Pack>
+			<PackagePath></PackagePath>
+		</None>
+	</ItemGroup>
 
 </Project>
