@@ -14,7 +14,7 @@ The QueryableTraceCollector is a lightweight API designed for collecting and que
 1. Adding QueryableTraceCollector to Your Aspire Project
 
 add the hosting nuget package to the 
-`<PackageReference Include="Aspire.Hosting.QueryableTraceCollector" Version="1.0.0" />`
+`<PackageReference Include="AJP.Aspire.Hosting.QueryableTraceCollector" Version="1.0.0" />`
 
 ```csharp
 var queryableTraceCollectorApiKey = builder.Configuration["QueryableTraceCollectorApiKey"] ?? "123456789"; // I add a local secret in VSCode...
@@ -25,7 +25,7 @@ var queryabletracecollector = builder.AddQueryableTraceCollector("queryabletrace
 This will add a container resource which runs the API.
 
 2. Add the client integration nuget package, probably to ServiceDefaults
-`<PackageReference Include="Aspire.QueryableTraceCollector.Client" Version="1.0.0" />`
+`<PackageReference Include="AJP.Aspire.QueryableTraceCollector.Client" Version="1.0.0" />`
 
 Add
 
