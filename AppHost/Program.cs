@@ -79,7 +79,7 @@ builder.AddProject<WeatherApp_EventListener>("eventlistener")
 builder.AddProject<WeatherApp_Outbox>("outbox")
     .WithReference(db).WaitFor(db)
     .WithReference(serviceBus).WaitFor(serviceBus)
-    .WithEnvironment($"{nameof(OutboxProcessorOptions)}__{nameof(OutboxProcessorOptions.IntervalBetweenBatchesInSeconds)}", "15")
+    .WithEnvironment($"{nameof(OutboxProcessorOptions)}__{nameof(OutboxProcessorOptions.IntervalBetweenBatchesInSeconds)}", "5")
     .WithReference(queryabletracecollector)
     .WithEnvironment("QueryableTraceCollectorApiKey", queryableTraceCollectorApiKey);
 

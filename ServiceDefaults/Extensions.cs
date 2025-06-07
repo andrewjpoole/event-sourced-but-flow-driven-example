@@ -74,7 +74,7 @@ public static class Extensions
 
         builder.AddOpenTelemetryExporters();
 
-        builder.Services.AddQueryableOtelCollectorExporter(builder.Configuration, ["Outbox Item Insertion", "User Notication Sent", "Domain Event Insertion"]);
+        builder.Services.AddQueryableOtelCollectorExporter(builder.Configuration, ["Outbox Item Insertion", "User Notification Sent", "Domain Event Insertion"]);
 
         return builder;
     }

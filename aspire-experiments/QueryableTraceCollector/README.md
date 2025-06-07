@@ -36,7 +36,8 @@ public static TBuilder ConfigureOpenTelemetry<TBuilder>(this TBuilder builder) w
 
         builder.AddOpenTelemetryExporters();
 
-        builder.Services.AddQueryableOtelCollectorExporter(builder.Configuration, ["Outbox Item Insertion", "User Notication Sent", "Domain Event Insertion"]); // Filter collected trace data by DisplayName to just the bits we're interested in, these can also be wired up through config instead if you prefer...
+        builder.Services.AddQueryableOtelCollectorExporter(builder.Configuration, ["Outbox Item Insertion", "User Notification Sent", "Domain Event Insertion"]); 
+        // Filter collected trace data by DisplayName to just the bits we're interested in, these can also be wired up through config instead if you prefer...
 
         return builder;
     }
@@ -64,7 +65,7 @@ public void PostWeatherData_EventuallyResultsIn_AUserNotificationBeingSent2()
 
     then.TheResponseShouldBe(response, HttpStatusCode.OK);
             
-    when.WeWaitWhilePollingForTheNotificationTrace(queryableTraceCollectorClient, 9, "User Notication Sent", out var traces);
+    when.WeWaitWhilePollingForTheNotificationTrace(queryableTraceCollectorClient, 9, "User Notification Sent", out var traces);
         
     then.WeAssertAgainstTheTraces(traces, traces => 
     {
@@ -74,7 +75,7 @@ public void PostWeatherData_EventuallyResultsIn_AUserNotificationBeingSent2()
         
         traces.AssertContainsDisplayName("Outbox Item Insertion");
 
-        traces.AssertContains(t => t.DisplayName == "User Notication Sent"
+        traces.AssertContains(t => t.DisplayName == "User Notification Sent"
             && t.ContainsTag("user-notification-event.body", x => x == "Dear user, your data has been submitted and included in our latest model")
             && t.ContainsTag("user-notification-event.reference", x => x == reference), 
             "Didn't find the expected user notification trace with the expected tags.");            

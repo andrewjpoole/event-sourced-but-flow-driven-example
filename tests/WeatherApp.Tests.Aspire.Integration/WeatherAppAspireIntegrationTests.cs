@@ -56,7 +56,7 @@ public class WeatherAppAspireIntegrationTests
     
         then.TheResponseShouldBe(response, HttpStatusCode.OK);
                 
-        when.WeWaitWhilePollingForTheNotificationTrace(queryableTraceCollectorClient, 9, "User Notication Sent", out var traces);
+        when.WeWaitWhilePollingForTheNotificationTrace(queryableTraceCollectorClient, 9, "User Notification Sent", out var traces);
             
         then.WeAssertAgainstTheTraces(traces, traces => 
         {
@@ -66,7 +66,7 @@ public class WeatherAppAspireIntegrationTests
             
             traces.AssertContainsDisplayName("Outbox Item Insertion");
 
-            traces.AssertContains(t => t.DisplayName == "User Notication Sent"
+            traces.AssertContains(t => t.DisplayName == "User Notification Sent"
                 && t.ContainsTag("user-notification-event.body", x => x == "Dear user, your data has been submitted and included in our latest model")
                 && t.ContainsTag("user-notification-event.reference", x => x == reference), 
                 "Didn't find the expected user notification trace with the expected tags.");            

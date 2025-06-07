@@ -32,7 +32,7 @@ public class UserNotificationEventHandler(ILogger<UserNotificationEventHandler> 
     private static readonly ActivitySource Activity = new(nameof(UserNotificationEventHandler));
     public async Task HandleEvent(UserNotificationEvent @event)
     {
-         using (var activity = Activity.StartActivity("User Notication Sent", ActivityKind.Producer))
+         using (var activity = Activity.StartActivity("User Notification Sent", ActivityKind.Producer))
          {
             activity?.SetTag("user-notification-event.body", @event.Body);
             activity?.SetTag("user-notification-event.reference", @event.Reference);
