@@ -102,9 +102,9 @@ public class OutboxDispatcherHostedService(
 
                     return Enumerable.Empty<string>();
                 });
-                Baggage.Current = parentContext.Baggage;
+                //Baggage.Current = parentContext.Baggage;
 
-                using var activity = Activity.StartActivity("Dispatch Message", ActivityKind.Consumer, parentContext.ActivityContext);
+                //using var activity = Activity.StartActivity("Dispatch Message", ActivityKind.Consumer, parentContext.ActivityContext);
                 await messageSender.SendAsync(item.SerialisedData, item.MessagingEntityName, cancellationToken);
                 await outboxRepository.AddSentStatus(OutboxSentStatusUpdate.CreateSent(item.Id));
                 logger.LogDispatchedOutboxItem(item.Id);
