@@ -54,19 +54,35 @@ public class CollectedWeatherDataOrchestrator(
                     streamId, 1) 
             }, idempotencyKey, existingEvents => idempotencyCheck(existingEvents))
             .Then(locationManager.Locate)
-            .Then(contributorPaymentService.CreatePendingPayment)
-            .Then(weatherModelingService.Submit,   // call to service, async response via integration event 
-                (c, f) => contributorPaymentService.RevokePendingPayment(c))
+            .Then(weatherModelingService.Submit)   // call to service, async response via integration event 
             .ToResult(WeatherDataCollectionResponse.FromWeatherDataCollection);
     }
     
+    /*
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    */
+
     public async Task HandleEvent(ModelingDataRejectedIntegrationEvent dataRejectedIntegrationEvent)
     {
         logger.LogReceivedModelingDataRejectedEvent(dataRejectedIntegrationEvent.StreamId);
 
         await WeatherDataCollectionAggregate.Hydrate(eventPersistenceService, dataRejectedIntegrationEvent.StreamId)
             .Then(x => x.AppendModelingDataRejectedEvent(dataRejectedIntegrationEvent.Reason))
-            .Then(contributorPaymentService.RevokePendingPayment)
             .ThrowOnFailure(nameof(ModelingDataRejectedIntegrationEvent));
     }
 
@@ -76,7 +92,6 @@ public class CollectedWeatherDataOrchestrator(
 
         await WeatherDataCollectionAggregate.Hydrate(eventPersistenceService, dataAcceptedIntegrationEvent.StreamId)
             .Then(x => x.AppendModelingDataAcceptedEvent())
-            .Then(contributorPaymentService.CommitPendingPayment)
             .Then(x => x.AppendSubmissionCompleteEvent())
             .ThrowOnFailure(nameof(ModelingDataAcceptedIntegrationEvent));
     }
@@ -101,21 +116,3 @@ public class CollectedWeatherDataOrchestrator(
         }
     }
 }
-
-// public static class OneOfExtensions
-// {
-//     public static async Task<OneOf<WeatherDataCollectionAggregate, Failure>> PersistFailure(
-//         this Task<OneOf<WeatherDataCollectionAggregate, Failure>> currentResult, 
-//         IEventPersistenceService eventPersistenceService)
-//     {
-//         var result = await currentResult;
-//         if(result.IsT1)
-//         {
-//             var failure = result.AsT1;
-            
-//             await eventPersistenceService.PersistFailure(failure);
-//         }
-
-//         return result;
-//     }
-// }

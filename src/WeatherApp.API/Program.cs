@@ -73,8 +73,8 @@ public class Program
                     unsupportedRegionFailure => Results.UnprocessableEntity(unsupportedRegionFailure.ToProblemDetails()),
                     modelingServiceRejectionFailure => Results.UnprocessableEntity(modelingServiceRejectionFailure.Message),
                     contributorPaymentServiceFailure => Results.UnprocessableEntity(contributorPaymentServiceFailure.Message),
-                    alreadyProcessedFailure => Results.Conflict(alreadyProcessedFailure.Message)
-                ));
+                    alreadyProcessedFailure => Results.Conflict(alreadyProcessedFailure.Message))
+                );
         }
         
         await app.RunAsync();
