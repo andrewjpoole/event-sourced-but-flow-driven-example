@@ -57,12 +57,12 @@ public class ComponentTests
             .And.WeGetTheStreamIdFromTheInitialDomainEvent(cannedData.RequestId, out var streamId);
         
         when.InPhase("2 (1st ASB message back from modeling service)")
-            .AMessageAppears(message: new ModelingDataAcceptedIntegrationEvent(streamId));
+            .AMessageAppears(new ModelingDataAcceptedIntegrationEvent(streamId));
 
         then.TheEventShouldHaveBeenPersisted<ModelingDataAccepted>();
 
         when.InPhase("3 (2nd ASB message back from modeling service)")
-            .AMessageAppears(message: new ModelUpdatedIntegrationEvent(streamId));
+            .AMessageAppears(new ModelUpdatedIntegrationEvent(streamId));
 
         then.TheEventShouldHaveBeenPersisted<ModelUpdated>()
             .And.AnOutboxRecordWasInserted<UserNotificationEvent>();

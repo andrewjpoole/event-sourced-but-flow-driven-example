@@ -56,7 +56,7 @@ public class WeatherAppAspireIntegrationTests
     
         then.TheResponseShouldBe(response, HttpStatusCode.OK);
                 
-        when.WeWaitWhilePollingForTheNotificationTrace(queryableTraceCollectorClient, 9, "User Notification Sent", out var traces);
+        when.WeWaitWhilePollingForTheNotificationTrace(queryableTraceCollectorClient, 8, "User Notification Sent", out var traces);
             
         then.WeAssertAgainstTheTraces(traces, traces => 
         {

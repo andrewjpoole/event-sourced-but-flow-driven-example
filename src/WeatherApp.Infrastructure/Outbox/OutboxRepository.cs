@@ -35,7 +35,6 @@ public class OutboxRepository(IDbConnectionFactory dbConnectionFactory) : IOutbo
 
         using (var activity = Activity.StartActivity("Outbox Item Insertion", ActivityKind.Producer))
         {
-
             Dictionary<string, string> telemetryDictionary = new();
             if(activity != null)
                 Propagator.Inject(new PropagationContext(activity.Context, Baggage.Current), telemetryDictionary, (carrier, key, value) => 
