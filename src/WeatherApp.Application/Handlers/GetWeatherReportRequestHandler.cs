@@ -62,10 +62,13 @@ public class GetWeatherReportRequestHandler(
     public async Task<OneOf<WeatherReportResponse, Failure>> HandleGetWeatherReport(
         string requestedRegion, DateTime requestedDate)
     {
+        var settings = "34jh5k4jh5";
         return await WeatherReportDetails.Create(requestedRegion, requestedDate)
             .Then(regionValidator.ValidateRegion)
             .Then(dateChecker.CheckDate)
-            .Then(weatherForecastGenerator.Generate)
+            .Then(d => CheckCache(d, settings))
+            .IfThen(d => d.PopulatedFromCache == false,
+                weatherForecastGenerator.Generate)
             .ToResult(WeatherReportResponse.FromDetails);
     }
 
@@ -85,7 +88,7 @@ public class GetWeatherReportRequestHandler(
     */
 
     public async Task<OneOf<WeatherReportDetails, Failure>> CheckCache(
-        WeatherReportDetails details)
+        WeatherReportDetails details, string settings)
     {
         // Check and populate from a local in-memory cache etc...
         // Methods from anywhere can be chained as long as they

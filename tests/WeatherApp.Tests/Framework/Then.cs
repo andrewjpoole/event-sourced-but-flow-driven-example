@@ -102,7 +102,7 @@ public class Then(ComponentTestFixture fixture)
     public Then TheModelingServiceSubmitEndpointShouldNotHaveBeenCalled() => 
         TheModelingServiceSubmitEndpointShouldHaveBeenCalled(0);
 
-    public Then TheEventShouldHaveBeenPersisted<T>()
+    public Then TheDomainEventShouldHaveBeenPersisted<T>()
     {
         var typeOfT = typeof(T);
         var eventClassName = typeOfT.FullName ?? typeOfT.Name;

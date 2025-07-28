@@ -51,7 +51,7 @@ public class ComponentTests
             .And.WeSendTheMessageToTheApi(httpRequest, out var response);
 
         then.And.TheModelingServiceSubmitEndpointShouldHaveBeenCalled(times: 1)
-            .And.TheEventShouldHaveBeenPersisted<SubmittedToModeling>()
+            .And.TheDomainEventShouldHaveBeenPersisted<SubmittedToModeling>()
             .And.TheResponseCodeShouldBe(response, HttpStatusCode.OK)
             .And.TheBodyShouldNotBeEmpty<WeatherDataCollectionResponse>(response)
             .And.WeGetTheStreamIdFromTheInitialDomainEvent(cannedData.RequestId, out var streamId);
@@ -59,12 +59,12 @@ public class ComponentTests
         when.InPhase("2 (1st ASB message back from modeling service)")
             .AMessageAppears(new ModelingDataAcceptedIntegrationEvent(streamId));
 
-        then.TheEventShouldHaveBeenPersisted<ModelingDataAccepted>();
+        then.TheDomainEventShouldHaveBeenPersisted<ModelingDataAccepted>();
 
         when.InPhase("3 (2nd ASB message back from modeling service)")
             .AMessageAppears(new ModelUpdatedIntegrationEvent(streamId));
 
-        then.TheEventShouldHaveBeenPersisted<ModelUpdated>()
+        then.TheDomainEventShouldHaveBeenPersisted<ModelUpdated>()
             .And.AnOutboxRecordWasInserted<UserNotificationEvent>();
 
         then.InPhase("4 (Notification Service handles event dispached by outbox)")

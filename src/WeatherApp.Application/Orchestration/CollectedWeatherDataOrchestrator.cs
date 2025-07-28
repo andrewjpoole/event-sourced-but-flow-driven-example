@@ -54,7 +54,9 @@ public class CollectedWeatherDataOrchestrator(
                     streamId, 1) 
             }, idempotencyKey, existingEvents => idempotencyCheck(existingEvents))
             .Then(locationManager.Locate)
-            .Then(weatherModelingService.Submit)   // call to service, async response via integration event 
+            .Then(contributorPaymentService.CreatePendingPayment)
+            .Then(weatherModelingService.Submit, // call to service, async response via integration event 
+                (d, f) => contributorPaymentService.RevokePendingPayment(d))   
             .ToResult(WeatherDataCollectionResponse.FromWeatherDataCollection);
     }
     
@@ -83,6 +85,7 @@ public class CollectedWeatherDataOrchestrator(
 
         await WeatherDataCollectionAggregate.Hydrate(eventPersistenceService, dataRejectedIntegrationEvent.StreamId)
             .Then(x => x.AppendModelingDataRejectedEvent(dataRejectedIntegrationEvent.Reason))
+            .Then(contributorPaymentService.RevokePendingPayment)
             .ThrowOnFailure(nameof(ModelingDataRejectedIntegrationEvent));
     }
 
@@ -92,6 +95,7 @@ public class CollectedWeatherDataOrchestrator(
 
         await WeatherDataCollectionAggregate.Hydrate(eventPersistenceService, dataAcceptedIntegrationEvent.StreamId)
             .Then(x => x.AppendModelingDataAcceptedEvent())
+            .Then(contributorPaymentService.CommitPendingPayment)
             .Then(x => x.AppendSubmissionCompleteEvent())
             .ThrowOnFailure(nameof(ModelingDataAcceptedIntegrationEvent));
     }
