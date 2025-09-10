@@ -34,3 +34,7 @@ I use it to try things out, to demonstrate things in talks and to share with any
 ### How to fall in love with automated tests!
 
 [PDF of slides from DDDSouthWest 2025](./media/How%20to%20fall%20in%20love%20with%20automated%20tests!.pdf)
+
+### Unit Test Complex E2E Flows + Integration Integration Testing with Aspire & OTEL
+
+[PDF of slides from DotNet SouthWest 2025/09/09](./media/Level%20up%20your%20DevEx%20e2e%20component%20tests%20and%20integration%20testing%20with%20aspire%20and%20OTEL%20.pdf)
