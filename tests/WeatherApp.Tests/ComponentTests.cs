@@ -42,7 +42,7 @@ public class ComponentTests
         var cannedData = new CannedData();
 
         given.WeHaveSomeCollectedWeatherData(cannedData, out var weatherData)
-            .And.TheContributorPaymentsServicePendingEndpointWillReturn(HttpStatusCode.Accepted)
+            .And.TheContributorPaymentsServiceCreateEndpointWillReturn(HttpStatusCode.Accepted)
             .And.TheModelingServiceSubmitEndpointWillReturn(HttpStatusCode.Accepted)
             .And.TheServersAreStarted();
         

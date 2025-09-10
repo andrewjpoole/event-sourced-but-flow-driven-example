@@ -41,7 +41,8 @@ public class CollectedWeatherDataOrchestrator(
         logger.LogWeatherDataValidationPassed(weatherDataLocation, requestId);
 
         var idempotencyKey = requestId.ToString();
-        var idempotencyCheck = (List<PersistedEvent> existingEvents) => existingEvents.To<WeatherDataCollectionInitiated>()?.Reference == reference;
+        var idempotencyCheck = (List<PersistedEvent> existingEvents) =>
+            existingEvents.To<WeatherDataCollectionInitiated>()?.Reference == reference;
 
         return await WeatherDataCollectionAggregate.PersistOrHydrate(eventPersistenceService, 
             streamId => new List<Event> 

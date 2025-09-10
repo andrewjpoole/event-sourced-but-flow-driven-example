@@ -55,7 +55,7 @@ public class Given(ComponentTestFixture fixture)
         return this;
     }
 
-    public Given TheContributorPaymentsServicePendingEndpointWillReturn(HttpStatusCode statusCode)
+    public Given TheContributorPaymentsServiceCreateEndpointWillReturn(HttpStatusCode statusCode)
     {        
         fixture.MockContributorPaymentsServiceHttpMessageHandler
             .SetupRequest(HttpMethod.Post, 

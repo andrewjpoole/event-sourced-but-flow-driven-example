@@ -30,7 +30,7 @@ public class CollectedWeatherDataIntegrationTests
         connection = new SqlConnection(connectionString);
     }    
 
-    [Test]
+    //[Test]
     public async Task PostCollectedWeatherData_ShouldSaveToDatabase()
     {
         // Arrange

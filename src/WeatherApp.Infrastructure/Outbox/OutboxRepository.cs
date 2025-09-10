@@ -37,7 +37,10 @@ public class OutboxRepository(IDbConnectionFactory dbConnectionFactory) : IOutbo
         {
             Dictionary<string, string> telemetryDictionary = new();
             if(activity != null)
-                Propagator.Inject(new PropagationContext(activity.Context, Baggage.Current), telemetryDictionary, (carrier, key, value) => 
+                Propagator.Inject(
+                    new PropagationContext(activity.Context, Baggage.Current),
+                    telemetryDictionary,
+                    (carrier, key, value) => 
                 {
                     carrier.Add(key, value);
                 });

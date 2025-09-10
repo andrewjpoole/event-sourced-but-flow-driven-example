@@ -107,7 +107,8 @@ public class Then(ComponentTestFixture fixture)
         var typeOfT = typeof(T);
         var eventClassName = typeOfT.FullName ?? typeOfT.Name;
 
-        Assert.That(fixture.EventRepositoryInMemory?.PersistedEvents, Has.Some.Matches<Event>(e => e.EventClassName == eventClassName),
+        Assert.That(fixture.EventRepositoryInMemory?.PersistedEvents,
+            Has.Some.Matches<Event>(e => e.EventClassName == eventClassName),
             $"\n{fixture.CurrentPhase}expected an event of type {eventClassName} to have been persisted in the database.");
 
         return this;

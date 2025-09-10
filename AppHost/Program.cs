@@ -25,7 +25,8 @@ var weatherAppModelingDataAcceptedQueue = serviceBus.AddServiceBusQueue(Queues.M
 var weatherAppModelingDataRejectedQueue = serviceBus.AddServiceBusQueue(Queues.ModelingDataRejectedIntegrationEvent);
 var weatherAppModelUpdatedQueue = serviceBus.AddServiceBusQueue(Queues.ModelUpdatedIntegrationEvent);
 var weatherAppUserNotificationQueue = serviceBus.AddServiceBusQueue(Queues.UserNotificationEvent);
-serviceBus.RunAsEmulator();
+serviceBus.RunAsEmulator(
+    x => x.WithLifetime(ContainerLifetime.Persistent));
 
 // Queryable Trace Collector for integration test assertions against collected trace data
 var queryableTraceCollectorApiKey = builder.Configuration["QueryableTraceCollectorApiKey"] ?? "123456789";
