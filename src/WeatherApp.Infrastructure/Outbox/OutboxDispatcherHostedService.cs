@@ -102,6 +102,7 @@ public class OutboxDispatcherHostedService(
 
                     return Enumerable.Empty<string>();
                 });
+                // Aspire talk prep: comment 106 & 108 Maintain the trace context accross the Outbox 'airgap'
                 Baggage.Current = parentContext.Baggage;
 
                 using var activity = Activity.StartActivity("Dispatch Message", ActivityKind.Consumer, parentContext.ActivityContext);
