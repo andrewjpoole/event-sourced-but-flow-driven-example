@@ -1,7 +1,5 @@
 <Project Sdk="Microsoft.NET.Sdk">
-
-  <Sdk Name="Aspire.AppHost.Sdk" Version="9.1.0" />
-
+  <Sdk Name="Aspire.AppHost.Sdk" Version="9.4.2" />
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>net9.0</TargetFramework>
@@ -10,15 +8,13 @@
     <IsAspireHost>true</IsAspireHost>
     <UserSecretsId>c28b160a-2291-4001-9e6e-bcecf3d2caff</UserSecretsId>
   </PropertyGroup>
-
   <ItemGroup>
-    <PackageReference Include="Aspire.Hosting.AppHost" Version="9.1.0" />
-    <PackageReference Include="Aspire.Hosting.Azure.ServiceBus" Version="9.1.0" />
-    <PackageReference Include="Aspire.Hosting.SqlServer" Version="9.1.0" />
-    <PackageReference Include="CommunityToolkit.Aspire.Hosting.SqlDatabaseProjects" Version="9.3.0" />
+    <PackageReference Include="Aspire.Hosting.AppHost" Version="9.4.2" />
+    <PackageReference Include="Aspire.Hosting.Azure.ServiceBus" Version="9.4.2" />
+    <PackageReference Include="Aspire.Hosting.SqlServer" Version="9.4.2" />
+    <PackageReference Include="CommunityToolkit.Aspire.Hosting.SqlDatabaseProjects" Version="9.4.2" />
   </ItemGroup>
-
-  <ItemGroup> 
+  <ItemGroup>
     <ProjectReference Include="..\external-dummy-apps\ContributorPaymentsService\ContributorPaymentsService.csproj" />
     <ProjectReference Include="..\external-dummy-apps\NotificationService\NotificationService.csproj" />
     <ProjectReference Include="..\external-dummy-apps\WeatherDataModelingSystem\WeatherDataModelingSystem.csproj" />
@@ -27,11 +23,9 @@
     <ProjectReference Include="..\src\WeatherApp.Outbox\WeatherApp.Outbox.csproj" />
     <ProjectReference Include="..\database\WeatherAppDb.sqlproj" />
   </ItemGroup>
-  
   <ItemGroup>
     <ProjectReference Include="..\src\WeatherApp.Infrastructure\WeatherApp.Infrastructure.csproj" IsAspireProjectResource="false" />
     <ProjectReference Include="..\aspire-experiments\QueryableTraceCollector\QueryableTraceCollector.csproj" IsAspireProjectResource="false" />
-    <ProjectReference Include="..\aspire-experiments\QueryableTraceExporter\QueryableTraceExporter.csproj" IsAspireProjectResource="false"/>
+    <ProjectReference Include="..\aspire-experiments\QueryableTraceExporter\QueryableTraceExporter.csproj" IsAspireProjectResource="false" />
   </ItemGroup>
-
 </Project>
