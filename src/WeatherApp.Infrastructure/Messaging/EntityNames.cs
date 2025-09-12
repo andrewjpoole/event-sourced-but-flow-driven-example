@@ -1,4 +1,4 @@
-using WeatherApp.SounrceGenerators;
+using WeatherApp.SourceGenerators;
 
 namespace WeatherApp.Infrastructure.Messaging;
 

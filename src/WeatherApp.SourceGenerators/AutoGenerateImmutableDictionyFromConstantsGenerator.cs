@@ -12,7 +12,7 @@ public class AutoGenerateImmutableDictionyFromConstantsGenerator : IIncrementalG
 private const string AttributeName = "AutoGenerateImmutableDictionyFromConstantsAttribute";
 
 public const string Attribute = @"
-namespace WeatherApp.SounrceGenerators;
+namespace WeatherApp.SourceGenerators;
 
 [AttributeUsage(AttributeTargets.Class, Inherited = false, AllowMultiple = false)]
 public sealed class AutoGenerateImmutableDictionyFromConstantsAttribute : Attribute

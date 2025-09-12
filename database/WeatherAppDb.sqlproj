@@ -3,9 +3,10 @@
   <Sdk Name="Microsoft.Build.Sql" Version="0.2.5-preview" />
   <PropertyGroup>
     <Name>WeatherAppDb</Name>
-    <ProjectGuid>{838F9F76-BE34-40E3-BA0C-0873A80D102C}</ProjectGuid>
+    <ProjectGuid>{838f9f76-be34-40e3-ba0c-0873a80d102c}</ProjectGuid>
     <DSP>Microsoft.Data.Tools.Schema.Sql.Sql160DatabaseSchemaProvider</DSP>
     <ModelCollation>1033, CI</ModelCollation>
+    <TargetDatabaseSet>True</TargetDatabaseSet>
   </PropertyGroup>
   <ItemGroup>
     <None Include="localdb.publish.xml" />
