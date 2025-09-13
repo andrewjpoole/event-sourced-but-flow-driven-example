@@ -38,9 +38,7 @@ public class ComponentTests
     [Test]
     public void e2e_flow_notifications_sent_when_ModelingDataAccepted()
     {
-        var (given, when, then) = testFixture.SetupHelpers();
-        var cannedData = new CannedData();
-
+        var (given, when, then, cannedData) = testFixture.SetupHelpers();
         given.WeHaveSomeCollectedWeatherData(cannedData, out var weatherData)
             .And.TheContributorPaymentsServiceCreateEndpointWillReturn(HttpStatusCode.Accepted)
             .And.TheModelingServiceSubmitEndpointWillReturn(HttpStatusCode.Accepted)

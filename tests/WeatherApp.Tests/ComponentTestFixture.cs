@@ -62,9 +62,9 @@ public class ComponentTestFixture : IDisposable
         NotificationServiceFactory.HttpClient?.Dispose();
     }
 
-    public (Given given, When when, Then then) SetupHelpers()
+    public (Given given, When when, Then then, CannedData cannedData) SetupHelpers()
     {
-        return (new Given(this), new When(this), new Then(this));
+        return (new Given(this), new When(this), new Then(this), new CannedData());
     }
 
     public void SetPhase(string newPhase) => phase = newPhase;
