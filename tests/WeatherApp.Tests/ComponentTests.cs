@@ -1,10 +1,8 @@
 using System.Net;
-using Microsoft.AspNetCore.Http.HttpResults;
 using NUnit.Framework;
 using WeatherApp.Application.Models;
 using WeatherApp.Application.Models.IntegrationEvents.NotificationEvents;
 using WeatherApp.Application.Models.IntegrationEvents.WeatherModelingEvents;
-using WeatherApp.Application.Models.Requests;
 using WeatherApp.Domain.DomainEvents;
 
 namespace WeatherApp.Tests;
