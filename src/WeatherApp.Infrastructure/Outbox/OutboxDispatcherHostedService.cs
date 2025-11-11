@@ -54,6 +54,22 @@ public class OutboxDispatcherHostedService(
 
     private async Task RunBackgroundTaskAsync(CancellationToken cancellationToken)
     {
+        // Apply initial jitter so multiple dispatcher instances don't all start at the same time
+        try
+        {
+            var jitterSeconds = options.InitialJitterSeconds;
+            if (jitterSeconds > 0)
+            {
+                var jitter = Random.Shared.Next(0, jitterSeconds + 1);
+                logger.LogDebug("Applying initial dispatcher jitter of {jitter}s", jitter);
+                await Task.Delay(TimeSpan.FromSeconds(jitter), timeProvider, cancellationToken);
+            }
+        }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        {
+            return;
+        }
+
         while (!cancellationToken.IsCancellationRequested)
         {
             try

@@ -1,5 +1,6 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 using WeatherApp.Infrastructure.Messaging;
 
@@ -20,6 +21,11 @@ public static class OutboxRegistrations
         services.AddSingleton<IUniversalMessageSender, UniversalMessageSender>();
         services.AddHostedService<OutboxDispatcherHostedService>();
 
+    // Add retention hosted service and default retention options
+    var retentionOptions = config.GetSection(nameof(OutboxRetentionOptions)).Get<OutboxRetentionOptions>() ?? new OutboxRetentionOptions();
+    services.AddSingleton(Options.Create(retentionOptions));
+    services.AddHostedService<OutboxRetentionHostedService>();
+
         return services;
     }
 
@@ -28,6 +34,9 @@ public static class OutboxRegistrations
         services
             .AddSingleton<IOutboxItemFactory, OutboxItemFactory>()
             .AddSingleton<IOutboxRepository, OutboxRepository>();
+
+        // Default retention options registration (can be overridden in AddOutboxDispatcherService)
+        services.TryAddSingleton(Options.Create(new OutboxRetentionOptions()));
 
         return services;
     }

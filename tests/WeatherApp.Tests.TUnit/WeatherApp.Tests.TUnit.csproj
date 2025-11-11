@@ -1,0 +1,72 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net9.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Content Remove="C:\Users\andre\.nuget\packages\shouldly\4.0.2\contentFiles\any\netstandard2.0\empty.7z" />
+    <Content Remove="C:\Users\andre\.nuget\packages\shouldly\4.0.2\contentFiles\any\netstandard2.0\empty.avif" />
+    <Content Remove="C:\Users\andre\.nuget\packages\shouldly\4.0.2\contentFiles\any\netstandard2.0\empty.bmp" />
+    <Content Remove="C:\Users\andre\.nuget\packages\shouldly\4.0.2\contentFiles\any\netstandard2.0\empty.bz2" />
+    <Content Remove="C:\Users\andre\.nuget\packages\shouldly\4.0.2\contentFiles\any\netstandard2.0\empty.dds" />
+    <Content Remove="C:\Users\andre\.nuget\packages\shouldly\4.0.2\contentFiles\any\netstandard2.0\empty.dib" />
+    <Content Remove="C:\Users\andre\.nuget\packages\shouldly\4.0.2\contentFiles\any\netstandard2.0\empty.docx" />
+    <Content Remove="C:\Users\andre\.nuget\packages\shouldly\4.0.2\contentFiles\any\netstandard2.0\empty.emf" />
+    <Content Remove="C:\Users\andre\.nuget\packages\shouldly\4.0.2\contentFiles\any\netstandard2.0\empty.exif" />
+    <Content Remove="C:\Users\andre\.nuget\packages\shouldly\4.0.2\contentFiles\any\netstandard2.0\empty.gif" />
+    <Content Remove="C:\Users\andre\.nuget\packages\shouldly\4.0.2\contentFiles\any\netstandard2.0\empty.gz" />
+    <Content Remove="C:\Users\andre\.nuget\packages\shouldly\4.0.2\contentFiles\any\netstandard2.0\empty.heic" />
+    <Content Remove="C:\Users\andre\.nuget\packages\shouldly\4.0.2\contentFiles\any\netstandard2.0\empty.heif" />
+    <Content Remove="C:\Users\andre\.nuget\packages\shouldly\4.0.2\contentFiles\any\netstandard2.0\empty.ico" />
+    <Content Remove="C:\Users\andre\.nuget\packages\shouldly\4.0.2\contentFiles\any\netstandard2.0\empty.j2c" />
+    <Content Remove="C:\Users\andre\.nuget\packages\shouldly\4.0.2\contentFiles\any\netstandard2.0\empty.jfif" />
+    <Content Remove="C:\Users\andre\.nuget\packages\shouldly\4.0.2\contentFiles\any\netstandard2.0\empty.jp2" />
+    <Content Remove="C:\Users\andre\.nuget\packages\shouldly\4.0.2\contentFiles\any\netstandard2.0\empty.jpc" />
+    <Content Remove="C:\Users\andre\.nuget\packages\shouldly\4.0.2\contentFiles\any\netstandard2.0\empty.jpe" />
+    <Content Remove="C:\Users\andre\.nuget\packages\shouldly\4.0.2\contentFiles\any\netstandard2.0\empty.jpg" />
+    <Content Remove="C:\Users\andre\.nuget\packages\shouldly\4.0.2\contentFiles\any\netstandard2.0\empty.jxr" />
+    <Content Remove="C:\Users\andre\.nuget\packages\shouldly\4.0.2\contentFiles\any\netstandard2.0\empty.odp" />
+    <Content Remove="C:\Users\andre\.nuget\packages\shouldly\4.0.2\contentFiles\any\netstandard2.0\empty.ods" />
+    <Content Remove="C:\Users\andre\.nuget\packages\shouldly\4.0.2\contentFiles\any\netstandard2.0\empty.odt" />
+    <Content Remove="C:\Users\andre\.nuget\packages\shouldly\4.0.2\contentFiles\any\netstandard2.0\empty.pbm" />
+    <Content Remove="C:\Users\andre\.nuget\packages\shouldly\4.0.2\contentFiles\any\netstandard2.0\empty.pcx" />
+    <Content Remove="C:\Users\andre\.nuget\packages\shouldly\4.0.2\contentFiles\any\netstandard2.0\empty.pdf" />
+    <Content Remove="C:\Users\andre\.nuget\packages\shouldly\4.0.2\contentFiles\any\netstandard2.0\empty.pgm" />
+    <Content Remove="C:\Users\andre\.nuget\packages\shouldly\4.0.2\contentFiles\any\netstandard2.0\empty.png" />
+    <Content Remove="C:\Users\andre\.nuget\packages\shouldly\4.0.2\contentFiles\any\netstandard2.0\empty.ppm" />
+    <Content Remove="C:\Users\andre\.nuget\packages\shouldly\4.0.2\contentFiles\any\netstandard2.0\empty.pptx" />
+    <Content Remove="C:\Users\andre\.nuget\packages\shouldly\4.0.2\contentFiles\any\netstandard2.0\empty.rle" />
+    <Content Remove="C:\Users\andre\.nuget\packages\shouldly\4.0.2\contentFiles\any\netstandard2.0\empty.rtf" />
+    <Content Remove="C:\Users\andre\.nuget\packages\shouldly\4.0.2\contentFiles\any\netstandard2.0\empty.tar" />
+    <Content Remove="C:\Users\andre\.nuget\packages\shouldly\4.0.2\contentFiles\any\netstandard2.0\empty.tga" />
+    <Content Remove="C:\Users\andre\.nuget\packages\shouldly\4.0.2\contentFiles\any\netstandard2.0\empty.tif" />
+    <Content Remove="C:\Users\andre\.nuget\packages\shouldly\4.0.2\contentFiles\any\netstandard2.0\empty.wdp" />
+    <Content Remove="C:\Users\andre\.nuget\packages\shouldly\4.0.2\contentFiles\any\netstandard2.0\empty.webp" />
+    <Content Remove="C:\Users\andre\.nuget\packages\shouldly\4.0.2\contentFiles\any\netstandard2.0\empty.wmp" />
+    <Content Remove="C:\Users\andre\.nuget\packages\shouldly\4.0.2\contentFiles\any\netstandard2.0\empty.xlsx" />
+    <Content Remove="C:\Users\andre\.nuget\packages\shouldly\4.0.2\contentFiles\any\netstandard2.0\empty.zip" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="TUnit" Version="0.73.19" />
+    <PackageReference Include="Shouldly" Version="4.0.2" />
+    <PackageReference Include="Moq" Version="4.20.72" />
+    <PackageReference Include="Moq.Contrib.HttpClient" Version="1.4.0" />
+    <PackageReference Include="Microsoft.Extensions.TimeProvider.Testing" Version="9.9.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="9.0.9" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\external-dummy-apps\NotificationService\NotificationService.csproj" />
+    <ProjectReference Include="..\..\src\WeatherApp.API\WeatherApp.API.csproj" />
+    <ProjectReference Include="..\..\src\WeatherApp.Domain\WeatherApp.Domain.csproj" />
+    <ProjectReference Include="..\..\src\WeatherApp.EventListener\WeatherApp.EventListener.csproj" />
+    <ProjectReference Include="..\..\src\WeatherApp.Infrastructure\WeatherApp.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\src\WeatherApp.Outbox\WeatherApp.Outbox.csproj" />
+  </ItemGroup>
+
+</Project>

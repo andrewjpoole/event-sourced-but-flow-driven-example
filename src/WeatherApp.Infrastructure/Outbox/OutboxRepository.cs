@@ -92,4 +92,62 @@ public class OutboxRepository(IDbConnectionFactory dbConnectionFactory) : IOutbo
             await connection.ExecuteAsync(sql, parameters, transaction);
         }
     }    
+
+    public async Task<int> RemoveSentOutboxItemsOlderThan(DateTimeOffset cutoff)
+    {
+        using var connection = dbConnectionFactory.Create();
+        var parameters = new DynamicParameters();
+        parameters.Add("@Cutoff", cutoff);
+
+        // Execute the batch delete within a transaction to ensure consistency
+        var transaction = connection.BeginTransaction();
+
+        // First delete statuses for items we will remove
+        const string deleteStatusesSql = @"
+            ;WITH LatestStatus AS (
+                SELECT
+                    OIS.[OutboxItemId],
+                    OIS.[Status],
+                    OIS.[Created],
+                    ROW_NUMBER() OVER (PARTITION BY OIS.[OutboxItemId] ORDER BY OIS.[Created] DESC) AS RowNum
+                FROM [dbo].[OutboxItemStatus] OIS
+            )
+            , ToDelete AS (
+                SELECT OI.[Id]
+                FROM [dbo].[OutboxItems] OI
+                INNER JOIN LatestStatus LS ON LS.[OutboxItemId] = OI.[Id] AND LS.RowNum = 1
+                WHERE LS.[Status] = 1 /* Sent */
+                  AND LS.[Created] < @Cutoff
+            )
+            DELETE FROM [dbo].[OutboxItemStatus] WHERE [OutboxItemId] IN (SELECT Id FROM ToDelete);";
+
+        await connection.ExecuteAsync(deleteStatusesSql, parameters, transaction);
+
+        // Then delete the OutboxItems and capture how many rows were removed
+        const string deleteItemsSql = @"
+            ;WITH LatestStatus AS (
+                SELECT
+                    OIS.[OutboxItemId],
+                    OIS.[Status],
+                    OIS.[Created],
+                    ROW_NUMBER() OVER (PARTITION BY OIS.[OutboxItemId] ORDER BY OIS.[Created] DESC) AS RowNum
+                FROM [dbo].[OutboxItemStatus] OIS
+            )
+            , ToDelete AS (
+                SELECT OI.[Id]
+                FROM [dbo].[OutboxItems] OI
+                INNER JOIN LatestStatus LS ON LS.[OutboxItemId] = OI.[Id] AND LS.RowNum = 1
+                WHERE LS.[Status] = 1 /* Sent */
+                  AND LS.[Created] < @Cutoff
+            )
+            DELETE OI
+            FROM [dbo].[OutboxItems] OI
+            WHERE OI.Id IN (SELECT Id FROM ToDelete);
+            SELECT @@ROWCOUNT;";
+
+        var deletedCount = await connection.ExecuteAsync(deleteItemsSql, parameters, transaction);
+        transaction.Commit();
+
+        return deletedCount;
+    }
 }
