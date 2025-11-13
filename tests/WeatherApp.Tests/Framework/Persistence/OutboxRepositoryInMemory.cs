@@ -60,6 +60,23 @@ public class OutboxRepositoryInMemory : IOutboxRepository, IOutboxBatchRepositor
 
         return Task.FromResult(outboxBatchItemList);
     }
+
+    public Task<int> RemoveSentOutboxItemsOlderThan(DateTimeOffset cutoff)
+    {
+        var itemsToRemove = OutboxItems
+            .Where(x => x.Value.StatusUpdates.Any() 
+                && x.Value.StatusUpdates.Last().Status == OutboxSentStatus.Sent
+                && x.Value.StatusUpdates.Last().Created < cutoff)
+            .Select(x => x.Key)
+            .ToList();
+
+        foreach (var key in itemsToRemove)
+        {
+            OutboxItems.Remove(key);
+        }
+
+        return Task.FromResult(itemsToRemove.Count);
+    }
 }
 
 public class OutboxItemWithSentStatuses

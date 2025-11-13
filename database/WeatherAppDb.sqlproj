@@ -4,7 +4,7 @@
   <PropertyGroup>
     <Name>WeatherAppDb</Name>
     <ProjectGuid>{838f9f76-be34-40e3-ba0c-0873a80d102c}</ProjectGuid>
-    <DSP>Microsoft.Data.Tools.Schema.Sql.Sql160DatabaseSchemaProvider</DSP>
+    <DSP>Microsoft.Data.Tools.Schema.Sql.Sql150DatabaseSchemaProvider</DSP>
     <ModelCollation>1033, CI</ModelCollation>
     <TargetDatabaseSet>True</TargetDatabaseSet>
   </PropertyGroup>
