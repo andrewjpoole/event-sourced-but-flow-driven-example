@@ -11,6 +11,7 @@ var sql = builder.AddSqlServer("sql", port: 54782)
 var db = sql.AddDatabase("WeatherAppDb", "WeatherAppDb");
 
 builder.AddSqlProject<WeatherAppDb>("weatherAppDbSqlProj")
+    .WithSkipWhenDeployed()
     .WithConfigureDacDeployOptions(options => 
     {
         options.BlockOnPossibleDataLoss = false;
@@ -27,6 +28,8 @@ var weatherAppModelUpdatedQueue = serviceBus.AddServiceBusQueue(Queues.ModelUpda
 var weatherAppUserNotificationQueue = serviceBus.AddServiceBusQueue(Queues.UserNotificationEvent);
 serviceBus.RunAsEmulator(
     x => x.WithLifetime(ContainerLifetime.Persistent));
+
+//builder.AddAsbEmulatorUi("asb-ui", serviceBus);
 
 // Queryable Trace Collector for integration test assertions against collected trace data
 var queryableTraceCollectorApiKey = builder.Configuration["QueryableTraceCollectorApiKey"] ?? "123456789";
