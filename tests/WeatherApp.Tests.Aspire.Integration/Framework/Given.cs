@@ -45,7 +45,7 @@ public class Given
 
     public Given WeCreateAnHttpClientForTheQueryableTraceCollector(DistributedApplication app, IConfiguration config, out HttpClient client)
     {
-        var apiKey = config["QueryableTraceCollectorApiKey"];
+        var apiKey = config["QueryableTraceCollectorApiKey"] ?? "123456789";
 
         client = app.CreateHttpClient("queryabletracecollector");
         client.DefaultRequestHeaders.Add("X-Api-Key", apiKey);
