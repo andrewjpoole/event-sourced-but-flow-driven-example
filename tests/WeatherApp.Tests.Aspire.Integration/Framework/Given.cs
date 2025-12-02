@@ -85,11 +85,4 @@ public class Given
 
         return this;
     }
-
-    public Given WeAddTheDashboardService(IDistributedApplicationTestingBuilder appHost)
-    {
-        appHost.Services.AddDashboardWebApplication();
-
-        return this;
-    }
 }

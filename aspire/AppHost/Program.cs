@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Options;
 using Projects;
 using WeatherApp.Infrastructure.Messaging;
 using WeatherApp.Infrastructure.Outbox;
@@ -16,20 +17,26 @@ builder.AddSqlProject<WeatherAppDb>("weatherAppDbSqlProj")
     {
         options.BlockOnPossibleDataLoss = false;
     })
-    .WithReference(db).WaitFor(db);
+    .WithReference(db);
 
 // ASB
 // if (builder.ExecutionContext.IsPublishMode || builder.Environment.IsProduction()) {}
 //var serviceBus = builder.AddConnectionString("asb").Resource; // existing namespace
 var serviceBus = builder.AddAzureServiceBus("asb");
-var weatherAppModelingDataAcceptedQueue = serviceBus.AddServiceBusQueue(Queues.ModelingDataAcceptedIntegrationEvent);
-var weatherAppModelingDataRejectedQueue = serviceBus.AddServiceBusQueue(Queues.ModelingDataRejectedIntegrationEvent);
-var weatherAppModelUpdatedQueue = serviceBus.AddServiceBusQueue(Queues.ModelUpdatedIntegrationEvent);
-var weatherAppUserNotificationQueue = serviceBus.AddServiceBusQueue(Queues.UserNotificationEvent);
-serviceBus.RunAsEmulator(
-    x => x.WithLifetime(ContainerLifetime.Persistent));
+serviceBus.AddServiceBusQueue(Queues.ModelingDataAcceptedIntegrationEvent);
+serviceBus.AddServiceBusQueue(Queues.ModelingDataRejectedIntegrationEvent);
+serviceBus.AddServiceBusQueue(Queues.ModelUpdatedIntegrationEvent);
+serviceBus.AddServiceBusQueue(Queues.UserNotificationEvent);
+serviceBus.AddServiceBusQueue("t1-sub1-fwdqueue");
+serviceBus.AddServiceBusTopic("t1")
+    .AddServiceBusSubscription("t1-sub1")
+    .WithProperties(subscription =>
+    {
+        subscription.ForwardTo = "t1-sub1-fwdqueue";
+    });
+serviceBus.RunAsEmulator(x => x.WithLifetime(ContainerLifetime.Persistent));
 
-//builder.AddAsbEmulatorUi("asb-ui", serviceBus);
+builder.AddAsbEmulatorUi("asb-ui", serviceBus, 8001);
 
 // Queryable Trace Collector for integration test assertions against collected trace data
 var queryableTraceCollectorApiKey = builder.Configuration["QueryableTraceCollectorApiKey"] ?? "123456789";
