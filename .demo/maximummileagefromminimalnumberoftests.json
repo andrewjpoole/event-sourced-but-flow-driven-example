@@ -1,0 +1,101 @@
+{
+  "$schema": "https://demotime.show/demo-time.schema.json",
+  "title": "MaximumMileageFromMinimalNumberOfTests",
+  "version": 2,
+  "demos": [
+    {
+      "id": "demo-mjysqmwo-23e2",
+      "title": "5-How-1-nice-framework",
+      "steps": [
+        {
+          "action": "create",
+          "path": ".demo/temp-files/1.cs",
+          "content": "public class ComponentTests\n{\n    private ComponentTestFixture testFixture;\n\n    [Before(Test)]\n    public void Setup()\n    {\n        testFixture = new ComponentTestFixture();\n    }\n\n    [Test]\n    public void Return_a_WeatherReport_given_valid_region_and_date()\n    {\n        \n\n\n    }\n}"
+        },
+        {
+          "action": "open",
+          "path": ".demo/temp-files/1.cs"
+        },
+        {
+          "action": "pause"
+        },
+        {
+          "action": "insert",
+          "content": "        var (given, when, then, cannedData) = testFixture.SetupHelpers();\n\n        ",
+          "path": ".demo/temp-files/1.cs",
+          "position": "14",
+          "highlightWholeLine": true,
+          "insertTypingMode": "character-by-character"
+        },
+        {
+          "action": "pause"
+        },
+        {
+          "action": "insert",
+          "path": ".demo/temp-files/1.cs",
+          "content": "        given.WeHaveAWeatherReportRequest(\"bristol\", DateTime.Now, out var apiRequest)\n            .And.TheServersAreStarted();\n",
+          "position": "16",
+          "highlightWholeLine": true
+        },
+        {
+          "action": "pause"
+        },
+        {
+          "action": "insert",
+          "path": ".demo/temp-files/1.cs",
+          "content": "        when.WeSendTheMessageToTheApi(apiRequest, out var response);\n\n",
+          "position": "19",
+          "highlightWholeLine": true
+        },
+        {
+          "action": "pause"
+        },
+        {
+          "action": "insert",
+          "path": ".demo/temp-files/1.cs",
+          "content": "        then.TheResponseCodeShouldBe(response, HttpStatusCode.OK)\n            .And.TheBodyShouldNotBeEmpty<WeatherReportResponse>(response, \n                x => x.Summary.ShouldNotBeEmpty());\n\n\n",
+          "position": "21",
+          "highlightWholeLine": true
+        }
+      ]
+    },
+    {
+      "id": "demo-mjyx2eok-35s1",
+      "title": "5-How-2-single-fixture",
+      "steps": [
+        {
+          "action": "open",
+          "path": "tests/WeatherApp.Tests.TUnit/ComponentTestFixture.cs"
+        },
+        {
+          "action": "selection",
+          "path": "tests/WeatherApp.Tests.TUnit/ComponentTestFixture.cs",
+          "position": "17:20",
+          "highlightWholeLine": true,
+          "zoom": 3
+        },
+        {
+          "action": "pause"
+        },
+        {
+          "action": "selection",
+          "path": "tests/WeatherApp.Tests.TUnit/ComponentTestFixture.cs",
+          "position": "41:43",
+          "highlightWholeLine": true,
+          "zoom": 3
+        },
+        {
+          "action": "pause"
+        },
+        {
+          "action": "selection",
+          "path": "tests/WeatherApp.Tests.TUnit/ComponentTestFixture.cs",
+          "position": "45:51",
+          "highlightWholeLine": true,
+          "zoom": 3
+        }
+      ]
+    }
+  ],
+  "description": "testing DemoTime for the code demos from my talk"
+}

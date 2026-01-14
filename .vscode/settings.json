@@ -1,5 +1,14 @@
 {
     "dataworkspace.excludedProjects": [
         "db/testdb/testdb.sqlproj"
-    ]
+    ],
+    "demoTime.highlightZoomEnabled": false,
+    "demoTime.customWebComponents": [
+        ".demo/custom-components/animated-diagram.js"
+    ],
+    "demoTime.customTheme": "",
+    "demoTime.insertTypingSpeed": 5,
+    "demoTime.hackerTyperChunkSize": 10,
+    "demoTime.nextActionBehaviour": "lastExecuted",
+    "window.zoomLevel": 0
 }

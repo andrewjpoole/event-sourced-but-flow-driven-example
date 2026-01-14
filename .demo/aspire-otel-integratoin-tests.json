@@ -1,0 +1,65 @@
+{
+  "$schema": "https://demotime.show/demo-time.schema.json",
+  "title": "aspire-otel-integratoin-tests",
+  "description": "",
+  "version": 3,
+  "timer": 60,
+  "scenes": [
+    {
+      "id": "scene-mkabpiey-q8q8",
+      "title": "slides - initial",
+      "moves": [
+        {
+          "action": "openSlide",
+          "path": ".demo/slides/aspire/slides1.md"
+        }
+      ]
+    },
+    {
+      "id": "scene-mkabqexb-kpjc",
+      "title": "demo - aspire initial",
+      "moves": []
+    },
+    {
+      "id": "scene-mkabquhc-3gr3",
+      "title": "slides fill missing trace data",
+      "moves": [
+        {
+          "action": "openSlide",
+          "path": ".demo/slides/aspire/slides2.md"
+        }
+      ]
+    },
+    {
+      "id": "demo-mkac3m1j-8bjt",
+      "title": "code - fill gaps in trace data",
+      "moves": [
+        {
+          "action": "open",
+          "path": "src/WeatherApp.Infrastructure/Outbox/OutboxRepository.cs"
+        },
+        {
+          "action": "selection",
+          "path": "src/WeatherApp.Infrastructure/Outbox/OutboxRepository.cs",
+          "position": "36:48",
+          "highlightWholeLine": true
+        }
+      ]
+    },
+    {
+      "id": "scene-mkabs8lx-t9o9",
+      "title": "demo - aspire full trace",
+      "moves": []
+    },
+    {
+      "id": "scene-mkabshcx-uv8g",
+      "title": "slides - aspire tests",
+      "moves": []
+    },
+    {
+      "id": "scene-mkabt08b-qvgr",
+      "title": "demo - aspire tests",
+      "moves": []
+    }
+  ]
+}

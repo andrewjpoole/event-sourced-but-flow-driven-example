@@ -24,7 +24,8 @@ public class ComponentTestFixture : IDisposable
     public EventRepositoryInMemory EventRepositoryInMemory = new();
     public OutboxRepositoryInMemory OutboxRepositoryInMemory = new();
 
-    public readonly Mock<HttpMessageHandler> MockContributorPaymentsServiceHttpMessageHandler = new(MockBehavior.Strict);
+    public readonly Mock<HttpMessageHandler> MockContributorPaymentsServiceHttpMessageHandler = 
+        new(MockBehavior.Strict);
 
     public ComponentTestFixture()
     {

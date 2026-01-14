@@ -1,0 +1,3 @@
+        then.TheResponseCodeShouldBe(response, HttpStatusCode.OK)
+            .And.TheBodyShouldNotBeEmpty<WeatherReportResponse>(response, 
+                x => x.Summary.ShouldNotBeEmpty());
