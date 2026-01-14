@@ -29,11 +29,17 @@ layout: default
 
 ---
 layout: default
-video: .demo/assets/complex-scenario.mp4
-controls: true
-playbackRate: 2.0
-autoPlay: true
 ---
+
+<simple-animate-svg-component 
+    svg-file-path="https://file+.vscode-resource.vscode-cdn.net/d%3A/git/event-sourced-but-flow-driven-example/.demo/assets/complex-scenario2.svg" 
+    background-color="#111"
+    invert-colors="true"
+    animation-speed="500" 
+    sizing="fill"
+    auto-play="true"
+    >
+</simple-animate-svg-component>
 
 ---
 layout: default
@@ -43,12 +49,17 @@ layout: default
 
 ---
 layout: default
-video: .demo/assets/scenario-sequence.mp4
-controls: true
-playbackRate: 2.0
-autoPlay: true
 ---
 
+<simple-animate-svg-component 
+    svg-file-path="https://file+.vscode-resource.vscode-cdn.net/d%3A/git/event-sourced-but-flow-driven-example/.demo/assets/scenario-sequence.svg" 
+    background-color="#111"
+    invert-colors="true"
+    animation-speed="500" 
+    sizing="fill"
+    auto-play="true"
+    >
+</simple-animate-svg-component>
 
 ---
 name: Intro
@@ -124,11 +135,17 @@ layout: default
 
 ---
 layout: default
-video: .demo/assets/test-trophy.mp4
-controls: true
-playbackRate: 2.0
-autoPlay: true
 ---
+
+<simple-animate-svg-component 
+    svg-file-path="https://file+.vscode-resource.vscode-cdn.net/d%3A/git/event-sourced-but-flow-driven-example/.demo/assets/test-trophy.svg" 
+    background-color="#111"
+    invert-colors="true"
+    animation-speed="500" 
+    sizing="fill"
+    auto-play="true"
+    >
+</simple-animate-svg-component>
 
 ---
 layout: default
@@ -197,8 +214,14 @@ Anatomy of an e2e component test...
 
 ---
 layout: default
-video: .demo/assets/component-test-bits.mp4
-controls: true
-playbackRate: 2.0
-autoPlay: true
 ---
+
+<simple-animate-svg-component 
+    svg-file-path="https://file+.vscode-resource.vscode-cdn.net/d%3A/git/event-sourced-but-flow-driven-example/.demo/assets/component-test-bits.svg" 
+    background-color="#111"
+    invert-colors="true"
+    animation-speed="500" 
+    sizing="fill"
+    auto-play="true"
+    >
+</simple-animate-svg-component>

@@ -55,14 +55,14 @@ layout: default
     svg-file-path="https://file+.vscode-resource.vscode-cdn.net/d%3A/git/event-sourced-but-flow-driven-example/.demo/assets/scenario-sequence.svg" 
     background-color="#111"
     invert-colors="true"
-    animation-speed="500" 
+    animation-speed="900" 
     sizing="fill"
     auto-play="true"
     >
 </simple-animate-svg-component>
 
 ---
-name: Intro
+name: default
 layout: default
 transition: fadeIn
 ---
@@ -73,11 +73,17 @@ transition: fadeIn
 layout: default
 ---
 
+# First of all what do I mean by integration tests? 
+
+---
+layout: default
+---
+
 <simple-animate-svg-component 
-    svg-file-path="https://file+.vscode-resource.vscode-cdn.net/d%3A/git/event-sourced-but-flow-driven-example/.demo/assets/test-trophy2.svg" 
+    svg-file-path="https://file+.vscode-resource.vscode-cdn.net/d%3A/git/event-sourced-but-flow-driven-example/.demo/assets/test-trophy3.svg" 
     background-color="#111"
     invert-colors="true"
-    animation-speed="500" 
+    animation-speed="1200" 
     sizing="fill"
     auto-play="true"
     >
@@ -359,38 +365,6 @@ Run local deploy script/command?
 Run integration tests, all pass first time
 
 From there on, hit [F5] and everything runs nicely😁
-
----
-layout: default
----
-
-# Aspire🚀 exceptional local devex!
-
-✔️Dashboard!
-
-✔️OTLP!
-
-✔️Easy to add to an existing app
-
-✔️Define everything in one file
-
-✔️Supports testing!
-
----
-layout: default
----
-
-# Aspire🚀 exceptional local devex!
-
-✔️Dashboard!
-
-✔️OTLP!
-
-✔️Easy to add to an existing app
-
-✔️Define everything in one file
-
-✔️Supports testing!
 
 ---
 layout: default

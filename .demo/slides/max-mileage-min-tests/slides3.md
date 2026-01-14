@@ -1,5 +1,5 @@
 ---
-layout: intro
+layout: default
 ---
 
 # Demo time!😅

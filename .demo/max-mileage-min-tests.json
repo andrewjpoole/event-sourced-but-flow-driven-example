@@ -3,5 +3,191 @@
   "title": "max-mileage-min-tests",
   "description": "",
   "version": 3,
-  "scenes": []
+  "timer": 60,
+  "scenes": [
+    {
+      "id": "scene-mkekq7nu-rclk",
+      "title": "initial slides",
+      "moves": [
+        {
+          "action": "openSlide",
+          "path": ".demo/slides/max-mileage-min-tests/slides1.md"
+        }
+      ]
+    },
+    {
+      "id": "scene-mkekq9mw-jfw6",
+      "title": "Prepare vscode",
+      "moves": [
+        {
+          "action": "zoomIn",
+          "zoom": 3
+        },
+        {
+          "action": "setSetting",
+          "disabled": false,
+          "setting": {
+            "key": "editor.codeLens",
+            "value": false
+          }
+        }
+      ]
+    },
+    {
+      "id": "scene-mkekqbf9-a1se",
+      "title": "How-1-nice-framework-1",
+      "moves": [
+        {
+          "action": "create",
+          "path": ".demo/temp-files/1.cs",
+          "contentPath": ".demo/code-snippets/max-mileage-min-tests/component-test-class-blank.txt"
+        },
+        {
+          "action": "open",
+          "path": ".demo/temp-files/1.cs"
+        }
+      ]
+    },
+    {
+      "id": "scene-mkekqean-473x",
+      "title": "How-1-nice-framework-2",
+      "moves": [
+        {
+          "action": "insert",
+          "position": "11",
+          "highlightWholeLine": true,
+          "insertTypingMode": "character-by-character",
+          "insertTypingSpeed": 10,
+          "path": ".demo/temp-files/1.cs",
+          "contentPath": ".demo/code-snippets/max-mileage-min-tests/component-test-class-add-test.txt"
+        }
+      ]
+    },
+    {
+      "id": "scene-mkekqgck-tvzs",
+      "title": "How-1-nice-framework-3",
+      "moves": [
+        {
+          "action": "insert",
+          "path": ".demo/temp-files/1.cs",
+          "highlightWholeLine": true,
+          "position": "14",
+          "contentPath": ".demo/code-snippets/max-mileage-min-tests/component-test-class-insert-1.txt",
+          "insertTypingMode": "character-by-character"
+        },
+        {
+          "action": "highlight",
+          "path": ".demo/temp-files/1.cs",
+          "position": "14,8:14,74",
+          "highlightWholeLine": false
+        }
+      ]
+    },
+    {
+      "id": "scene-mkekqhy2-z2is",
+      "title": "How-1-nice-framework-4",
+      "moves": [
+        {
+          "action": "insert",
+          "path": ".demo/temp-files/1.cs",
+          "highlightWholeLine": true,
+          "position": "16",
+          "contentPath": ".demo/code-snippets/max-mileage-min-tests/component-test-class-insert-2.txt",
+          "insertTypingMode": "character-by-character"
+        },
+        {
+          "action": "highlight",
+          "position": "16:17",
+          "highlightWholeLine": true,
+          "path": ".demo/temp-files/1.cs"
+        }
+      ]
+    },
+    {
+      "id": "scene-mkekqjjk-hapr",
+      "title": "How-1-nice-framework-5",
+      "moves": [
+        {
+          "action": "insert",
+          "path": ".demo/temp-files/1.cs",
+          "highlightWholeLine": true,
+          "position": "19",
+          "contentPath": ".demo/code-snippets/max-mileage-min-tests/component-test-class-insert-3.txt",
+          "insertTypingMode": "character-by-character"
+        },
+        {
+          "action": "highlight",
+          "path": ".demo/temp-files/1.cs",
+          "position": "19",
+          "highlightWholeLine": true
+        }
+      ]
+    },
+    {
+      "id": "scene-mkekqmti-lemk",
+      "title": "How-1-nice-framework-6",
+      "moves": [
+        {
+          "action": "insert",
+          "path": ".demo/temp-files/1.cs",
+          "contentPath": ".demo/code-snippets/max-mileage-min-tests/component-test-class-insert-4.txt",
+          "position": "21",
+          "highlightWholeLine": true,
+          "insertTypingMode": "character-by-character"
+        },
+        {
+          "action": "highlight",
+          "path": ".demo/temp-files/1.cs",
+          "position": "11:24",
+          "highlightWholeLine": true
+        }
+      ]
+    },
+    {
+      "id": "scene-mkekqok0-ncbq",
+      "title": "Reset vscode",
+      "moves": [
+        {
+          "action": "zoomReset"
+        },
+        {
+          "action": "setSetting",
+          "setting": {
+            "key": "editor.codeLens",
+            "value": true
+          }
+        }
+      ]
+    },
+    {
+      "id": "scene-mkekkbak-olek",
+      "title": "sides 2",
+      "moves": [
+        {
+          "action": "openSlide",
+          "path": ".demo/slides/max-mileage-min-tests/slides2.md"
+        }
+      ]
+    },
+    {
+      "id": "scene-mkekl4kb-1492",
+      "title": "slides 3",
+      "moves": [
+        {
+          "action": "openSlide",
+          "path": ".demo/slides/max-mileage-min-tests/slides3.md"
+        }
+      ]
+    },
+    {
+      "id": "demo-mkeklrq3-blyj",
+      "title": "slides 4",
+      "moves": [
+        {
+          "action": "openSlide",
+          "path": ".demo/slides/max-mileage-min-tests/slides4.md"
+        }
+      ]
+    }
+  ]
 }

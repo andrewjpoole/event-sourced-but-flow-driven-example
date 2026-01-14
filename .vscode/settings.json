@@ -10,5 +10,6 @@
     "demoTime.insertTypingSpeed": 5,
     "demoTime.hackerTyperChunkSize": 10,
     "demoTime.nextActionBehaviour": "lastExecuted",
-    "window.zoomLevel": 0
+    "window.zoomLevel": 0,
+    "editor.codeLens": true
 }

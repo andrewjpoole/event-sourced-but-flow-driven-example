@@ -16,9 +16,58 @@
       ]
     },
     {
-      "id": "scene-mkabqexb-kpjc",
-      "title": "demo - aspire initial",
-      "moves": []
+      "id": "scene-mkekp2lx-0ta2",
+      "title": "Prepare vscode",
+      "moves": [
+        {
+          "action": "zoomIn",
+          "zoom": 3
+        },
+        {
+          "action": "setSetting",
+          "disabled": false,
+          "setting": {
+            "key": "editor.codeLens",
+            "value": false
+          }
+        }
+      ]
+    },
+    {
+      "id": "scene-mkekp4az-08i9",
+      "title": "show Service Defaults",
+      "moves": [
+        {
+          "action": "open",
+          "path": "aspire/ServiceDefaults/Extensions.cs"
+        }
+      ]
+    },
+    {
+      "id": "demo-mkem368a-wul8",
+      "title": "show AppHost",
+      "moves": [
+        {
+          "action": "open",
+          "path": "aspire/AppHost/Program.cs"
+        }
+      ]
+    },
+    {
+      "id": "scene-mkekpgot-jwl0",
+      "title": "Reset vscode",
+      "moves": [
+        {
+          "action": "zoomReset"
+        },
+        {
+          "action": "setSetting",
+          "setting": {
+            "key": "editor.codeLens",
+            "value": true
+          }
+        }
+      ]
     },
     {
       "id": "scene-mkabquhc-3gr3",

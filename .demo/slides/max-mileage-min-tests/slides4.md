@@ -1,11 +1,11 @@
 ---
-layout: intro
+layout: default
 ---
 
 # Pros and Cons⚖️
 
 ---
-layout: intro
+layout: default
 ---
 
 # Pros and Cons⚖️
@@ -13,7 +13,7 @@ layout: intro
 ✔️Test entire e2e flows in addition to individual phases
 
 ---
-layout: intro
+layout: default
 ---
 
 # Pros and Cons⚖️
@@ -23,7 +23,7 @@ layout: intro
 ✔️The more reusable the code, the more care/love is justified 
 
 ---
-layout: intro
+layout: default
 ---
 
 # Pros and Cons⚖️
@@ -35,7 +35,7 @@ layout: intro
 ✔️Detect config and IoC registration issues
 
 ---
-layout: intro
+layout: default
 ---
 
 # Pros and Cons⚖️
@@ -49,7 +49,7 @@ layout: intro
 ✖️TDD is possible but is harder and especially at the start
 
 ---
-layout: intro
+layout: default
 ---
 
 # Pros and Cons⚖️
