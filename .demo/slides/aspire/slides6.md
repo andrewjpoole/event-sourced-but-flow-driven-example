@@ -10,7 +10,7 @@ layout: default
 
 # Pros and Cons⚖️
 
-✔️Massive shift-left
+✔️ Massive shift-left
 
 
 --
@@ -19,22 +19,10 @@ layout: default
 
 # Pros and Cons⚖️
 
-✔️Massive shift-left
+✔️ Massive shift-left
 
-✔️Easy to realistically run the service locally
+✔️ Easy to realistically run the service locally
 
-
---
-layout: default
----
-
-# Pros and Cons⚖️
-
-✔️Massive shift-left
-
-✔️Easy to realistically run the service locally
-
-✔️Easy to write and run integration tests locally
 
 --
 layout: default
@@ -42,13 +30,11 @@ layout: default
 
 # Pros and Cons⚖️
 
-✔️Massive shift-left
+✔️ Massive shift-left
 
-✔️Easy to realistically run the service locally
+✔️ Easy to realistically run the service locally
 
-✔️Easy to write and run integration tests locally 
-
-✔️Observability Driven Development?
+✔️ Easy to write and run integration tests locally
 
 --
 layout: default
@@ -56,15 +42,29 @@ layout: default
 
 # Pros and Cons⚖️
 
-✔️Massive shift-left
+✔️ Massive shift-left
 
-✔️Easy to realistically run the service locally
+✔️ Easy to realistically run the service locally
 
-✔️Easy to write and run integration tests locally 
+✔️ Easy to write and run integration tests locally 
 
-✔️Observability Driven Development?
+✔️ Observability Driven Development?
 
-✖️May have to create Dummy/Mocked external services
+--
+layout: default
+---
+
+# Pros and Cons⚖️
+
+✔️ Massive shift-left
+
+✔️ Easy to realistically run the service locally
+
+✔️ Easy to write and run integration tests locally 
+
+✔️ Observability Driven Development?
+
+✖️ May have to create Dummy/Mocked external services
 
 --
 layout: default

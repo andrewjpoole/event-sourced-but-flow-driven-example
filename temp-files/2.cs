@@ -8,11 +8,7 @@ public class ComponentTests
         testFixture = new ComponentTestFixture();
     }
 
-    [Test]
-    public void Return_a_WeatherReport_given_valid_region_and_date()
-    {
-        
-    }
+    
 
     [After(Test)]
     public void TearDown()

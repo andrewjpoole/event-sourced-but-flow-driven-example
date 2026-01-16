@@ -3,6 +3,8 @@ using Projects;
 using WeatherApp.Infrastructure.Messaging;
 using WeatherApp.Infrastructure.Outbox;
 
+// AppHost Program.cs
+
 var builder = DistributedApplication.CreateBuilder(args);
 
 // SQL database

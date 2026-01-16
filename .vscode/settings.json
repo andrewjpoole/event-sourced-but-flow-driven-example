@@ -9,7 +9,9 @@
     "demoTime.customTheme": "",
     "demoTime.insertTypingSpeed": 5,
     "demoTime.hackerTyperChunkSize": 10,
-    "demoTime.nextActionBehaviour": "lastExecuted",
+    "demoTime.nextActionBehaviour": "currentPosition",
     "window.zoomLevel": 0,
-    "editor.codeLens": true
+    "editor.codeLens": true,
+    "demoTime.api.enabled": true,
+    "demoTime.highlightBlur": 1
 }

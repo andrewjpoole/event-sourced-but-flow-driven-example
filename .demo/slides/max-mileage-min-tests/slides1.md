@@ -55,7 +55,7 @@ layout: default
     svg-file-path="https://file+.vscode-resource.vscode-cdn.net/d%3A/git/event-sourced-but-flow-driven-example/.demo/assets/scenario-sequence.svg" 
     background-color="#111"
     invert-colors="true"
-    animation-speed="500" 
+    animation-speed="2500" 
     sizing="fill"
     auto-play="true"
     >
@@ -73,25 +73,25 @@ transition: fadeIn
 
 # There are lots of ways to test a piece of software
 
-Every org
+## Every org
 
 ---
 
 # There are lots of ways to test a piece of software
 
-Every org, team
+## Every org, team
 
 ---
 
 # There are lots of ways to test a piece of software
 
-Every org, team, project
+## Every org, team, project
 
 ---
 
 # There are lots of ways to test a piece of software
 
-Every org, team, project, dev has a way
+## Every org, team, project, dev has a way
 
 ---
 layout: default

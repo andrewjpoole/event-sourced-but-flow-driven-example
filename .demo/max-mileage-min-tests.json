@@ -1,13 +1,13 @@
 {
-  "$schema": "https://demotime.show/demo-time.schema.json",
+  "$schema": "https://beta.demotime.show/demo-time.schema.json",
   "title": "max-mileage-min-tests",
-  "description": "",
+  "description": "test2",
   "version": 3,
   "timer": 60,
   "scenes": [
     {
-      "id": "scene-mkekq7nu-rclk",
-      "title": "initial slides",
+      "id": "demo-mkgnjd80-v3w8",
+      "title": "slides 1-1",
       "moves": [
         {
           "action": "openSlide",
