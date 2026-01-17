@@ -25,6 +25,158 @@
           "highlightWholeLine": true
         }
       ]
+    },
+    {
+      "id": "demo-mkixs9kh-j4f9",
+      "title": "view test 2",
+      "moves": [
+        {
+          "action": "highlight",
+          "path": "tests/WeatherApp.Tests.TUnit/ComponentTests.cs",
+          "position": "38",
+          "highlightWholeLine": true
+        }
+      ]
+    },
+    {
+      "id": "demo-mkixsrkf-08r7",
+      "title": "view test 3",
+      "moves": [
+        {
+          "action": "highlight",
+          "path": "tests/WeatherApp.Tests.TUnit/ComponentTests.cs",
+          "position": "39:42",
+          "highlightWholeLine": true
+        }
+      ]
+    },
+    {
+      "id": "demo-mkixt81b-wlck",
+      "title": "view test 4",
+      "moves": [
+        {
+          "action": "highlight",
+          "path": "tests/WeatherApp.Tests.TUnit/ComponentTests.cs",
+          "position": "44:46",
+          "highlightWholeLine": true
+        }
+      ]
+    },
+    {
+      "id": "demo-mkixtmnc-1tgm",
+      "title": "view test 5",
+      "moves": [
+        {
+          "action": "highlight",
+          "path": "tests/WeatherApp.Tests.TUnit/ComponentTests.cs",
+          "position": "48:52",
+          "highlightWholeLine": true
+        }
+      ]
+    },
+    {
+      "id": "demo-mkixu2ld-rblm",
+      "title": "view test 6",
+      "moves": [
+        {
+          "action": "highlight",
+          "path": "tests/WeatherApp.Tests.TUnit/ComponentTests.cs",
+          "position": "54:55",
+          "highlightWholeLine": true
+        }
+      ]
+    },
+    {
+      "id": "demo-mkixuph3-n0n0",
+      "title": "view test 7",
+      "moves": [
+        {
+          "action": "highlight",
+          "path": "tests/WeatherApp.Tests.TUnit/ComponentTests.cs",
+          "position": "57",
+          "highlightWholeLine": true
+        }
+      ]
+    },
+    {
+      "id": "demo-mkixv6h0-u3x0",
+      "title": "view test 8",
+      "moves": [
+        {
+          "action": "highlight",
+          "path": "tests/WeatherApp.Tests.TUnit/ComponentTests.cs",
+          "position": "59:60",
+          "highlightWholeLine": true
+        }
+      ]
+    },
+    {
+      "id": "demo-mkixvqsx-mf4o",
+      "title": "view test 9",
+      "moves": [
+        {
+          "action": "highlight",
+          "path": "tests/WeatherApp.Tests.TUnit/ComponentTests.cs",
+          "position": "62:63",
+          "highlightWholeLine": true
+        }
+      ]
+    },
+    {
+      "id": "demo-mkixw8c6-c5qm",
+      "title": "view test 10",
+      "moves": [
+        {
+          "action": "highlight",
+          "path": "tests/WeatherApp.Tests.TUnit/ComponentTests.cs",
+          "position": "65:68",
+          "highlightWholeLine": true
+        }
+      ]
+    },
+    {
+      "id": "demo-mkixwrn7-jyre",
+      "title": "run test",
+      "moves": [
+        {
+          "action": "executeVSCodeCommand",
+          "command": "workbench.view.testing.open"
+        },
+        {
+          "action": "selection",
+          "path": "tests/WeatherApp.Tests.TUnit/ComponentTests.cs",
+          "position": "35:36",
+          "highlightWholeLine": true
+        },
+        {
+          "action": "executeVSCodeCommand",
+          "command": "testing.runAtCursor"
+        }
+      ]
+    },
+    {
+      "id": "demo-mkiy7qow-4p9c",
+      "title": "debug test with breakpoints",
+      "moves": [
+        {
+          "action": "executeVSCodeCommand",
+          "command": "workbench.debug.viewlet.action.enableAllBreakpoints"
+        },
+        {
+          "action": "executeVSCodeCommand",
+          "command": "workbench.view.testing.open"
+        },
+        {
+          "action": "selection",
+          "path": "tests/WeatherApp.Tests.TUnit/ComponentTests.cs",
+          "position": "35:36",
+          "highlightWholeLine": true
+        },
+        {
+          "action": "executeVSCodeCommand",
+          "command": "testing.debugAtCursor"
+        }
+      ]
     }
   ]
 }
