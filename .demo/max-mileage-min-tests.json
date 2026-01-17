@@ -18,18 +18,12 @@
     {
       "id": "scene-mkekq9mw-jfw6",
       "title": "Prepare vscode",
+      "description": "especially enable all breakpoints",
       "moves": [
         {
-          "action": "zoomIn",
-          "zoom": 3
-        },
-        {
-          "action": "setSetting",
+          "action": "executeVSCodeCommand",
           "disabled": false,
-          "setting": {
-            "key": "editor.codeLens",
-            "value": false
-          }
+          "command": "workbench.debug.viewlet.action.enableAllBreakpoints"
         }
       ]
     },

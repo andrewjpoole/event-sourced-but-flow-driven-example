@@ -3,7 +3,7 @@
         "action": "setSetting",
         "setting": {
             "key": "workbench.statusBar.visible",
-            "value": true
+            "value": null
         }
     },
     {
@@ -37,5 +37,26 @@
     },
     {
         "action": "zoomReset"
+    },
+    {
+        "action": "setSetting",
+        "setting": {
+            "key": "editor.fontSize",
+            "value": null
+        }
+    },
+    {
+        "action": "setSetting",
+        "setting": {
+            "key": "terminal.integrated.fontSize",
+            "value": null
+        }
+    },
+    {
+        "action": "setSetting",
+        "setting": {
+        "key": "github.copilot.enable",
+        "value": null
+        }
     }
 ]

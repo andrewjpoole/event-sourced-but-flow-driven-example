@@ -24,9 +24,8 @@
           "path": "src/WeatherApp.Infrastructure/Outbox/OutboxRepository.cs"
         },
         {
-          "action": "selection",
+          "action": "highlight",
           "path": "src/WeatherApp.Infrastructure/Outbox/OutboxRepository.cs",
-          "highlightWholeLine": true,
           "startPlaceholder": "//*",
           "endPlaceholder": "//-"
         }
@@ -63,7 +62,7 @@
       "title": "code 2 - 3 hydrate telemetry in outbox dispatcher",
       "moves": [
         {
-          "action": "selection",
+          "action": "highlight",
           "path": "src/WeatherApp.Infrastructure/Outbox/OutboxDispatcherHostedService.cs",
           "position": "110:111",
           "highlightWholeLine": true
@@ -88,7 +87,7 @@
       "title": "code 2 - 5 telemetry on notification",
       "moves": [
         {
-          "action": "selection",
+          "action": "highlight",
           "path": "external-dummy-apps/NotificationService/Program.cs",
           "position": "33:33",
           "highlightWholeLine": true

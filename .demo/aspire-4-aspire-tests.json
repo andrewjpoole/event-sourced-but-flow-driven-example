@@ -21,7 +21,7 @@
       "description": "out of the box test",
       "moves": [
         {
-          "action": "selection",
+          "action": "highlight",
           "path": "tests/WeatherApp.Tests.Aspire.Integration/WeatherAppAspireIntegrationTests.cs",
           "position": "11:45",
           "highlightWholeLine": true
@@ -40,7 +40,7 @@
     },
     {
       "id": "demo-mkh02out-rz58",
-      "title": "code 4 - 1 QTC",
+      "title": "code 4 - 1 QTC collector",
       "description": "collector API",
       "moves": [
         {
@@ -51,7 +51,7 @@
     },
     {
       "id": "demo-mkh04z45-vx0g",
-      "title": "code 4 - 2 QTC",
+      "title": "code 4 - 2 QTC exporter",
       "description": "exporter",
       "moves": [
         {
@@ -62,7 +62,7 @@
     },
     {
       "id": "demo-mkh05ujm-gimz",
-      "title": "code 4 - 3 QTC",
+      "title": "code 4 - 3 QTC activityLite",
       "description": "ActivityLite",
       "moves": [
         {
@@ -73,7 +73,7 @@
     },
     {
       "id": "demo-mkh06n96-6eqb",
-      "title": "code 4 - 4 QTC",
+      "title": "code 4 - 4 QTC extensions",
       "description": "exporter extensions",
       "moves": [
         {
@@ -83,10 +83,27 @@
       ]
     },
     {
-      "id": "demo-mkh0d3tl-khq6",
-      "title": "demo - QTC",
+      "id": "demo-mki6bw7d-nt94",
+      "title": "demo - view dashboard",
       "description": "exporter extensions",
-      "moves": []
+      "moves": [
+        {
+          "action": "openWebsite",
+          "openInVSCode": false,
+          "url": "https://localhost:17218/"
+        }
+      ]
+    },
+    {
+      "id": "demo-mki6dz7f-qjx5",
+      "title": "demo - endpoints tester",
+      "description": "exporter extensions",
+      "moves": [
+        {
+          "action": "open",
+          "path": "notebooks/endpoints-tester.ipynb"
+        }
+      ]
     },
     {
       "id": "demo-mkgzzcqk-gp9d",

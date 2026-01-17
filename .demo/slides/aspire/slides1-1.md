@@ -28,18 +28,11 @@ layout: default
 # Let’s start with a scenario…
 
 ---
-layout: default
+customLayout: .demo/layouts/animated-diagram.html
+filePath: .demo/assets/complex-scenario2.svg
+speed: 500
+dark: true
 ---
-
-<simple-animate-svg-component 
-    svg-file-path="https://file+.vscode-resource.vscode-cdn.net/d%3A/git/event-sourced-but-flow-driven-example/.demo/assets/complex-scenario2.svg" 
-    background-color="#111"
-    invert-colors="true"
-    animation-speed="500" 
-    sizing="fill"
-    auto-play="true"
-    >
-</simple-animate-svg-component>
 
 ---
 layout: default
@@ -48,15 +41,8 @@ layout: default
 # and as a sequence diagram...
 
 ---
-layout: default
+customLayout: .demo/layouts/animated-diagram.html
+filePath: .demo/assets/scenario-sequence.svg
+speed: 2500
 ---
 
-<simple-animate-svg-component 
-    svg-file-path="https://file+.vscode-resource.vscode-cdn.net/d%3A/git/event-sourced-but-flow-driven-example/.demo/assets/scenario-sequence.svg" 
-    background-color="#111"
-    invert-colors="true"
-    animation-speed="2500" 
-    sizing="fill"
-    auto-play="true"
-    >
-</simple-animate-svg-component>

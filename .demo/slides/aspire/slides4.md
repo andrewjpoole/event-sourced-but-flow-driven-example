@@ -67,18 +67,10 @@ layout: default
 enter the QueryableTraceCollector = hosting package + client package
 
 ---
-layout: default
+customLayout: .demo/layouts/animated-diagram.html
+filePath: .demo/assets/aspire-testing.svg
+speed: 1500
 ---
-
-<simple-animate-svg-component 
-    svg-file-path="https://file+.vscode-resource.vscode-cdn.net/d%3A/git/event-sourced-but-flow-driven-example/.demo/assets/aspire-testing.svg" 
-    background-color="#111"
-    invert-colors="true"
-    animation-speed="1500" 
-    sizing="fill"
-    auto-play="true"
-    >
-</simple-animate-svg-component>
 
 ---
 layout: default

@@ -27,12 +27,12 @@
             "key": "editor.cursorBlinking",
             "value": "expand"
         }
-    },
+    },    
     {
         "action": "setSetting",
         "setting": {
             "key": "editor.hover.enabled",
-            "value": "false"
+            "value": "off"
         }
     },    
     {
@@ -44,6 +44,33 @@
         }
     },
     {
+        "disabled": true,
         "action": "zoomIn"
+    },
+    {
+        "action": "setSetting",
+        "setting": {
+            "key": "editor.fontSize",
+            "value": 20
+        }
+    },
+    {
+        "action": "setSetting",
+        "setting": {
+            "key": "terminal.integrated.fontSize",
+            "value": 20
+        }
+    },
+    {
+        "action": "setSetting",
+        "setting": {
+        "key": "github.copilot.enable",
+        "value": {
+            "*": false,
+            "plaintext": false,
+            "markdown": false,
+            "scminput": false
+        }
+        }
     }
 ]

@@ -11,9 +11,9 @@
     "demoTime.hackerTyperChunkSize": 10,
     "demoTime.nextActionBehaviour": "currentPosition",
     "window.zoomLevel": 0,
-    "editor.codeLens": true,
     "demoTime.api.enabled": false,
     "demoTime.highlightBlur": 1,
-    "demoTime.highlightOpacity": 0.6,
-    "demoTime.highlightBackground": "#303030"
+    "demoTime.highlightOpacity": 0.5,
+    "demoTime.highlightBackground": "#303030",
+    "demoTime.highlightBorderColor": "rgba(255,255,255,0.22)"
 }
