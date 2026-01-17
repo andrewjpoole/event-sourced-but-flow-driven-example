@@ -14,6 +14,20 @@
           "path": ".demo/slides/aspire/slides5.md"
         }
       ]
+    },
+    {
+      "id": "scene-mkih7f0c-85fp",
+      "title": "start aspire",
+      "moves": [
+        {
+          "action": "open",
+          "path": "aspire/AppHost/Program.cs"
+        },
+        {
+          "action": "executeVSCodeCommand",
+          "command": "workbench.action.debug.start"
+        }
+      ]
     }
   ]
 }

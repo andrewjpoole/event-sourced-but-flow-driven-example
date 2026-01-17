@@ -32,7 +32,7 @@ layout: default
 
 ### 😐 Deploying into enterprise environment is not
 
-### ⭐ Aspire fixes this too!
+### ⭐ Aspire may be able to help here too!
 
 ---
 layout: default

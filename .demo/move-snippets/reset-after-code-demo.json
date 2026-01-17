@@ -58,5 +58,12 @@
         "key": "github.copilot.enable",
         "value": null
         }
+    },
+    {
+        "action": "setSetting",
+        "setting": {
+            "key": "editor.inlayHints.enabled",
+            "value": null
+        }
     }
 ]

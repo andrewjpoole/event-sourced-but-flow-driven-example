@@ -1,0 +1,88 @@
+{
+  "$schema": "https://demotime.show/demo-time.schema.json",
+  "title": "max-mileage-2-how-3",
+  "description": "",
+  "version": 3,
+  "scenes": [
+    {
+      "id": "scene-mkit7boo-uips",
+      "title": "slide - app host factory",
+      "moves": [
+        {
+          "action": "openSlide",
+          "path": ".demo/slides/max-mileage-min-tests/slides2-3.md"
+        }
+      ]
+    },
+    {
+      "id": "scene-mkitzcfb-tlet",
+      "title": "open outbox apphost factory",
+      "moves": [
+        {
+          "action": "open",
+          "path": "tests/WeatherApp.Tests.TUnit/AppHostFactories/OutboxApplicationFactory.cs"
+        }
+      ]
+    },
+    {
+      "id": "demo-mkiu06zy-lxxt",
+      "title": "derrive from WebApplicationFactory",
+      "moves": [
+        {
+          "action": "highlight",
+          "path": "tests/WeatherApp.Tests.TUnit/AppHostFactories/OutboxApplicationFactory.cs",
+          "position": "14,68:14,108",
+          "highlightWholeLine": true
+        }
+      ]
+    },
+    {
+      "id": "demo-mkiu9rrn-t08t",
+      "title": "fields",
+      "moves": [
+        {
+          "action": "highlight",
+          "path": "tests/WeatherApp.Tests.TUnit/AppHostFactories/OutboxApplicationFactory.cs",
+          "position": "16:17",
+          "highlightWholeLine": false
+        }
+      ]
+    },
+    {
+      "id": "demo-mkiua79b-4bxl",
+      "title": "wire up repository",
+      "moves": [
+        {
+          "action": "highlight",
+          "path": "tests/WeatherApp.Tests.TUnit/AppHostFactories/OutboxApplicationFactory.cs",
+          "position": "18:18",
+          "highlightWholeLine": false
+        }
+      ]
+    },
+    {
+      "id": "demo-mkiuh63c-3ix5",
+      "title": "override env variables",
+      "moves": [
+        {
+          "action": "highlight",
+          "path": "tests/WeatherApp.Tests.TUnit/AppHostFactories/OutboxApplicationFactory.cs",
+          "position": "22:25",
+          "highlightWholeLine": false
+        }
+      ]
+    },
+    {
+      "id": "demo-mkiukysn-5fhb",
+      "title": "override dependencies in IoC",
+      "moves": [
+        {
+          "action": "highlight",
+          "path": "tests/WeatherApp.Tests.TUnit/AppHostFactories/OutboxApplicationFactory.cs",
+          "position": "27:49",
+          "highlightWholeLine": false
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "$schema": "https://demotime.show/demo-time.schema.json",
+  "title": "max-mileage-2-how-7",
+  "description": "",
+  "version": 3,
+  "scenes": [
+    {
+      "id": "scene-mkitcka7-g9im",
+      "title": "slide - database options",
+      "moves": [
+        {
+          "action": "openSlide",
+          "path": ".demo/slides/max-mileage-min-tests/slides2-7.md"
+        }
+      ]
+    }
+  ]
+}

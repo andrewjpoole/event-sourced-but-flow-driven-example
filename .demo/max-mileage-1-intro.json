@@ -1,0 +1,19 @@
+{
+  "$schema": "https://beta.demotime.show/demo-time.schema.json",
+  "title": "max-mileage-1-intro",
+  "description": "test2",
+  "version": 3,
+  "timer": 60,
+  "scenes": [
+    {
+      "id": "demo-mkgnjd80-v3w8",
+      "title": "slides 1-1",
+      "moves": [
+        {
+          "action": "openSlide",
+          "path": ".demo/slides/max-mileage-min-tests/slides1.md"
+        }
+      ]
+    }
+  ]
+}

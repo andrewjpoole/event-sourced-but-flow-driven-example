@@ -1,0 +1,102 @@
+{
+  "$schema": "https://demotime.show/demo-time.schema.json",
+  "title": "max-mileage-2-how-2",
+  "description": "",
+  "version": 3,
+  "scenes": [
+    {
+      "id": "scene-mkekkbak-olek",
+      "title": "side - text fixture",
+      "moves": [
+        {
+          "action": "openSlide",
+          "path": ".demo/slides/max-mileage-min-tests/slides2-2.md"
+        }
+      ]
+    },
+    {
+      "id": "scene-mkit5xs6-ywpq",
+      "title": "open text fixture",
+      "moves": [
+        {
+          "action": "highlight",
+          "path": "tests/WeatherApp.Tests.TUnit/ComponentTestFixture.cs",
+          "position": "13:13",
+          "highlightWholeLine": true
+        }
+      ]
+    },
+    {
+      "id": "demo-mkitnf7p-7jts",
+      "title": "fields",
+      "moves": [
+        {
+          "action": "highlight",
+          "path": "tests/WeatherApp.Tests.TUnit/ComponentTestFixture.cs",
+          "position": "17:28",
+          "highlightWholeLine": true
+        }
+      ]
+    },
+    {
+      "id": "demo-mkitnzjt-0v3x",
+      "title": "instantiate factories",
+      "moves": [
+        {
+          "action": "highlight",
+          "path": "tests/WeatherApp.Tests.TUnit/ComponentTestFixture.cs",
+          "position": "32:39",
+          "highlightWholeLine": true
+        }
+      ]
+    },
+    {
+      "id": "demo-mkitqiex-6u54",
+      "title": "instantiate FakeServiceBus",
+      "moves": [
+        {
+          "action": "highlight",
+          "path": "tests/WeatherApp.Tests.TUnit/ComponentTestFixture.cs",
+          "position": "41:43",
+          "highlightWholeLine": true
+        }
+      ]
+    },
+    {
+      "id": "demo-mkitrhx3-u8jr",
+      "title": "add senders and processors",
+      "moves": [
+        {
+          "action": "highlight",
+          "path": "tests/WeatherApp.Tests.TUnit/ComponentTestFixture.cs",
+          "position": "45:49",
+          "highlightWholeLine": true
+        }
+      ]
+    },
+    {
+      "id": "demo-mkits9o2-vg5u",
+      "title": "wire up senders to corresponding processors",
+      "moves": [
+        {
+          "action": "highlight",
+          "path": "tests/WeatherApp.Tests.TUnit/ComponentTestFixture.cs",
+          "position": "51:51",
+          "highlightWholeLine": true
+        }
+      ]
+    },
+    {
+      "id": "demo-mkittem2-kw7f",
+      "title": "FakeTimeProvider",
+      "moves": [
+        {
+          "action": "highlight",
+          "path": "tests/WeatherApp.Tests.TUnit/ComponentTestFixture.cs",
+          "position": "53:55",
+          "highlightWholeLine": true
+        }
+      ]
+    }
+  ]
+}

@@ -18,7 +18,7 @@ layout: intro
 
 andrewjpoole@gmail.com .. [forkinthecode.net](forkinthecode.net) .. [linkedin.com/in/andrew-poole-2782494a](linkedin.com/in/andrew-poole-2782494a)
 
-**all code -> [github.com/andrewjpoole/demoTimeTest](github.com/andrewjpoole/demoTimeTest)**
+**all code -> [github.com/andrewjpoole/event-sourced-but-flow-driven-example](https://github.com/andrewjpoole/event-sourced-but-flow-driven-example)**
 
 
 ---

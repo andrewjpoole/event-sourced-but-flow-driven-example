@@ -2,7 +2,7 @@
     "dataworkspace.excludedProjects": [
         "db/testdb/testdb.sqlproj"
     ],
-    "demoTime.highlightZoomEnabled": 3,
+    "demoTime.highlightZoomEnabled": 0,
     "demoTime.customWebComponents": [
         ".demo/custom-components/animated-diagram.js"
     ],

@@ -19,7 +19,8 @@ public class OutboxApplicationFactory(ComponentTestFixture fixture) : WebApplica
     
     protected override IHost CreateHost(IHostBuilder builder)
     {        
-        Environment.SetEnvironmentVariable("ConnectionStrings__WeatherAppDb", "dummyConnectionString");
+        Environment.SetEnvironmentVariable(
+            "ConnectionStrings__WeatherAppDb", "dummyConnectionString");
         Environment.SetEnvironmentVariable(
             $"{nameof(OutboxProcessorOptions)}__{nameof(OutboxProcessorOptions.IntervalBetweenBatchesInSeconds)}", "1");
 
@@ -28,6 +29,7 @@ public class OutboxApplicationFactory(ComponentTestFixture fixture) : WebApplica
             {
                 services.AddMockLogger(MockLogger);
                 services.AddSingleton<TimeProvider>(fixture.FakeTimeProvider);
+                
                 fixture.FakeServiceBus.WireUpSendersAndProcessors(services);
 
                 if (SetSharedOutboxRepositories is not null)

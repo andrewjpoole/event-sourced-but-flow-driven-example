@@ -1,0 +1,30 @@
+{
+  "$schema": "https://demotime.show/demo-time.schema.json",
+  "title": "max-mileage-9-demo",
+  "description": "",
+  "version": 3,
+  "scenes": [
+    {
+      "id": "scene-mkilpeh8-4dyc",
+      "title": "slide - demo",
+      "moves": [
+        {
+          "action": "openSlide",
+          "path": ".demo/slides/max-mileage-min-tests/slides3.md"
+        }
+      ]
+    },
+    {
+      "id": "scene-mkithm97-y1zl",
+      "title": "view test 1",
+      "moves": [
+        {
+          "action": "highlight",
+          "path": "tests/WeatherApp.Tests.TUnit/ComponentTests.cs",
+          "position": "35:69",
+          "highlightWholeLine": true
+        }
+      ]
+    }
+  ]
+}

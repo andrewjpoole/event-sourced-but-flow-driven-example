@@ -1,0 +1,148 @@
+{
+  "$schema": "https://demotime.show/demo-time.schema.json",
+  "title": "max-mileage-2-how-4",
+  "description": "",
+  "version": 3,
+  "scenes": [
+    {
+      "id": "scene-mkit8n2i-u87h",
+      "title": "slide - testable service bus processor",
+      "moves": [
+        {
+          "action": "openSlide",
+          "path": ".demo/slides/max-mileage-min-tests/slides2-4.md"
+        }
+      ]
+    },
+    {
+      "id": "scene-mkivcfym-ufy8",
+      "title": "open testable service bus processor",
+      "moves": [
+        {
+          "action": "open",
+          "path": "tests/WeatherApp.Tests.TUnit/Framework/ServiceBus/TestableServiceBusProcessor.cs"
+        }
+      ]
+    },
+    {
+      "id": "demo-mkivdc0v-7zwi",
+      "title": "derrive from ServiceBusProcessor",
+      "moves": [
+        {
+          "action": "highlight",
+          "path": "tests/WeatherApp.Tests.TUnit/Framework/ServiceBus/TestableServiceBusProcessor.cs",
+          "position": "7,60:7,82",
+          "highlightWholeLine": false
+        }
+      ]
+    },
+    {
+      "id": "demo-mkivg5pp-1qnf",
+      "title": "MessageDeliveryAttempts",
+      "moves": [
+        {
+          "action": "highlight",
+          "path": "tests/WeatherApp.Tests.TUnit/Framework/ServiceBus/TestableServiceBusProcessor.cs",
+          "position": "9:9",
+          "highlightWholeLine": false
+        }
+      ]
+    },
+    {
+      "id": "demo-mkivgld2-ivva",
+      "title": "StartProcessingAsync",
+      "moves": [
+        {
+          "action": "highlight",
+          "path": "tests/WeatherApp.Tests.TUnit/Framework/ServiceBus/TestableServiceBusProcessor.cs",
+          "position": "47:48",
+          "highlightWholeLine": false
+        }
+      ]
+    },
+    {
+      "id": "demo-mkivhilk-43fg",
+      "title": "PresentMessage 1",
+      "moves": [
+        {
+          "action": "highlight",
+          "path": "tests/WeatherApp.Tests.TUnit/Framework/ServiceBus/TestableServiceBusProcessor.cs",
+          "position": "28:36",
+          "highlightWholeLine": false
+        }
+      ]
+    },
+    {
+      "id": "demo-mkivjnk0-ce84",
+      "title": "CreateMessageArgs 1",
+      "moves": [
+        {
+          "action": "highlight",
+          "path": "tests/WeatherApp.Tests.TUnit/Framework/ServiceBus/TestableServiceBusProcessor.cs",
+          "position": "50:68",
+          "highlightWholeLine": false
+        }
+      ]
+    },
+    {
+      "id": "demo-mkivqldq-qiv6",
+      "title": "CreateMessageArgs 2",
+      "moves": [
+        {
+          "action": "highlight",
+          "path": "tests/WeatherApp.Tests.TUnit/Framework/ServiceBus/TestableServiceBusProcessor.cs",
+          "position": "53:53",
+          "highlightWholeLine": false
+        }
+      ]
+    },
+    {
+      "id": "demo-mkivr46t-zd6p",
+      "title": "CreateMessageArgs 3",
+      "moves": [
+        {
+          "action": "highlight",
+          "path": "tests/WeatherApp.Tests.TUnit/Framework/ServiceBus/TestableServiceBusProcessor.cs",
+          "position": "55:59",
+          "highlightWholeLine": false
+        }
+      ]
+    },
+    {
+      "id": "demo-mkivrqcy-qswj",
+      "title": "CreateMessageArgs 4",
+      "moves": [
+        {
+          "action": "highlight",
+          "path": "tests/WeatherApp.Tests.TUnit/Framework/ServiceBus/TestableServiceBusProcessor.cs",
+          "position": "61:68",
+          "highlightWholeLine": false
+        }
+      ]
+    },
+    {
+      "id": "demo-mkivnlni-0m98",
+      "title": "TestableMessageEventArgs 1",
+      "moves": [
+        {
+          "action": "highlight",
+          "path": "tests/WeatherApp.Tests.TUnit/Framework/ServiceBus/TestableMessageEventArgs.cs",
+          "position": "5:12",
+          "highlightWholeLine": false
+        }
+      ]
+    },
+    {
+      "id": "demo-mkivpeo7-ovvh",
+      "title": "TestableMessageEventArgs 2",
+      "moves": [
+        {
+          "action": "highlight",
+          "path": "tests/WeatherApp.Tests.TUnit/Framework/ServiceBus/TestableMessageEventArgs.cs",
+          "position": "21:27",
+          "highlightWholeLine": false
+        }
+      ]
+    }
+  ]
+}

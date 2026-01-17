@@ -1,0 +1,113 @@
+{
+  "$schema": "https://demotime.show/demo-time.schema.json",
+  "title": "max-mileage-2-how-5",
+  "description": "",
+  "version": 3,
+  "scenes": [
+    {
+      "id": "scene-mkitbn5o-1uvt",
+      "title": "slide - mock service bus sender",
+      "moves": [
+        {
+          "action": "openSlide",
+          "path": ".demo/slides/max-mileage-min-tests/slides2-5.md"
+        }
+      ]
+    },
+    {
+      "id": "scene-mkivywzt-12q6",
+      "title": "code - sender mocking 1",
+      "moves": [
+        {
+          "action": "highlight",
+          "path": "tests/WeatherApp.Tests.TUnit/Framework/ServiceBus/FakeServiceBus.cs",
+          "position": "13:24",
+          "highlightWholeLine": true
+        }
+      ]
+    },
+    {
+      "id": "demo-mkiw356h-eu9p",
+      "title": "code - sender mocking 2",
+      "moves": [
+        {
+          "action": "highlight",
+          "path": "tests/WeatherApp.Tests.TUnit/Framework/ServiceBus/FakeServiceBus.cs",
+          "position": "20:21",
+          "highlightWholeLine": true
+        }
+      ]
+    },
+    {
+      "id": "demo-mkiw3jmi-jy3u",
+      "title": "code - sender mocking 3 assertions",
+      "moves": [
+        {
+          "action": "highlight",
+          "path": "tests/WeatherApp.Tests.TUnit/Framework/Then.cs",
+          "position": "153:160",
+          "highlightWholeLine": true
+        }
+      ]
+    },
+    {
+      "id": "demo-mkivyekh-r03d",
+      "title": "slide - mock service bus sender 2",
+      "moves": [
+        {
+          "action": "openSlide",
+          "path": ".demo/slides/max-mileage-min-tests/slides2-5.md",
+          "slide": 3
+        }
+      ]
+    },
+    {
+      "id": "scene-mkiw5m4g-fffj",
+      "title": "FakeServiceBus wire up 1",
+      "moves": [
+        {
+          "action": "highlight",
+          "path": "tests/WeatherApp.Tests.TUnit/Framework/ServiceBus/FakeServiceBus.cs",
+          "position": "136:154",
+          "highlightWholeLine": true
+        }
+      ]
+    },
+    {
+      "id": "demo-mkiw7527-99me",
+      "title": "FakeServiceBus wire up 2",
+      "moves": [
+        {
+          "action": "highlight",
+          "path": "tests/WeatherApp.Tests.TUnit/Framework/ServiceBus/FakeServiceBus.cs",
+          "position": "138",
+          "highlightWholeLine": true
+        }
+      ]
+    },
+    {
+      "id": "demo-mkiw7o1j-lz8d",
+      "title": "FakeServiceBus wire up 3",
+      "moves": [
+        {
+          "action": "highlight",
+          "path": "tests/WeatherApp.Tests.TUnit/Framework/ServiceBus/FakeServiceBus.cs",
+          "position": "140:141",
+          "highlightWholeLine": true
+        }
+      ]
+    },
+    {
+      "id": "demo-mkiw86p1-8n2h",
+      "title": "FakeServiceBus wire up 4",
+      "moves": [
+        {
+          "action": "highlight",
+          "path": "tests/WeatherApp.Tests.TUnit/Framework/ServiceBus/FakeServiceBus.cs",
+          "position": "146:151",
+          "highlightWholeLine": true
+        }
+      ]
+    }
+  ]
+}

@@ -25,7 +25,8 @@ public class TestableServiceBusProcessor(string entityName) : ServiceBusProcesso
         }
     }
 
-    public async Task PresentMessage<T>(T message, int deliveryCount = 1, Dictionary<string, object>? applicationProperties = null) where T : class
+    public async Task PresentMessage<T>(T message, int deliveryCount = 1, 
+        Dictionary<string, object>? applicationProperties = null) where T : class
     {
         var args = CreateMessageArgs(message, deliveryCount, applicationProperties);
         MessageDeliveryAttempts.Add((TestableMessageEventArgs)args);
@@ -46,7 +47,8 @@ public class TestableServiceBusProcessor(string entityName) : ServiceBusProcesso
     public override Task StartProcessingAsync(CancellationToken cancellationToken = default) 
         => Task.CompletedTask;
 
-    public static ProcessMessageEventArgs CreateMessageArgs<T>(T payload, int deliveryCount = 1, Dictionary<string, object>? applicationProperties = null) where T : class
+    public static ProcessMessageEventArgs CreateMessageArgs<T>(T payload, int deliveryCount = 1, 
+        Dictionary<string, object>? applicationProperties = null) where T : class
     {
         var payloadJson = JsonSerializer.Serialize(payload, GlobalJsonSerialiserSettings.Default);
 

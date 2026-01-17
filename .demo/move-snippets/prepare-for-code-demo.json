@@ -72,5 +72,12 @@
             "scminput": false
         }
         }
+    },
+    {
+        "action": "setSetting",
+        "setting": {
+            "key": "editor.inlayHints.enabled",
+            "value": "off"
+        }
     }
 ]

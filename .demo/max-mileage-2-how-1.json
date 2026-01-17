@@ -1,17 +1,17 @@
 {
   "$schema": "https://beta.demotime.show/demo-time.schema.json",
-  "title": "max-mileage-min-tests",
+  "title": "max-mileage-2-how",
   "description": "test2",
   "version": 3,
   "timer": 60,
   "scenes": [
     {
-      "id": "demo-mkgnjd80-v3w8",
-      "title": "slides 1-1",
+      "id": "scene-mkist0by-sy8y",
+      "title": "slide",
       "moves": [
         {
           "action": "openSlide",
-          "path": ".demo/slides/max-mileage-min-tests/slides1.md"
+          "path": ".demo/slides/max-mileage-min-tests/slides2-1.md"
         }
       ]
     },
@@ -51,9 +51,14 @@
           "position": "11",
           "highlightWholeLine": true,
           "insertTypingMode": "character-by-character",
-          "insertTypingSpeed": 10,
           "path": ".demo/temp-files/1.cs",
           "contentPath": ".demo/code-snippets/max-mileage-min-tests/component-test-class-add-test.txt"
+        },
+        {
+          "action": "highlight",
+          "path": ".demo/temp-files/1.cs",
+          "position": "11:15",
+          "highlightWholeLine": true
         }
       ]
     },
@@ -110,9 +115,15 @@
           "insertTypingMode": "character-by-character"
         },
         {
+          "action": "selection",
+          "path": ".demo/temp-files/1.cs",
+          "highlightWholeLine": true,
+          "position": "19,38:19,48"
+        },
+        {
           "action": "highlight",
           "path": ".demo/temp-files/1.cs",
-          "position": "19",
+          "position": "16:19",
           "highlightWholeLine": true
         }
       ]
@@ -132,54 +143,8 @@
         {
           "action": "highlight",
           "path": ".demo/temp-files/1.cs",
-          "position": "11:24",
+          "position": "11:25",
           "highlightWholeLine": true
-        }
-      ]
-    },
-    {
-      "id": "scene-mkekqok0-ncbq",
-      "title": "Reset vscode",
-      "moves": [
-        {
-          "action": "zoomReset"
-        },
-        {
-          "action": "setSetting",
-          "setting": {
-            "key": "editor.codeLens",
-            "value": true
-          }
-        }
-      ]
-    },
-    {
-      "id": "scene-mkekkbak-olek",
-      "title": "sides 2",
-      "moves": [
-        {
-          "action": "openSlide",
-          "path": ".demo/slides/max-mileage-min-tests/slides2.md"
-        }
-      ]
-    },
-    {
-      "id": "scene-mkekl4kb-1492",
-      "title": "slides 3",
-      "moves": [
-        {
-          "action": "openSlide",
-          "path": ".demo/slides/max-mileage-min-tests/slides3.md"
-        }
-      ]
-    },
-    {
-      "id": "demo-mkeklrq3-blyj",
-      "title": "slides 4",
-      "moves": [
-        {
-          "action": "openSlide",
-          "path": ".demo/slides/max-mileage-min-tests/slides4.md"
         }
       ]
     }

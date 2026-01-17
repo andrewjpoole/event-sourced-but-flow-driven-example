@@ -1,0 +1,18 @@
+{
+  "$schema": "https://demotime.show/demo-time.schema.json",
+  "title": "max-mileage-2-how-6",
+  "description": "",
+  "version": 3,
+  "scenes": [
+    {
+      "id": "scene-mkitc54s-41hv",
+      "title": "slide - Http clients",
+      "moves": [
+        {
+          "action": "openSlide",
+          "path": ".demo/slides/max-mileage-min-tests/slides2-6.md"
+        }
+      ]
+    }
+  ]
+}
