@@ -4,7 +4,7 @@ layout: default
 
 # In an ideal world…
 
-We would:
+### We would:
 
 ---
 layout: default
@@ -12,21 +12,9 @@ layout: default
 
 # In an ideal world…
 
-We would:
+### We would:
 
-🎯 Clone a repo
-
----
-layout: default
----
-
-# In an ideal world…
-
-We would:
-
-🎯 Clone a repo
-
-🎯 Run non-integration tests, all pass first time
+### 🎯 Clone a repo
 
 ---
 layout: default
@@ -34,13 +22,11 @@ layout: default
 
 # In an ideal world…
 
-We would:
+### We would:
 
-🎯 Clone a repo
+### 🎯 Clone a repo
 
-🎯 Run non-integration tests, all pass first time
-
-🎯 Run local deploy script/command?
+### 🎯 Run non-integration tests, all pass first time
 
 ---
 layout: default
@@ -48,15 +34,13 @@ layout: default
 
 # In an ideal world…
 
-We would:
+### We would:
 
-🎯 Clone a repo
+### 🎯 Clone a repo
 
-🎯 Run non-integration tests, all pass first time
+### 🎯 Run non-integration tests, all pass first time
 
-🎯 Run local deploy script/command?
-
-🎯 Run integration tests, all pass first time
+### 🎯 Run local deploy script/command?
 
 ---
 layout: default
@@ -64,17 +48,33 @@ layout: default
 
 # In an ideal world…
 
-We would:
+### We would:
 
-🎯 Clone a repo
+### 🎯 Clone a repo
 
-🎯 Run non-integration tests, all pass first time
+### 🎯 Run non-integration tests, all pass first time
 
-🎯 Run local deploy script/command?
+### 🎯 Run local deploy script/command?
 
-🎯 Run integration tests, all pass first time
+### 🎯 Run integration tests, all pass first time
 
-🎯 From there on, hit [F5] and everything runs nicely😁
+---
+layout: default
+---
+
+# In an ideal world…
+
+### We would:
+
+### 🎯 Clone a repo
+
+### 🎯 Run non-integration tests, all pass first time
+
+### 🎯 Run local deploy script/command?
+
+### 🎯 Run integration tests, all pass first time
+
+### 🎯 From there on, hit [F5] and everything runs nicely😁
 
 ---
 layout: default
@@ -88,7 +88,7 @@ layout: default
 
 # Aspire🚀 exceptional local devex!
 
-✔️ Dashboard!
+### ✔️ Dashboard!
 
 ---
 layout: default
@@ -96,21 +96,9 @@ layout: default
 
 # Aspire🚀 exceptional local devex!
 
-✔️ Dashboard!
+### ✔️ Dashboard!
 
-✔️ OTLP!
-
----
-layout: default
----
-
-# Aspire🚀 exceptional local devex!
-
-✔️ Dashboard!
-
-✔️ OTLP!
-
-✔️ Easy to add to an existing app
+### ✔️ OTLP!
 
 ---
 layout: default
@@ -118,13 +106,11 @@ layout: default
 
 # Aspire🚀 exceptional local devex!
 
-✔️ Dashboard!
+### ✔️ Dashboard!
 
-✔️ OTLP!
+### ✔️ OTLP!
 
-✔️ Easy to add to an existing app
-
-✔️ Define everything in one file
+### ✔️ Easy to add to an existing app
 
 ---
 layout: default
@@ -132,15 +118,29 @@ layout: default
 
 # Aspire🚀 exceptional local devex!
 
-✔️ Dashboard!
+### ✔️ Dashboard!
 
-✔️ OTLP!
+### ✔️ OTLP!
 
-✔️ Easy to add to an existing app
+### ✔️ Easy to add to an existing app
 
-✔️ Define everything in one file
+### ✔️ Define everything in one file
 
-✔️ Supports testing!
+---
+layout: default
+---
+
+# Aspire🚀 exceptional local devex!
+
+### ✔️ Dashboard!
+
+### ✔️ OTLP!
+
+### ✔️ Easy to add to an existing app
+
+### ✔️ Define everything in one file
+
+### ✔️ Supports testing!
 
 ---
 layout: default

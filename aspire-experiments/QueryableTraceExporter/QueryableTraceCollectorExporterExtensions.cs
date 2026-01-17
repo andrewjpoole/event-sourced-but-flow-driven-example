@@ -9,7 +9,8 @@ namespace Microsoft.Extensions.Hosting;
 public static class QueryableTraceCollectorExporterExtensions
 {
 
-    public static IServiceCollection AddQueryableOtelCollectorExporter(this IServiceCollection services, IConfiguration config, List<string>? allowedActivityDisplayNames = null)
+    public static IServiceCollection AddQueryableOtelCollectorExporter(
+        this IServiceCollection services, IConfiguration config, List<string>? allowedActivityDisplayNames = null)
     {   
         var baseAddress = config["services:queryabletracecollector:http:0"];
         if(baseAddress == null)
@@ -26,7 +27,8 @@ public static class QueryableTraceCollectorExporterExtensions
         });
 
         if(allowedActivityDisplayNames == null)
-            allowedActivityDisplayNames = config.GetSection("QueryableTraceCollector:AllowedActivityDisplayNames").Get<List<string>>() ?? new List<string>();
+            allowedActivityDisplayNames = config.GetSection("QueryableTraceCollector:AllowedActivityDisplayNames")
+                .Get<List<string>>() ?? new List<string>();
 
         var appName = Path.GetFileName(Process.GetCurrentProcess().MainModule?.FileName.Replace(".exe", string.Empty) ?? "Unknown");
         

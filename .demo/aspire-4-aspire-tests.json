@@ -1,0 +1,105 @@
+{
+  "$schema": "https://demotime.show/demo-time.schema.json",
+  "title": "aspire-4-aspire-tests",
+  "description": "",
+  "version": 3,
+  "timer": 60,
+  "scenes": [
+    {
+      "id": "scene-mkabshcx-uv8g",
+      "title": "slides - aspire tests",
+      "moves": [
+        {
+          "action": "openSlide",
+          "path": ".demo/slides/aspire/slides3.md"
+        }
+      ]
+    },
+    {
+      "id": "demo-mkgzqvza-9xbf",
+      "title": "code 3 -1 - aspire tests",
+      "description": "out of the box test",
+      "moves": [
+        {
+          "action": "selection",
+          "path": "tests/WeatherApp.Tests.Aspire.Integration/WeatherAppAspireIntegrationTests.cs",
+          "position": "11:45",
+          "highlightWholeLine": true
+        }
+      ]
+    },
+    {
+      "id": "demo-mkgzgwkn-ogyq",
+      "title": "slides - aspire tests better assertions",
+      "moves": [
+        {
+          "action": "openSlide",
+          "path": ".demo/slides/aspire/slides4.md"
+        }
+      ]
+    },
+    {
+      "id": "demo-mkh02out-rz58",
+      "title": "code 4 - 1 QTC",
+      "description": "collector API",
+      "moves": [
+        {
+          "action": "open",
+          "path": "aspire-experiments/QueryableTraceCollector/Program.cs"
+        }
+      ]
+    },
+    {
+      "id": "demo-mkh04z45-vx0g",
+      "title": "code 4 - 2 QTC",
+      "description": "exporter",
+      "moves": [
+        {
+          "action": "open",
+          "path": "aspire-experiments/QueryableTraceExporter/QueryableTraceCollectorExporter.cs"
+        }
+      ]
+    },
+    {
+      "id": "demo-mkh05ujm-gimz",
+      "title": "code 4 - 3 QTC",
+      "description": "ActivityLite",
+      "moves": [
+        {
+          "action": "open",
+          "path": "aspire-experiments/QueryableTraceExporter/ActivityLite.cs"
+        }
+      ]
+    },
+    {
+      "id": "demo-mkh06n96-6eqb",
+      "title": "code 4 - 4 QTC",
+      "description": "exporter extensions",
+      "moves": [
+        {
+          "action": "open",
+          "path": "aspire-experiments/QueryableTraceExporter/QueryableTraceCollectorExporterExtensions.cs"
+        }
+      ]
+    },
+    {
+      "id": "demo-mkh0d3tl-khq6",
+      "title": "demo - QTC",
+      "description": "exporter extensions",
+      "moves": []
+    },
+    {
+      "id": "demo-mkgzzcqk-gp9d",
+      "title": "code 5 - 1 - aspire tests",
+      "description": "my test based on QTC",
+      "moves": [
+        {
+          "action": "selection",
+          "path": "tests/WeatherApp.Tests.Aspire.Integration/WeatherAppAspireIntegrationTests.cs",
+          "position": "47:84",
+          "highlightWholeLine": true
+        }
+      ]
+    }
+  ]
+}

@@ -38,7 +38,7 @@ layout: default
 
 # The problem with integration tests…
 
-They tend to be the last task on a story…😒
+### 👉 They tend to be the last task on a story…😒
 
 ---
 layout: default
@@ -46,9 +46,9 @@ layout: default
 
 # The problem with integration tests…
 
-They tend to be the last task on a story…😒
+### 👉 They tend to be the last task on a story…😒
 
-change -> CI -> release -> tests, loop is way too long🥱
+### 👉 change -> CI -> release -> tests, loop is way too long🥱
 
 ---
 layout: default
@@ -56,18 +56,12 @@ layout: default
 
 # The problem with integration tests…
 
-They tend to be the last task on a story…😒
+### 👉 They tend to be the last task on a story…😒
 
-change -> CI -> release -> tests, loop is way too long🥱
+### 👉 change -> CI -> release -> tests, loop is way too long🥱
 
-They expose how difficult it is to run things locally😬
+### 👉 They expose how difficult it is to run things locally😬
 
-
----
-layout: default
----
-
-# The problem with local dev ex…
 
 ---
 layout: default
@@ -75,7 +69,13 @@ layout: default
 
 # The problem with local dev ex…
 
-Heavily dependant on Compute platform😕
+---
+layout: default
+---
+
+# The problem with local dev ex…
+
+### 👉 Heavily dependant on Compute platform😕
 
 ---
 layout: default
@@ -83,9 +83,9 @@ layout: default
 
 # The problem with local dev ex…
 
-Heavily dependant on Compute platform😕
+### 👉 Heavily dependant on Compute platform😕
 
-Too many options!😵‍💫
+### 👉 Too many options!😵‍💫
 
 ---
 layout: default
@@ -93,9 +93,9 @@ layout: default
 
 # The problem with local dev ex…
 
-Heavily dependant on Compute platform😕
+### 👉 Heavily dependant on Compute platform😕
 
-Too many options!😵‍💫
+### 👉 Too many options!😵‍💫
 
-Large differences between local and real running in an environment😖
+### 👉 Large differences between local and real running in an environment😖
 

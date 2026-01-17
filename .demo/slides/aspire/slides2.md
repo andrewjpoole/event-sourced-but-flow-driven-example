@@ -10,7 +10,7 @@ layout: default
 
 # Adding missing trace data
 
-✔️ Lots of operations traced out-of-the-box
+### ✔️ Lots of operations traced out-of-the-box
 
 ---
 layout: default
@@ -18,9 +18,9 @@ layout: default
 
 # Adding missing trace data
 
-✔️ Lots of operations traced out-of-the-box
+### ✔️ Lots of operations traced out-of-the-box
 
-🔧 Trace across air-gaps (i.e. outbox)
+### 🔧 Trace across air-gaps (i.e. outbox)
 
 ---
 layout: default
@@ -28,8 +28,8 @@ layout: default
 
 # Adding missing trace data
 
-✔️ Lots of operations traced out-of-the-box
+### ✔️ Lots of operations traced out-of-the-box
 
-🔧 Trace across air-gaps (i.e. outbox)
+### 🔧 Trace across air-gaps (i.e. outbox)
 
-🔧 Trace significant events
+### 🔧 Trace significant events

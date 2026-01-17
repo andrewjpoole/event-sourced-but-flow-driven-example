@@ -1,0 +1,41 @@
+[
+    {
+        "action": "setSetting",
+        "setting": {
+            "key": "workbench.statusBar.visible",
+            "value": true
+        }
+    },
+    {
+        "action": "setSetting",
+        "setting": {
+            "key": "editor.cursorStyle",
+            "value": null
+        }
+    },
+    {
+        "action": "setSetting",
+        "setting": {
+            "key": "editor.cursorBlinking",
+            "value": null
+        }
+    },
+    {
+        "action": "setSetting",
+        "setting": {
+            "key": "editor.hover.enabled",
+            "value": null
+        }
+    },
+    {
+        "action": "setSetting",
+        "disabled": false,
+        "setting": {
+            "key": "editor.codeLens",
+            "value": null
+        }
+    },
+    {
+        "action": "zoomReset"
+    }
+]

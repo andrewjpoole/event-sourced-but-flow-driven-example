@@ -1,0 +1,13 @@
+        //*
+        Dictionary<string, string> telemetryDictionary = new();
+        if (activity != null)
+            Propagator.Inject(
+                new PropagationContext(activity.Context, Baggage.Current),
+                telemetryDictionary,
+                (carrier, key, value) =>
+            {
+                carrier.Add(key, value);
+            });
+
+        parameters.Add("@SerialisedTelemetry", JsonSerializer.Serialize(telemetryDictionary));
+        //-

@@ -1,0 +1,49 @@
+[
+    {
+        "action": "executeVSCodeCommand",
+        "command": "workbench.action.closeSidebar"
+    },
+    {
+        "action": "executeVSCodeCommand",
+        "command": "workbench.action.closePanel"
+    },
+    {
+        "action": "setSetting",
+        "setting": {
+            "key": "workbench.statusBar.visible",
+            "value": false
+        }
+    },    
+    {
+        "action": "setSetting",
+        "setting": {
+            "key": "editor.cursorStyle",
+            "value": "block"
+        }
+    },
+    {
+        "action": "setSetting",
+        "setting": {
+            "key": "editor.cursorBlinking",
+            "value": "expand"
+        }
+    },
+    {
+        "action": "setSetting",
+        "setting": {
+            "key": "editor.hover.enabled",
+            "value": "false"
+        }
+    },    
+    {
+        "action": "setSetting",
+        "disabled": false,
+        "setting": {
+            "key": "editor.codeLens",
+            "value": false
+        }
+    },
+    {
+        "action": "zoomIn"
+    }
+]

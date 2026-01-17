@@ -1,0 +1,18 @@
+{
+  "$schema": "https://demotime.show/demo-time.schema.json",
+  "title": "0-prepare-vscode",
+  "description": "",
+  "version": 3,
+  "scenes": [
+    {
+      "id": "scene-mki37gw1-m1eb",
+      "title": "prepare vscode for demo",
+      "moves": [
+        {
+          "action": "snippet",
+          "contentPath": ".demo/move-snippets/prepare-for-code-demo.json"
+        }
+      ]
+    }
+  ]
+}

@@ -105,6 +105,7 @@ public class OutboxDispatcherHostedService(
         {
             try
             {
+                //*
                 // Hydrate the telemetry trace context.
                 var parentContext = Propagator.Extract(default, item.SerialisedTelemetry, (serialisedTelemetry, key) => 
                 {
@@ -118,10 +119,13 @@ public class OutboxDispatcherHostedService(
 
                     return Enumerable.Empty<string>();
                 });
-                // Aspire talk prep: comment 106 & 108 Maintain the trace context accross the Outbox 'airgap'
+
+                // Hydrate trace context to cross the Outbox 'airgap'
                 Baggage.Current = parentContext.Baggage;
 
                 using var activity = Activity.StartActivity("Dispatch Message", ActivityKind.Consumer, parentContext.ActivityContext);
+                //-
+                
                 await messageSender.SendAsync(item.SerialisedData, item.MessagingEntityName, cancellationToken);
                 await outboxRepository.AddSentStatus(OutboxSentStatusUpdate.CreateSent(item.Id));
                 logger.LogDispatchedOutboxItem(item.Id);

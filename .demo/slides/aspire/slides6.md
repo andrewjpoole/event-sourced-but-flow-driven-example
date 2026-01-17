@@ -1,72 +1,72 @@
---
+---
 layout: default
 ---
 
 # Pros and Cons⚖️
 
---
+---
 layout: default
 ---
 
 # Pros and Cons⚖️
 
-✔️ Massive shift-left
+### ✔️ Massive shift-left
 
 
---
+---
 layout: default
 ---
 
 # Pros and Cons⚖️
 
-✔️ Massive shift-left
+### ✔️ Massive shift-left
 
-✔️ Easy to realistically run the service locally
+### ✔️ Easy to realistically run the service locally
 
 
---
+---
 layout: default
 ---
 
 # Pros and Cons⚖️
 
-✔️ Massive shift-left
+### ✔️ Massive shift-left
 
-✔️ Easy to realistically run the service locally
+### ✔️ Easy to realistically run the service locally
 
-✔️ Easy to write and run integration tests locally
+### ✔️ Easy to write and run integration tests locally
 
---
+---
 layout: default
 ---
 
 # Pros and Cons⚖️
 
-✔️ Massive shift-left
+### ✔️ Massive shift-left
 
-✔️ Easy to realistically run the service locally
+### ✔️ Easy to realistically run the service locally
 
-✔️ Easy to write and run integration tests locally 
+### ✔️ Easy to write and run integration tests locally 
 
-✔️ Observability Driven Development?
+### ✔️ Observability Driven Development?
 
---
+---
 layout: default
 ---
 
 # Pros and Cons⚖️
 
-✔️ Massive shift-left
+### ✔️ Massive shift-left
 
-✔️ Easy to realistically run the service locally
+### ✔️ Easy to realistically run the service locally
 
-✔️ Easy to write and run integration tests locally 
+### ✔️ Easy to write and run integration tests locally 
 
-✔️ Observability Driven Development?
+### ✔️ Observability Driven Development?
 
-✖️ May have to create Dummy/Mocked external services
+### ✖️ May have to create Dummy/Mocked external services
 
---
+---
 layout: default
 ---
 
@@ -74,14 +74,14 @@ layout: default
 
 ## Github repo: everything I showed + lots more cool stuff =>
 
-github.com/andrewjpoole/event-sourced-but-flow-driven-example
+## github.com/andrewjpoole/event-sourced-but-flow-driven-example
 
 ### andrew.poole@flagstoneim.com
 
-andrewjpoole@gmail.com
+### andrewjpoole@gmail.com
 
-LinkedIn.com/in/andrew-poole-2782494a/
+### LinkedIn.com/in/andrew-poole-2782494a/
 
-Github.com/andrewjpoole
+### Github.com/andrewjpoole
 
-forkInTheCode.net
+### forkInTheCode.net

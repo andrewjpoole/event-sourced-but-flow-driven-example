@@ -33,28 +33,30 @@ public class OutboxRepository(IDbConnectionFactory dbConnectionFactory) : IOutbo
         parameters.Add("@MessagingEntityName", outboxItem.MessagingEntityName);
         parameters.Add("@Created", outboxItem.Created);
 
-        using (var activity = Activity.StartActivity("Outbox Item Insertion", ActivityKind.Producer))
-        {
-            Dictionary<string, string> telemetryDictionary = new();
-            if(activity != null)
-                Propagator.Inject(
-                    new PropagationContext(activity.Context, Baggage.Current),
-                    telemetryDictionary,
-                    (carrier, key, value) => 
-                {
-                    carrier.Add(key, value);
-                });
+        using var activity = Activity.StartActivity("Outbox Item Insertion", ActivityKind.Producer);
+        
+        //*
+        // Capture the current trace content and persist in database along side Outbox Item...
+        Dictionary<string, string> telemetryDictionary = new();
+        if (activity != null)
+            Propagator.Inject(
+                new PropagationContext(activity.Context, Baggage.Current),
+                telemetryDictionary,
+                (carrier, key, value) =>
+            {
+                carrier.Add(key, value);
+            });
 
-            parameters.Add("@SerialisedTelemetry", JsonSerializer.Serialize(telemetryDictionary));
+        parameters.Add("@SerialisedTelemetry", JsonSerializer.Serialize(telemetryDictionary));
+        //-
 
-            var insertedOutboxItemId = await connection.QuerySingleOrDefault<int>(sql, parameters, transaction);
-            
-            activity?.SetTag("outbox-item.TypeName", outboxItem.TypeName);
-            activity?.SetTag("outbox-item.Id", insertedOutboxItemId);
+        var insertedOutboxItemId = await connection.QuerySingleOrDefault<int>(sql, parameters, transaction);
 
-            return insertedOutboxItemId;
-        }
-    }    
+        activity?.SetTag("outbox-item.TypeName", outboxItem.TypeName);
+        activity?.SetTag("outbox-item.Id", insertedOutboxItemId);
+
+        return insertedOutboxItemId;
+    }
 
     public async Task AddScheduled(OutboxItem outboxItem, DateTimeOffset retryAfter)
     {

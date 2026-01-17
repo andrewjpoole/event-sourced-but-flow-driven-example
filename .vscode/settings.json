@@ -2,7 +2,7 @@
     "dataworkspace.excludedProjects": [
         "db/testdb/testdb.sqlproj"
     ],
-    "demoTime.highlightZoomEnabled": false,
+    "demoTime.highlightZoomEnabled": 3,
     "demoTime.customWebComponents": [
         ".demo/custom-components/animated-diagram.js"
     ],
@@ -12,6 +12,8 @@
     "demoTime.nextActionBehaviour": "currentPosition",
     "window.zoomLevel": 0,
     "editor.codeLens": true,
-    "demoTime.api.enabled": true,
-    "demoTime.highlightBlur": 1
+    "demoTime.api.enabled": false,
+    "demoTime.highlightBlur": 1,
+    "demoTime.highlightOpacity": 0.6,
+    "demoTime.highlightBackground": "#303030"
 }

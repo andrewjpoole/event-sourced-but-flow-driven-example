@@ -1,0 +1,18 @@
+{
+  "$schema": "https://demotime.show/demo-time.schema.json",
+  "title": "z_reset-vscode",
+  "description": "",
+  "version": 3,
+  "scenes": [
+    {
+      "id": "scene-mki399ej-9wx6",
+      "title": "reset vscode",
+      "moves": [
+        {
+          "action": "snippet",
+          "contentPath": ".demo/move-snippets/reset-after-code-demo.json"
+        }
+      ]
+    }
+  ]
+}

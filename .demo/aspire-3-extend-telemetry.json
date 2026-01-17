@@ -1,0 +1,146 @@
+{
+  "$schema": "https://demotime.show/demo-time.schema.json",
+  "title": "aspire-3-extend-telemetry",
+  "description": "",
+  "version": 3,
+  "timer": 60,
+  "scenes": [
+    {
+      "id": "scene-mkabquhc-3gr3",
+      "title": "slides 2 fill missing trace data",
+      "moves": [
+        {
+          "action": "openSlide",
+          "path": ".demo/slides/aspire/slides2.md"
+        }
+      ]
+    },
+    {
+      "id": "demo-mkac3m1j-8bjt",
+      "title": "code 2 - 1 persist telemetry in outbox repo",
+      "moves": [
+        {
+          "action": "open",
+          "path": "src/WeatherApp.Infrastructure/Outbox/OutboxRepository.cs"
+        },
+        {
+          "action": "selection",
+          "path": "src/WeatherApp.Infrastructure/Outbox/OutboxRepository.cs",
+          "highlightWholeLine": true,
+          "startPlaceholder": "//*",
+          "endPlaceholder": "//-"
+        }
+      ]
+    },
+    {
+      "id": "demo-mkgzdtka-8qfx",
+      "title": "code 2 - show outbox with trace data",
+      "moves": [
+        {
+          "action": "selection",
+          "path": "sql-scratch-pad.sql",
+          "position": "42:43",
+          "highlightWholeLine": true
+        },
+        {
+          "action": "executeVSCodeCommand",
+          "command": "mssql.runCurrentStatement"
+        }
+      ]
+    },
+    {
+      "id": "demo-mkhi947g-fne4",
+      "title": "close panel after SQL query",
+      "moves": [
+        {
+          "action": "executeVSCodeCommand",
+          "command": "workbench.action.closePanel"
+        }
+      ]
+    },
+    {
+      "id": "demo-mkgy0apl-8slr",
+      "title": "code 2 - 3 hydrate telemetry in outbox dispatcher",
+      "moves": [
+        {
+          "action": "selection",
+          "path": "src/WeatherApp.Infrastructure/Outbox/OutboxDispatcherHostedService.cs",
+          "position": "110:111",
+          "highlightWholeLine": true
+        }
+      ]
+    },
+    {
+      "id": "demo-mkgybt8u-4eyn",
+      "title": "code 2 - 4 insert telemetry code in outbox dispatcher ",
+      "moves": [
+        {
+          "action": "insert",
+          "path": "src/WeatherApp.Infrastructure/Outbox/OutboxDispatcherHostedService.cs",
+          "contentPath": ".demo/code-snippets/aspire/bridge-the-air-gap2.txt",
+          "position": "108",
+          "highlightWholeLine": true
+        }
+      ]
+    },
+    {
+      "id": "demo-mkgy1pcj-33s4",
+      "title": "code 2 - 5 telemetry on notification",
+      "moves": [
+        {
+          "action": "selection",
+          "path": "external-dummy-apps/NotificationService/Program.cs",
+          "position": "33:33",
+          "highlightWholeLine": true
+        }
+      ]
+    },
+    {
+      "id": "demo-mkgyivn0-1nd8",
+      "title": "code 2 - 6 insert telemetry on notification",
+      "moves": [
+        {
+          "action": "insert",
+          "path": "external-dummy-apps/NotificationService/Program.cs",
+          "contentPath": ".demo/code-snippets/aspire/trace-significant-notification-event.txt",
+          "position": "35",
+          "highlightWholeLine": true
+        }
+      ]
+    },
+    {
+      "id": "scene-mkabs8lx-t9o9",
+      "title": "stop aspire",
+      "moves": [
+        {
+          "action": "executeVSCodeCommand",
+          "command": "workbench.action.debug.stop"
+        }
+      ]
+    },
+    {
+      "id": "demo-mkhienqi-luum",
+      "title": "start aspire",
+      "moves": [
+        {
+          "action": "open",
+          "path": "aspire/AppHost/Program.cs"
+        },
+        {
+          "action": "executeVSCodeCommand",
+          "command": "workbench.action.debug.start"
+        }
+      ]
+    },
+    {
+      "id": "scene-mkhigxix-la82",
+      "title": "endpoints tester",
+      "moves": [
+        {
+          "action": "open",
+          "path": "notebooks/endpoints-tester.ipynb"
+        }
+      ]
+    }
+  ]
+}

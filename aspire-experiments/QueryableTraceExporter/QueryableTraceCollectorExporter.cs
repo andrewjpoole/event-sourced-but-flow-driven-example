@@ -4,7 +4,10 @@ using OpenTelemetry;
 
 namespace Microsoft.Extensions.Hosting;
 
-public class QueryableTraceCollectorExporter(string appName, IServiceProvider services, List<string>? allowedActivityDisplayNames = null) : BaseExporter<Activity>
+public class QueryableTraceCollectorExporter(
+    string appName, 
+    IServiceProvider services, 
+    List<string>? allowedActivityDisplayNames = null) : BaseExporter<Activity>
 {
     public override ExportResult Export(in Batch<Activity> batch)
     {        

@@ -39,11 +39,7 @@ LEFT JOIN LatestStatus LS
 
 
 -- Get all outbox records
-SELECT TOP (1000) [Id]
-      ,[TypeName]
-      ,[SerialisedData]
-      ,[MessagingEntityName]
-      ,[Created]
+SELECT TOP (1000) *
   FROM [WeatherAppDb].[dbo].[OutboxItems]
 
 

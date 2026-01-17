@@ -1,0 +1,19 @@
+{
+  "$schema": "https://demotime.show/demo-time.schema.json",
+  "title": "aspire-6-end",
+  "description": "",
+  "version": 3,
+  "timer": 60,
+  "scenes": [
+    {
+      "id": "demo-mkgzigxn-zhni",
+      "title": "slides - end",
+      "moves": [
+        {
+          "action": "openSlide",
+          "path": ".demo/slides/aspire/slides6.md"
+        }
+      ]
+    }
+  ]
+}
