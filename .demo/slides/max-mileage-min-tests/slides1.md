@@ -100,7 +100,7 @@ layout: default
 
 ### 👉 Test as much of the surface area as possible
 
-### 👉 **Test behaviour _not_ implementation**
+### 👉 **<dt-highlight color="#15181f" text-color="#47c4f1">Test behaviour _not_ implementation<dt-highlight color="#15181f" text-color="#ffffff">**
 
 ---
 customLayout: .demo/layouts/animated-diagram.html

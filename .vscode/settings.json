@@ -4,7 +4,8 @@
     ],
     "demoTime.highlightZoomEnabled": 0,
     "demoTime.customWebComponents": [
-        ".demo/custom-components/animated-diagram.js"
+        ".demo/custom-components/animated-diagram.js",
+        ".demo/custom-components/highlight.js"
     ],
     "demoTime.customTheme": "",
     "demoTime.insertTypingSpeed": 5,
