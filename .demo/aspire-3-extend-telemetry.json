@@ -136,6 +136,10 @@
       "title": "endpoints tester",
       "moves": [
         {
+          "action": "executeVSCodeCommand",
+          "command": "workbench.action.closePanel"
+        },
+        {
           "action": "open",
           "path": "notebooks/endpoints-tester.ipynb"
         }

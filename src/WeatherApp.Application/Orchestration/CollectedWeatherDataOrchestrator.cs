@@ -60,25 +60,6 @@ public class CollectedWeatherDataOrchestrator(
                 (d, f) => contributorPaymentService.RevokePendingPayment(d))   
             .ToResult(WeatherDataCollectionResponse.FromWeatherDataCollection);
     }
-    
-    /*
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    */
 
     public async Task HandleEvent(ModelingDataRejectedIntegrationEvent dataRejectedIntegrationEvent)
     {

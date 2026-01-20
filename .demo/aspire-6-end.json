@@ -10,6 +10,10 @@
       "title": "slides - end",
       "moves": [
         {
+          "action": "executeVSCodeCommand",
+          "command": "workbench.action.closePanel"
+        },
+        {
           "action": "openSlide",
           "path": ".demo/slides/aspire/slides6.md"
         }

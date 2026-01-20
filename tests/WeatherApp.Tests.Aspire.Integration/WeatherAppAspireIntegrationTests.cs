@@ -39,7 +39,7 @@ public class WeatherAppAspireIntegrationTests
         // This default test passes once the resource names are changed, 
         // you can observe the dependency containers coming up and down in docker desktop!
         
-        // At this point you would have to write code to assert against what happened:
+        // At this point you would have to write code to assert what happened:
         // connecting to databases, ABS etc 
         // OR...
     }

@@ -1,0 +1,78 @@
+{
+  "$schema": "https://demotime.show/demo-time.schema.json",
+  "title": "max-mileage-9-recap impl",
+  "description": "",
+  "version": 3,
+  "scenes": [
+    {
+      "id": "scene-mkk9b44u-mfil",
+      "title": "slides",
+      "moves": [
+        {
+          "action": "openSlide",
+          "path": ".demo/slides/max-mileage-min-tests/slides4.md"
+        }
+      ]
+    },
+    {
+      "id": "scene-mkkdmiv9-znvq",
+      "title": "ochestrator 1",
+      "moves": [
+        {
+          "action": "highlight",
+          "path": "src/WeatherApp.Application/Orchestration/CollectedWeatherDataOrchestrator.cs",
+          "position": "15:24",
+          "highlightWholeLine": true
+        }
+      ]
+    },
+    {
+      "id": "demo-mkkdoflw-fnyu",
+      "title": "ochestrator 2",
+      "moves": [
+        {
+          "action": "highlight",
+          "path": "src/WeatherApp.Application/Orchestration/CollectedWeatherDataOrchestrator.cs",
+          "position": "26",
+          "highlightWholeLine": true
+        }
+      ]
+    },
+    {
+      "id": "demo-mkkdp1w0-wo94",
+      "title": "ochestrator 3 sync AI handler",
+      "moves": [
+        {
+          "action": "highlight",
+          "path": "src/WeatherApp.Application/Orchestration/CollectedWeatherDataOrchestrator.cs",
+          "position": "34:61",
+          "highlightWholeLine": true
+        }
+      ]
+    },
+    {
+      "id": "demo-mkkdq1pt-0415",
+      "title": "ochestrator 4 event handlers",
+      "moves": [
+        {
+          "action": "highlight",
+          "path": "src/WeatherApp.Application/Orchestration/CollectedWeatherDataOrchestrator.cs",
+          "position": "64:83",
+          "highlightWholeLine": true
+        }
+      ]
+    },
+    {
+      "id": "demo-mkkdqx5h-dowy",
+      "title": "ochestrator 5 final event handler",
+      "moves": [
+        {
+          "action": "highlight",
+          "path": "src/WeatherApp.Application/Orchestration/CollectedWeatherDataOrchestrator.cs",
+          "position": "85:92",
+          "highlightWholeLine": true
+        }
+      ]
+    }
+  ]
+}

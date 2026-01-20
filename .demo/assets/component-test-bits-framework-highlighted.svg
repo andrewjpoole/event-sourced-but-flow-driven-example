@@ -4,10 +4,12 @@
    height="540"
    version="1.1"
    viewBox="0 0 960 540"
-   style="background-color: white"
    id="svg1"
    sodipodi:docname="component-test-bits-framework-highlighted.svg"
    inkscape:version="1.4.3 (0d15f75, 2025-12-25)"
+   inkscape:export-filename="component-test-bits-framework-highlighted.png"
+   inkscape:export-xdpi="96"
+   inkscape:export-ydpi="96"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns="http://www.w3.org/2000/svg"
@@ -26,14 +28,15 @@
      inkscape:deskcolor="#d1d1d1"
      inkscape:document-units="pt"
      inkscape:zoom="1.7477836"
-     inkscape:cx="523.23413"
-     inkscape:cy="328.12988"
-     inkscape:window-width="3840"
-     inkscape:window-height="2071"
-     inkscape:window-x="2551"
-     inkscape:window-y="121"
+     inkscape:cx="523.23411"
+     inkscape:cy="328.12987"
+     inkscape:window-width="2560"
+     inkscape:window-height="1571"
+     inkscape:window-x="-9"
+     inkscape:window-y="-9"
      inkscape:window-maximized="1"
-     inkscape:current-layer="Pen" />
+     inkscape:current-layer="Pen"
+     inkscape:export-bgcolor="#ffffffff" />
   <!--
 	Exported with Concepts: Smarter Sketching
 	Version: 2025.3.4 on Microsoft Windows NT 10.0.26100.0

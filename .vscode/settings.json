@@ -7,8 +7,8 @@
         ".demo/custom-components/animated-diagram.js",
         ".demo/custom-components/highlight.js"
     ],
-    "demoTime.customTheme": "",
-    "demoTime.insertTypingSpeed": 5,
+    "demoTime.customTheme": ".demo/slides/theme.css",
+    "demoTime.insertTypingSpeed": 2,
     "demoTime.hackerTyperChunkSize": 10,
     "demoTime.nextActionBehaviour": "currentPosition",
     "window.zoomLevel": 0,

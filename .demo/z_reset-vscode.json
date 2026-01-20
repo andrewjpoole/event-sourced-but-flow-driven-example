@@ -11,6 +11,10 @@
         {
           "action": "snippet",
           "contentPath": ".demo/move-snippets/reset-after-code-demo.json"
+        },
+        {
+          "action": "executeVSCodeCommand",
+          "command": "workbench.action.closePanel"
         }
       ]
     }

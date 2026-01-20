@@ -61,17 +61,6 @@
       ]
     },
     {
-      "id": "demo-mkh05ujm-gimz",
-      "title": "code 4 - 3 QTC activityLite",
-      "description": "ActivityLite",
-      "moves": [
-        {
-          "action": "open",
-          "path": "aspire-experiments/QueryableTraceExporter/ActivityLite.cs"
-        }
-      ]
-    },
-    {
       "id": "demo-mkh06n96-6eqb",
       "title": "code 4 - 4 QTC extensions",
       "description": "exporter extensions",
@@ -79,6 +68,19 @@
         {
           "action": "open",
           "path": "aspire-experiments/QueryableTraceExporter/QueryableTraceCollectorExporterExtensions.cs"
+        }
+      ]
+    },
+    {
+      "id": "demo-mkn6bk5z-0h9d",
+      "title": "code 4 - 5 QTC extensions usage",
+      "description": "exporter extensions",
+      "moves": [
+        {
+          "action": "highlight",
+          "path": "aspire/ServiceDefaults/Extensions.cs",
+          "position": "77",
+          "highlightWholeLine": true
         }
       ]
     },
@@ -111,10 +113,36 @@
       "description": "my test based on QTC",
       "moves": [
         {
+          "action": "highlight",
+          "position": "47:84",
+          "highlightWholeLine": true,
+          "path": "tests/WeatherApp.Tests.Aspire.Integration/WeatherAppAspireIntegrationTests.cs"
+        }
+      ]
+    },
+    {
+      "id": "scene-mkn34qcw-2ljv",
+      "title": "stop aspire",
+      "moves": [
+        {
+          "action": "executeVSCodeCommand",
+          "command": "workbench.action.debug.stop"
+        }
+      ]
+    },
+    {
+      "id": "scene-mkn35yjd-1i7w",
+      "title": "run test",
+      "moves": [
+        {
           "action": "selection",
           "path": "tests/WeatherApp.Tests.Aspire.Integration/WeatherAppAspireIntegrationTests.cs",
           "position": "47:84",
           "highlightWholeLine": true
+        },
+        {
+          "action": "executeVSCodeCommand",
+          "command": "testing.runAtCursor"
         }
       ]
     }

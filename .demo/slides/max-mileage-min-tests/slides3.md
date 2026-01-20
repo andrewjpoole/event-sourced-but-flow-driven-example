@@ -4,4 +4,17 @@ layout: default
 
 # Demo time!😅
 
-Now let’s see everything together in a test
+---
+layout: default
+---
+
+# Demo time!😅
+
+### Let's recap what we're testing...
+
+---
+layout: default
+---
+
+<img src=".demo/assets/complex-scenario2.svg" style="background: white; height: 500px;"></img>
+

@@ -10,7 +10,7 @@ layout: intro
 
 # Level up your devex!😍
 
-## Unit Test Complex E2E Flows + Integration Integration Testing with Aspire & OTEL
+## Aspire, OTEL & Integration Testing 
 
 <br></br>
 
@@ -31,7 +31,7 @@ layout: default
 customLayout: .demo/layouts/animated-diagram.html
 filePath: .demo/assets/complex-scenario2.svg
 speed: 500
-dark: true
+dark: false
 ---
 
 ---
@@ -43,6 +43,6 @@ layout: default
 ---
 customLayout: .demo/layouts/animated-diagram.html
 filePath: .demo/assets/scenario-sequence.svg
-speed: 2500
+speed: 500
 ---
 

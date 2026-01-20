@@ -1,12 +1,12 @@
 <simple-animate-svg-component
     svg-file-path="{{metadata.webViewUrl}}/{{metadata.filePath}}" 
     
-    {{#if metadata.light}}
-        background-color="#FFFFFF"
-        invert-colors="false"
-    {{else}}
-        background-color="#000000"
+    {{#if metadata.dark}}
+         background-color="#000000"
         invert-colors="true"
+    {{else}}
+       background-color="#FFFFFF"
+        invert-colors="false"
     {{/if}}
     
     animation-speed="{{metadata.speed}}" 
