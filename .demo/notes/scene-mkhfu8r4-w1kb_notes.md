@@ -5,3 +5,7 @@
 ## close all tabs
 
 ## reset polyglot notebook outputs
+
+## Select Broswer instance
+
+## decide whether to delete containers
