@@ -16,5 +16,7 @@
     "demoTime.highlightBlur": 1,
     "demoTime.highlightOpacity": 0.5,
     "demoTime.highlightBackground": "#303030",
-    "demoTime.highlightBorderColor": "rgba(255,255,255,0.22)"
+    "demoTime.highlightBorderColor": "rgba(255,255,255,0.22)",
+    "workbench.editor.showTabs": "multiple",
+    "workbench.activityBar.location": "default"
 }

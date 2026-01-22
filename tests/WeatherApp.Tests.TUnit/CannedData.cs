@@ -21,7 +21,7 @@ public class CannedData
     {        
         StreamId = streamId ?? Guid.NewGuid();
         Location = location ?? $"testLocation{Guid.NewGuid()}"[..20];
-        Reference = reference ?? $"testRef{Guid.NewGuid()}"[..10];
+        Reference = reference ?? NewFruityReference();
         RequestId = requestId ?? Guid.NewGuid();
 
         modelingDataRejectedReason = $"Reason{Random.Next(10, 99)}";      
@@ -88,5 +88,13 @@ public class CannedData
             Event.Create(ModellingDataRejected(), streamId, version++, null),
             Event.Create(PendingContributorPaymentRevoked(), streamId, version++, null),
         };
+    }
+
+    public string NewFruityReference()
+    {
+        var fruits = new[] { "Apple", "Banana", "Cherry", "Date", "Elderberry", "Fig", "Grape", "Honeydew" };
+        var randomFruit = fruits[Random.Shared.Next(fruits.Length)];
+        var randomNumber = Random.Shared.Next(1000, 9999);
+        return $"component-test-{randomFruit}{randomNumber}";
     }
 }

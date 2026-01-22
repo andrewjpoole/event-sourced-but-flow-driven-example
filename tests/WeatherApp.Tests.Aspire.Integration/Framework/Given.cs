@@ -69,7 +69,7 @@ public class Given
     public Given WeHaveSomeCollectedWeatherData(out string location, out string reference, out Guid requestId, out CollectedWeatherDataModel collectedWeatherData)
     {
         location = $"TestLocation{Random.Shared.Next(10,99)}";
-        reference = $"TestReference{Random.Shared.Next(10,99)}";
+        reference = NewFruityReference();
         requestId = Guid.NewGuid();
 
         collectedWeatherData = new CollectedWeatherDataModel(
@@ -84,5 +84,13 @@ public class Given
                 });
 
         return this;
+    }
+
+    private string NewFruityReference()
+    {
+        var fruits = new[] { "Apple", "Banana", "Cherry", "Date", "Elderberry", "Fig", "Grape", "Honeydew" };
+        var randomFruit = fruits[Random.Shared.Next(fruits.Length)];
+        var randomNumber = Random.Shared.Next(1000, 9999);
+        return $"aspire-integration-test-{randomFruit}{randomNumber}";
     }
 }

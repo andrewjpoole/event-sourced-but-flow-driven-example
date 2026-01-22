@@ -105,7 +105,26 @@ public class OutboxDispatcherHostedService(
         {
             try
             {
-                
+                //*
+                // Hydrate the telemetry trace context.
+                var parentContext = Propagator.Extract(default, item.SerialisedTelemetry, (serialisedTelemetry, key) => 
+                {
+                    var telemetryDictionary = JsonSerializer.Deserialize<Dictionary<string, string>>(serialisedTelemetry);
+
+                    if (telemetryDictionary == null || telemetryDictionary.Count == 0)
+                        return Enumerable.Empty<string>();
+
+                    if(telemetryDictionary.TryGetValue(key, out var value))
+                        return new List<string> { telemetryDictionary[key] };
+
+                    return Enumerable.Empty<string>();
+                });
+
+                // Hydrate trace context to cross the Outbox 'airgap'
+                Baggage.Current = parentContext.Baggage;
+
+                using var activity = Activity.StartActivity("Dispatch Message", ActivityKind.Consumer, parentContext.ActivityContext);
+                //-
                 
                 await messageSender.SendAsync(item.SerialisedData, item.MessagingEntityName, cancellationToken);
                 await outboxRepository.AddSentStatus(OutboxSentStatusUpdate.CreateSent(item.Id));

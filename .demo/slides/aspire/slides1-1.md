@@ -30,7 +30,7 @@ layout: default
 ---
 customLayout: .demo/layouts/animated-diagram.html
 filePath: .demo/assets/complex-scenario2.svg
-speed: 500
+speed: 400
 dark: false
 ---
 
@@ -43,6 +43,6 @@ layout: default
 ---
 customLayout: .demo/layouts/animated-diagram.html
 filePath: .demo/assets/scenario-sequence.svg
-speed: 500
+speed: 800
 ---
 

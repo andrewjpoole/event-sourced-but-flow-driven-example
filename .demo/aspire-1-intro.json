@@ -43,7 +43,10 @@
           "action": "openSlide",
           "path": ".demo/slides/aspire/slides1-1.md"
         }
-      ]
+      ],
+      "notes": {
+        "path": "notes/scene-mkhfu8r4-w1kb_notes.md"
+      }
     },
     {
       "id": "demo-mkgpdb6o-eqcx",
