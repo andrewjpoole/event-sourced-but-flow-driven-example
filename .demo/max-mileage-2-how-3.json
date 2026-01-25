@@ -12,7 +12,10 @@
           "action": "openSlide",
           "path": ".demo/slides/max-mileage-min-tests/slides2-3.md"
         }
-      ]
+      ],
+      "notes": {
+        "path": "notes/scene-mkit7boo-uips_notes.md"
+      }
     },
     {
       "id": "scene-mkitzcfb-tlet",
@@ -67,7 +70,7 @@
         {
           "action": "highlight",
           "path": "tests/WeatherApp.Tests.TUnit/AppHostFactories/OutboxApplicationFactory.cs",
-          "position": "22:25",
+          "position": "22:27",
           "highlightWholeLine": false
         }
       ]
@@ -79,10 +82,13 @@
         {
           "action": "highlight",
           "path": "tests/WeatherApp.Tests.TUnit/AppHostFactories/OutboxApplicationFactory.cs",
-          "position": "27:49",
+          "position": "29:51",
           "highlightWholeLine": false
         }
-      ]
+      ],
+      "notes": {
+        "path": "notes/demo-mkiukysn-5fhb_notes.md"
+      }
     }
   ]
 }

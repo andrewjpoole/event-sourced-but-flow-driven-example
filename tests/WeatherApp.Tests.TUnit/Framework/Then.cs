@@ -193,10 +193,10 @@ public class Then(ComponentTestFixture fixture)
 
     
 
-    public Then AMessageWasSent<TMessage>(Func<TMessage, bool> match, int times = 1, int numberOfRetries = 10, int retryDelayInMilliSeconds = 200)
+    public Then AMessageWasSent<T>(Func<T, bool> match, int times = 1, int numberOfRetries = 10, int retryDelayInMilliSeconds = 200)
     {
-        var senderMock = fixture.FakeServiceBus.GetSenderFor<TMessage>() ?? 
-            throw new Exception($"No Mock<ServiceBusSender> found for message type {typeof(TMessage).Name}");
+        var senderMock = fixture.FakeServiceBus.GetSenderFor<T>() ?? 
+            throw new Exception($"No Mock<ServiceBusSender> found for message type {typeof(T).Name}");
 
         var retryPolicy = Policy
             .Handle<Exception>()
@@ -205,24 +205,24 @@ public class Then(ComponentTestFixture fixture)
                 sleepDurationProvider: _ => TimeSpan.FromMilliseconds(retryDelayInMilliSeconds),
                 onRetry: (exception, timeSpan, retryCount, context) =>
                 {
-                    Console.WriteLine($"{fixture.CurrentPhase}AMessageWasSent<{typeof(TMessage).Name}> retry attempt {retryCount}/{numberOfRetries} after {timeSpan.TotalMilliseconds}ms delay. Exception: {exception.Message}");
+                    Console.WriteLine($"{fixture.CurrentPhase}AMessageWasSent<{typeof(T).Name}> retry attempt {retryCount}/{numberOfRetries} after {timeSpan.TotalMilliseconds}ms delay. Exception: {exception.Message}");
                 });
 
         retryPolicy.Execute(() =>
         {
             senderMock.Verify(x => x.SendMessageAsync(
-                It.Is<ServiceBusMessage>(m => match(m.Body.ToObjectFromJson<TMessage>()!)), 
+                It.Is<ServiceBusMessage>(m => match(m.Body.ToObjectFromJson<T>()!)), 
                 It.IsAny<CancellationToken>()), Times.Exactly(times), 
-                $"{fixture.CurrentPhase}expected message of type {typeof(TMessage).Name} to have been sent {times} time(s).");
+                $"{fixture.CurrentPhase}expected message of type {typeof(T).Name} to have been sent {times} time(s).");
         });
 
         return this;
     }
 
-    public Then AMessageWasSent<TMessage>(int times = 1, int numberOfRetries = 10, int retryDelayInMilliSeconds = 200)
+    public Then AMessageWasSent<T>(int times = 1, int numberOfRetries = 10, int retryDelayInMilliSeconds = 200)
     {
-        var senderMock = fixture.FakeServiceBus.GetSenderFor<TMessage>() ?? 
-            throw new Exception($"No Mock<ServiceBusSender> found for message type {typeof(TMessage).Name}");
+        var senderMock = fixture.FakeServiceBus.GetSenderFor<T>() ?? 
+            throw new Exception($"No Mock<ServiceBusSender> found for message type {typeof(T).Name}");
 
         var retryPolicy = Policy
             .Handle<Exception>()
@@ -231,15 +231,14 @@ public class Then(ComponentTestFixture fixture)
                 sleepDurationProvider: _ => TimeSpan.FromMilliseconds(retryDelayInMilliSeconds),
                 onRetry: (exception, timeSpan, retryCount, context) =>
                 {
-                    Console.WriteLine($"{fixture.CurrentPhase}AMessageWasSent<{typeof(TMessage).Name}> retry attempt {retryCount}/{numberOfRetries} after {timeSpan.TotalMilliseconds}ms delay. Exception: {exception.Message}");
+                    Console.WriteLine($"{fixture.CurrentPhase}AMessageWasSent<{typeof(T).Name}> retry attempt {retryCount}/{numberOfRetries} after {timeSpan.TotalMilliseconds}ms delay. Exception: {exception.Message}");
                 });
 
         retryPolicy.Execute(() =>
         {
             senderMock.Verify(x => x.SendMessageAsync(
-                It.IsAny<ServiceBusMessage>(), 
-                It.IsAny<CancellationToken>()), Times.Exactly(times), 
-                $"{fixture.CurrentPhase}expected message of type {typeof(TMessage).Name} to have been sent {times} time(s).");
+                It.IsAny<ServiceBusMessage>(), It.IsAny<CancellationToken>()), Times.Exactly(times), 
+                $"{fixture.CurrentPhase}expected message of type {typeof(T).Name} to have been sent {times} time(s).");
         });
 
         return this;
@@ -255,7 +254,7 @@ public class Then(ComponentTestFixture fixture)
         return this;
     }
 
-    public Then TheMessageWasHandled<TIntegrationEvent>(int numberOfReties = 25, int retryDelayInMilliSeconds = 250) where TIntegrationEvent : class
+    public Then TheMessageWasHandled<T>(int numberOfReties = 25, int retryDelayInMilliSeconds = 250) where T : class
     {
         var retryPolicy = Policy
             .Handle<Exception>()
@@ -264,16 +263,16 @@ public class Then(ComponentTestFixture fixture)
                 sleepDurationProvider: _ => TimeSpan.FromMilliseconds(retryDelayInMilliSeconds),
                 onRetry: (exception, timeSpan, retryCount, context) =>
                 {
-                    Console.WriteLine($"TheMessageWasHandled<{typeof(TIntegrationEvent).Name}> retry attempt {retryCount}/{numberOfReties} after {timeSpan.TotalMilliseconds}ms delay. Exception: {exception.Message}");
+                    Console.WriteLine($"TheMessageWasHandled<{typeof(T).Name}> retry attempt {retryCount}/{numberOfReties} after {timeSpan.TotalMilliseconds}ms delay. Exception: {exception.Message}");
                 });
 
         retryPolicy.Execute(() =>
         {
-            var processor = fixture.FakeServiceBus.GetProcessorFor<TIntegrationEvent>();
+            var processor = fixture.FakeServiceBus.GetProcessorFor<T>();
             var deliveryCount = processor.MessageDeliveryAttempts.Count;
             
-            deliveryCount.ShouldBe(1, $"{fixture.CurrentPhase}in TheMessageWasHandled<{typeof(TIntegrationEvent).Name}>, expected the ServiceBusProcesser<{typeof(TIntegrationEvent).Name}> to have had a single delivery attempt, instead found {deliveryCount}.");
-            processor.MessageDeliveryAttempts[0].WasCompleted.ShouldBeTrue($"{fixture.CurrentPhase}expected the event {typeof(TIntegrationEvent).Name} to have been handled.");
+            deliveryCount.ShouldBe(1, $"{fixture.CurrentPhase}in TheMessageWasHandled<{typeof(T).Name}>, expected the ServiceBusProcesser<{typeof(T).Name}> to have had a single delivery attempt, instead found {deliveryCount}.");
+            processor.MessageDeliveryAttempts[0].WasCompleted.ShouldBeTrue($"{fixture.CurrentPhase}expected the event {typeof(T).Name} to have been handled.");
         });
 
         return this;

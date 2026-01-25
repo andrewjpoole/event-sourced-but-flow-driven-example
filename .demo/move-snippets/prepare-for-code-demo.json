@@ -58,7 +58,7 @@
         "action": "setSetting",
         "setting": {
             "key": "terminal.integrated.fontSize",
-            "value": 30
+            "value": 25
         }
     },
     {

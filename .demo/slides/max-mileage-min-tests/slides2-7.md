@@ -46,4 +46,4 @@ layout: default
 
 ### ⚙️ Or use a real database with something like CSharpSqlTests
 
-### ⚙️ **<dt-highlight color="#15181f" text-color="#47c4f1">Decent test data generation will require significant thought + effort!</dt-highlight>**
+### **<dt-highlight color="#15181f" text-color="#47c4f1">Decent test data generation will require significant thought + effort!</dt-highlight>**

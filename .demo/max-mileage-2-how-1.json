@@ -15,20 +15,8 @@
         }
       ],
       "notes": {
-        "path": "notes/scene-mkist0by-sy8y_notes.md"
+        "path": ".demo/notes/scene-mkist0by-sy8y_notes.md"
       }
-    },
-    {
-      "id": "scene-mkekq9mw-jfw6",
-      "title": "Prepare vscode",
-      "description": "especially enable all breakpoints",
-      "moves": [
-        {
-          "action": "executeVSCodeCommand",
-          "disabled": false,
-          "command": "workbench.debug.viewlet.action.enableAllBreakpoints"
-        }
-      ]
     },
     {
       "id": "scene-mkekqbf9-a1se",
@@ -45,7 +33,7 @@
         }
       ],
       "notes": {
-        "path": ".demo/notes/scene-mkekqbf9-a1se_notes.md"
+        "path": ".demo/notes/scene-mkist0by-sy8y_notes.md"
       }
     },
     {
@@ -66,7 +54,10 @@
           "position": "11:15",
           "highlightWholeLine": true
         }
-      ]
+      ],
+      "notes": {
+        "path": ".demo/notes/scene-mkist0by-sy8y_notes.md"
+      }
     },
     {
       "id": "scene-mkekqgck-tvzs",
@@ -86,7 +77,10 @@
           "position": "14,8:14,74",
           "highlightWholeLine": false
         }
-      ]
+      ],
+      "notes": {
+        "path": ".demo/notes/scene-mkist0by-sy8y_notes.md"
+      }
     },
     {
       "id": "scene-mkekqhy2-z2is",
@@ -106,7 +100,10 @@
           "highlightWholeLine": true,
           "path": ".demo/temp-files/1.cs"
         }
-      ]
+      ],
+      "notes": {
+        "path": ".demo/notes/scene-mkist0by-sy8y_notes.md"
+      }
     },
     {
       "id": "scene-mkekqjjk-hapr",
@@ -132,7 +129,10 @@
           "position": "16:19",
           "highlightWholeLine": true
         }
-      ]
+      ],
+      "notes": {
+        "path": ".demo/notes/scene-mkist0by-sy8y_notes.md"
+      }
     },
     {
       "id": "scene-mkekqmti-lemk",
@@ -152,7 +152,10 @@
           "position": "11:25",
           "highlightWholeLine": true
         }
-      ]
+      ],
+      "notes": {
+        "path": ".demo/notes/scene-mkist0by-sy8y_notes.md"
+      }
     }
   ]
 }

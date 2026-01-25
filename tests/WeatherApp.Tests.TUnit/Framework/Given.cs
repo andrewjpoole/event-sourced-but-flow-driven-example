@@ -152,7 +152,7 @@ public class Given(ComponentTestFixture fixture)
     }
 
     public Given WeWillHandleAMessageOfType<T>(Action<T> consumeEvent)
-    {        
+    { 
         var testableServiceBusProcessor = fixture.FakeServiceBus.GetProcessorFor<T>();
 
         testableServiceBusProcessor.ProcessMessageAsync += async (args) =>

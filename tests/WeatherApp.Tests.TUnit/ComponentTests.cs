@@ -36,7 +36,6 @@ public class ComponentTests
     public void e2e_flow_notifications_sent_when_ModelingDataAccepted()
     {
         var (given, when, then, cannedData) = testFixture.SetupHelpers();
-
         given.WeHaveSomeCollectedWeatherData(cannedData, out var weatherData, out var reference)
             .And.TheContributorPaymentsServiceCreateEndpointWillReturn(HttpStatusCode.OK)
             .And.TheContributorPaymentsServiceCommitEndpointWillReturn(HttpStatusCode.OK)
@@ -110,60 +109,7 @@ public class ComponentTests
             .And.TheResponseCodeShouldBe(response, HttpStatusCode.UnprocessableEntity)
             .And.TheBodyShouldNotBeEmpty<string>(response, 
                 x => x.ShouldBe(cannedData.modelingDataRejectedReason));
-    }
-
-    [Test]
-    public void e2e_flow_notifications_sent_when_ModelingDataAccepted_with_mimicing_of_NotificationService()
-    {
-        var (given, when, then, cannedData) = testFixture.SetupHelpers();
-        UserNotificationEvent? handledUserNotificationEvent = null;
-
-        given.WeHaveSomeCollectedWeatherData(cannedData, out var weatherData, out var reference)
-            .And.TheContributorPaymentsServiceCreateEndpointWillReturn(HttpStatusCode.OK)
-            .And.TheContributorPaymentsServiceCommitEndpointWillReturn(HttpStatusCode.OK)
-            .And.TheModelingServiceSubmitEndpointWillReturn(HttpStatusCode.Accepted)
-            .And.WeWillHandleAMessageOfType<UserNotificationEvent>( // Mimic Notification Service.
-                @event => handledUserNotificationEvent = @event)
-            .And.TheServersAreStarted();
-        
-        when.InPhase("1 (initial API request)") 
-            .And.WeWrapTheCollectedWeatherDataInAnHttpRequestMessage(weatherData, cannedData, reference, out var httpRequest)
-            .And.WeSendTheMessageToTheApi(httpRequest, out var response);
-
-        then.TheContributorPaymentsServiceCreateEndpointShouldHaveBeenCalled(times: 1)
-            .And.TheModelingServiceSubmitEndpointShouldHaveBeenCalled(times: 1)
-            .And.TheDomainEventShouldHaveBeenPersisted<SubmittedToModeling>()
-            .And.TheResponseCodeShouldBe(response, HttpStatusCode.OK)
-            .And.TheBodyShouldNotBeEmpty(response)
-            .And.WeGetTheStreamIdFromTheInitialDomainEvent(cannedData.RequestId, out var streamId);
-        
-        when.InPhase("2 (1st ASB message back from modeling service)")
-            .AMessageAppears(new ModelingDataAcceptedIntegrationEvent(streamId)); // Mimic Modeling Service.
-
-        then.TheMessageWasHandled<ModelingDataAcceptedIntegrationEvent>()
-            .And.TheDomainEventShouldHaveBeenPersisted<ModelingDataAccepted>()
-            .And.TheContributorPaymentsServiceCommitEndpointShouldHaveBeenCalled(times: 1);
-
-        when.InPhase("3 (2nd ASB message back from modeling service)")
-            .AMessageAppears(new ModelUpdatedIntegrationEvent(streamId)); // Mimic Modeling Service.
-
-        then.TheMessageWasHandled<ModelUpdatedIntegrationEvent>()
-            .And.TheDomainEventShouldHaveBeenPersisted<ModelUpdated>()
-            .And.WeShouldHaveTheCorrectNumberOfDomainEventsPersisted(8)
-            .And.AnOutboxRecordWasInserted<UserNotificationEvent>();
-
-        then.InPhase("4 (Notification Service handles event dispached by outbox)")
-            .AfterSomeTimeHasPassed()
-            .AMessageWasSent<UserNotificationEvent>()
-            .TheMessageWasHandled<UserNotificationEvent>()
-            .AndAlso("The handled UserNotificationEvent properties were correct", () =>
-            {
-                handledUserNotificationEvent.ShouldNotBeNull();
-                handledUserNotificationEvent!.Reference.ShouldBe(reference);
-                handledUserNotificationEvent.Body.ShouldBe(
-                    "Dear user, your data has been submitted and included in our latest model");
-            });
-    }
+    }    
 
     [After(Test)]
     public void TearDown()

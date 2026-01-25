@@ -94,7 +94,6 @@ layout: default
 // in OutboxDispatcherHostedService...
 await Task.Delay(TimeSpan.FromSeconds(options.IntervalBetweenBatchesInSeconds), 
                     timeProvider, cancellationToken);
-//                  ^^^^^^^^^^^^
 // Time related methods now accept a TimeProvider
                     
 await ProcessOutboxBatchAsync(options.BatchSize, cancellationToken);
@@ -124,12 +123,10 @@ layout: default
 
 ```csharp
 // then at the opportune moment...
-public Then AfterSomeTimeHasPassed(int numberOfMsToAdvance = 2000, int numberOfMsToWait = 2000)
+public Then AfterSomeTimeHasPassed(int numberOfMsToAdvance = 2000)
 {
     // Advance the time so the outbox processor wakes up to check for messages...
     fixture.FakeTimeProvider.Advance(TimeSpan.FromMilliseconds(numberOfMsToAdvance));
     // So cool!😁
-
-    // Wait and return...
 }
 ```

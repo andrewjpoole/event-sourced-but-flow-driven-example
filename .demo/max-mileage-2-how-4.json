@@ -12,7 +12,10 @@
           "action": "openSlide",
           "path": ".demo/slides/max-mileage-min-tests/slides2-4.md"
         }
-      ]
+      ],
+      "notes": {
+        "path": "notes/scene-mkit8n2i-u87h_notes.md"
+      }
     },
     {
       "id": "scene-mkivcfym-ufy8",
@@ -67,7 +70,7 @@
         {
           "action": "highlight",
           "path": "tests/WeatherApp.Tests.TUnit/Framework/ServiceBus/TestableServiceBusProcessor.cs",
-          "position": "28:36",
+          "position": "28:34",
           "highlightWholeLine": false
         }
       ]
@@ -122,6 +125,16 @@
     },
     {
       "id": "demo-mkivnlni-0m98",
+      "title": "TestableMessageEventArgs",
+      "moves": [
+        {
+          "action": "open",
+          "path": "tests/WeatherApp.Tests.TUnit/Framework/ServiceBus/TestableMessageEventArgs.cs"
+        }
+      ]
+    },
+    {
+      "id": "demo-mkuanqor-2lut",
       "title": "TestableMessageEventArgs 1",
       "moves": [
         {
@@ -139,7 +152,31 @@
         {
           "action": "highlight",
           "path": "tests/WeatherApp.Tests.TUnit/Framework/ServiceBus/TestableMessageEventArgs.cs",
+          "position": "14:19",
+          "highlightWholeLine": false
+        }
+      ]
+    },
+    {
+      "id": "demo-mkuamx9j-p6m2",
+      "title": "TestableMessageEventArgs 3",
+      "moves": [
+        {
+          "action": "highlight",
+          "path": "tests/WeatherApp.Tests.TUnit/Framework/ServiceBus/TestableMessageEventArgs.cs",
           "position": "21:27",
+          "highlightWholeLine": false
+        }
+      ]
+    },
+    {
+      "id": "demo-mkuapo2j-8yki",
+      "title": "Assertions",
+      "moves": [
+        {
+          "action": "highlight",
+          "path": "tests/WeatherApp.Tests.TUnit/Framework/Then.cs",
+          "position": "272:276",
           "highlightWholeLine": false
         }
       ]

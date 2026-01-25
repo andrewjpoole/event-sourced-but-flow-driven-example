@@ -2,19 +2,19 @@
 layout: default
 ---
 
-# Demo time!😅
+# Nearly time to see the test👀
 
 ---
 layout: default
 ---
 
-# Demo time!😅
+# Nearly time to see the test👀
 
-### Let's recap what we're testing...
+### But first let's recap what we're testing...
 
 ---
 layout: default
 ---
 
-<img src=".demo/assets/complex-scenario2.svg" style="background: white; height: 500px;"></img>
+<img src=".demo/assets/complex-scenario2.svg" style="background: white; height: 600px;"></img>
 

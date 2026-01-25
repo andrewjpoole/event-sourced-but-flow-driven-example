@@ -30,7 +30,7 @@ public class TestableServiceBusProcessor(string entityName) : ServiceBusProcesso
     {
         var args = CreateMessageArgs(message, deliveryCount, applicationProperties);
         MessageDeliveryAttempts.Add((TestableMessageEventArgs)args);
-        await base.OnProcessMessageAsync(args);
+        await base.OnProcessMessageAsync(args); // Presents message to app's ServiceBusEventListener.
     }
 
     public async Task PresentMessage(string json)

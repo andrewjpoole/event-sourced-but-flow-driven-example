@@ -21,6 +21,18 @@
         {
           "action": "highlight",
           "path": "tests/WeatherApp.Tests.TUnit/Framework/ServiceBus/FakeServiceBus.cs",
+          "position": "72:76",
+          "highlightWholeLine": true
+        }
+      ]
+    },
+    {
+      "id": "demo-mkub76gm-47ws",
+      "title": "code - sender mocking 2",
+      "moves": [
+        {
+          "action": "highlight",
+          "path": "tests/WeatherApp.Tests.TUnit/Framework/ServiceBus/FakeServiceBus.cs",
           "position": "13:24",
           "highlightWholeLine": true
         }
@@ -28,7 +40,7 @@
     },
     {
       "id": "demo-mkiw356h-eu9p",
-      "title": "code - sender mocking 2",
+      "title": "code - sender mocking 3",
       "moves": [
         {
           "action": "highlight",
@@ -40,12 +52,12 @@
     },
     {
       "id": "demo-mkiw3jmi-jy3u",
-      "title": "code - sender mocking 3 assertions",
+      "title": "code - sender mocking 4 assertions",
       "moves": [
         {
           "action": "highlight",
           "path": "tests/WeatherApp.Tests.TUnit/Framework/Then.cs",
-          "position": "153:160",
+          "position": "239:241",
           "highlightWholeLine": true
         }
       ]
@@ -56,7 +68,7 @@
       "moves": [
         {
           "action": "openSlide",
-          "path": ".demo/slides/max-mileage-min-tests/slides2-5.md",
+          "path": ".demo/slides/max-mileage-min-tests/slides2-5-2.md",
           "slide": 3
         }
       ]
@@ -83,7 +95,10 @@
           "position": "138",
           "highlightWholeLine": true
         }
-      ]
+      ],
+      "notes": {
+        "path": "notes/demo-mkiw7527-99me_notes.md"
+      }
     },
     {
       "id": "demo-mkiw7o1j-lz8d",
@@ -95,7 +110,10 @@
           "position": "140:141",
           "highlightWholeLine": true
         }
-      ]
+      ],
+      "notes": {
+        "path": "notes/demo-mkiw7o1j-lz8d_notes.md"
+      }
     },
     {
       "id": "demo-mkiw86p1-8n2h",
@@ -107,7 +125,10 @@
           "position": "146:151",
           "highlightWholeLine": true
         }
-      ]
+      ],
+      "notes": {
+        "path": "notes/demo-mkiw86p1-8n2h_notes.md"
+      }
     }
   ]
 }
