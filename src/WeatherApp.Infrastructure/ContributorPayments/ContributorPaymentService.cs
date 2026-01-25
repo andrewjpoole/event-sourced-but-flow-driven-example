@@ -101,8 +101,6 @@ public class ContributorPaymentService(
             return OneOf<WeatherDataCollectionAggregate, Failure>.FromT1(new ContributorPaymentServiceFailure(bodyContent));
         }
 
-        await weatherDataCollectionAggregate.AppendCommittedContributorPaymentEvent(pendingPayment.PaymentId);
-
-        return OneOf<WeatherDataCollectionAggregate, Failure>.FromT0(weatherDataCollectionAggregate);
+        return await weatherDataCollectionAggregate.AppendCommittedContributorPaymentEvent(pendingPayment.PaymentId);
     }
 }

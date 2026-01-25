@@ -9,7 +9,8 @@ var builder = DistributedApplication.CreateBuilder(args);
 
 // SQL database
 var sql = builder.AddSqlServer("sql", port: 54782)
-    .WithLifetime(ContainerLifetime.Persistent);
+    .WithLifetime(ContainerLifetime.Persistent)
+    .WithEndpointProxySupport(false);
 
 var db = sql.AddDatabase("WeatherAppDb", "WeatherAppDb");
 

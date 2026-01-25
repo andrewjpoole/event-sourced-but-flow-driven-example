@@ -13,7 +13,10 @@
           "action": "openSlide",
           "path": ".demo/slides/max-mileage-min-tests/slides2-1.md"
         }
-      ]
+      ],
+      "notes": {
+        "path": "notes/scene-mkist0by-sy8y_notes.md"
+      }
     },
     {
       "id": "scene-mkekq9mw-jfw6",
@@ -40,7 +43,10 @@
           "action": "open",
           "path": ".demo/temp-files/1.cs"
         }
-      ]
+      ],
+      "notes": {
+        "path": ".demo/notes/scene-mkekqbf9-a1se_notes.md"
+      }
     },
     {
       "id": "scene-mkekqean-473x",

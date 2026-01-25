@@ -7,6 +7,7 @@ using Moq.Contrib.HttpClient;
 using WeatherApp.Application.Models.Requests;
 using WeatherApp.Domain.EventSourcing;
 using WeatherApp.Domain.ValueObjects;
+using WeatherApp.Infrastructure.Messaging;
 
 namespace WeatherApp.Tests.TUnit.Framework;
 
@@ -20,9 +21,10 @@ public class Given(ComponentTestFixture fixture)
         return this;
     }
 
-    public Given WeHaveSomeCollectedWeatherData(CannedData cannedData, out CollectedWeatherDataModel data)
+    public Given WeHaveSomeCollectedWeatherData(CannedData cannedData, out CollectedWeatherDataModel data, out string reference)
     {
         data = cannedData.GetRandCollectedWeatherDataModel(3);
+        reference = cannedData.Reference;
 
         return this;
     }
@@ -48,7 +50,6 @@ public class Given(ComponentTestFixture fixture)
     public Given TheServersAreStarted()
     {
         fixture.ApiFactory.Start();
-        fixture.NotificationServiceFactory.Start();
         fixture.EventListenerFactory.Start();
         fixture.OutboxApplicationFactory.Start();
         
@@ -87,8 +88,8 @@ public class Given(ComponentTestFixture fixture)
             .SetupRequest(HttpMethod.Post, 
                 r => r.RequestUri!.ToString().StartsWith($"{Constants.BaseUrl}{Constants.ContributorPaymentsServiceUriStart}") 
                 && r.RequestUri!.ToString().Contains("revoke"))
-            .Returns((HttpRequestMessage request, CancellationToken ct) => 
-            {                
+           .ReturnsAsync((HttpRequestMessage request, CancellationToken ct) => 
+            {
                 var contributorId = GetSegmentFromPath(2, request);
                 var paymentId = GetSegmentFromPath(4, request);
                 var content = new StringContent(JsonSerializer.Serialize(new { ContributorId = Guid.Parse(contributorId), PaymentId = paymentId, Status = "Revoked" }));
@@ -103,7 +104,7 @@ public class Given(ComponentTestFixture fixture)
             .SetupRequest(HttpMethod.Post, 
                 r => r.RequestUri!.ToString().StartsWith($"{Constants.BaseUrl}{Constants.ContributorPaymentsServiceUriStart}") 
                 && r.RequestUri!.ToString().Contains("commit"))
-           .Returns((HttpRequestMessage request, CancellationToken ct) => 
+           .ReturnsAsync((HttpRequestMessage request, CancellationToken ct) => 
             {                
                 var contributorId = GetSegmentFromPath(2, request);
                 var paymentId = GetSegmentFromPath(4, request);
@@ -149,4 +150,21 @@ public class Given(ComponentTestFixture fixture)
 
         return this;
     }
+
+    public Given WeWillHandleAMessageOfType<T>(Action<T> consumeEvent)
+    {        
+        var testableServiceBusProcessor = fixture.FakeServiceBus.GetProcessorFor<T>();
+
+        testableServiceBusProcessor.ProcessMessageAsync += async (args) =>
+        {
+            var @event = args.Message.GetJsonPayload<T>();
+            consumeEvent(@event!);
+
+            args.CompleteMessageAsync(args.Message).GetAwaiter().GetResult();
+        };
+
+        testableServiceBusProcessor.StartProcessingAsync(CancellationToken.None).GetAwaiter().GetResult();
+
+        return this;
+    }   
 }

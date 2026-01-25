@@ -9,6 +9,10 @@
       "title": "final slides",
       "moves": [
         {
+          "action": "executeVSCodeCommand",
+          "command": "workbench.action.closePanel"
+        },
+        {
           "action": "openSlide",
           "path": ".demo/slides/max-mileage-min-tests/slides5.md"
         }

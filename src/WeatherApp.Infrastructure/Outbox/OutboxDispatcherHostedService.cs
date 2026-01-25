@@ -137,6 +137,6 @@ public class OutboxDispatcherHostedService(
             }            
         }
 
-        transaction.Rollback();
+        transaction.Commit();
     }    
 }

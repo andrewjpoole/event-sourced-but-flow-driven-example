@@ -43,7 +43,7 @@ layout: default
 ---
 customLayout: .demo/layouts/animated-diagram.html
 filePath: .demo/assets/scenario-sequence.svg
-speed: 2500
+speed: 1500
 ---
 
 ---
@@ -192,6 +192,6 @@ layout: default
 customLayout: .demo/layouts/animated-diagram.html
 filePath: .demo/assets/component-test-bits.svg
 speed: 2500
-light: true
+invert: true
 ---
 

@@ -6,6 +6,8 @@ using Moq.Contrib.HttpClient;
 using WeatherApp.Domain.EventSourcing;
 using WeatherApp.Domain.DomainEvents;
 using Shouldly;
+using Polly;
+using Polly.Retry;
 
 namespace WeatherApp.Tests.TUnit.Framework;
 
@@ -13,7 +15,7 @@ public class Then(ComponentTestFixture fixture)
 {
     public Then And => this;
 
-    public Then AndAssert(Action assertion)
+    public Then AndAlso(string name, Action assertion)
     {
         assertion();
         return this;
@@ -102,6 +104,34 @@ public class Then(ComponentTestFixture fixture)
     public Then TheModelingServiceSubmitEndpointShouldNotHaveBeenCalled() => 
         TheModelingServiceSubmitEndpointShouldHaveBeenCalled(0);
 
+    public Then TheContributorPaymentsServiceCreateEndpointShouldHaveBeenCalled(int times = 1)
+    {
+        fixture.MockContributorPaymentsServiceHttpMessageHandler
+            .VerifyRequest(HttpMethod.Post, 
+                r => r.RequestUri!.ToString().StartsWith($"{Constants.BaseUrl}{Constants.ContributorPaymentsServiceUriStart}") 
+                && r.RequestUri!.ToString().EndsWith("/pending"), 
+                Times.Exactly(times), $"{fixture.CurrentPhase}expected the ContributorPaymentsServiceCreateEndpoint to have been called {times} time(s).");
+
+        return this;
+    }
+
+    public Then TheContributorPaymentsServiceCreateEndpointShouldNotHaveBeenCalled() => 
+        TheContributorPaymentsServiceCreateEndpointShouldHaveBeenCalled(0);
+
+    public Then TheContributorPaymentsServiceCommitEndpointShouldHaveBeenCalled(int times = 1)
+    {
+        fixture.MockContributorPaymentsServiceHttpMessageHandler
+            .VerifyRequest(HttpMethod.Post, 
+                r => r.RequestUri!.ToString().StartsWith($"{Constants.BaseUrl}{Constants.ContributorPaymentsServiceUriStart}") 
+                && r.RequestUri!.ToString().Contains("/commit/"), 
+                Times.Exactly(times), $"{fixture.CurrentPhase}expected the ContributorPaymentsServiceCommitEndpoint to have been called {times} time(s).");
+
+        return this;
+    }
+
+    public Then TheContributorPaymentsServiceCommitEndpointShouldNotHaveBeenCalled() => 
+        TheContributorPaymentsServiceCommitEndpointShouldHaveBeenCalled(0);
+
     public Then TheDomainEventShouldHaveBeenPersisted<T>()
     {
         var typeOfT = typeof(T);
@@ -109,6 +139,24 @@ public class Then(ComponentTestFixture fixture)
 
         var found = fixture.EventRepositoryInMemory?.PersistedEvents.Any(e => e.EventClassName == eventClassName) ?? false;
         found.ShouldBeTrue($"\n{fixture.CurrentPhase}expected an event of type {eventClassName} to have been persisted in the database.");
+
+        return this;
+    }
+
+    public Then WeShouldHaveTheCorrectNumberOfDomainEventsPersisted(int expectedNumber)
+    {
+        var actualNumber = fixture.EventRepositoryInMemory?.PersistedEvents.Count ?? 0;
+        
+        if (actualNumber != expectedNumber)
+        {
+            var eventNames = fixture.EventRepositoryInMemory?.PersistedEvents.Select(e => e.EventClassName).ToList() ?? new List<string>();
+            var eventList = string.Join("\n  - ", eventNames);
+            actualNumber.ShouldBe(expectedNumber, $"{fixture.CurrentPhase}expected {expectedNumber} domain events to have been persisted, but found {actualNumber}.\nEvents persisted:\n  - {eventList}");
+        }
+        else
+        {
+            actualNumber.ShouldBe(expectedNumber);
+        }
 
         return this;
     }
@@ -143,59 +191,91 @@ public class Then(ComponentTestFixture fixture)
         return this;
     }
 
-    public Then AMessageWasSent(Mock<ServiceBusSender> senderMock, int times = 1)
+    
+
+    public Then AMessageWasSent<TMessage>(Func<TMessage, bool> match, int times = 1, int numberOfRetries = 10, int retryDelayInMilliSeconds = 200)
     {
-        senderMock.Verify(x => x.SendMessageAsync(It.IsAny<ServiceBusMessage>(), It.IsAny<CancellationToken>()), Times.Exactly(times));
+        var senderMock = fixture.FakeServiceBus.GetSenderFor<TMessage>() ?? 
+            throw new Exception($"No Mock<ServiceBusSender> found for message type {typeof(TMessage).Name}");
+
+        var retryPolicy = Policy
+            .Handle<Exception>()
+            .WaitAndRetry(
+                retryCount: numberOfRetries,
+                sleepDurationProvider: _ => TimeSpan.FromMilliseconds(retryDelayInMilliSeconds),
+                onRetry: (exception, timeSpan, retryCount, context) =>
+                {
+                    Console.WriteLine($"{fixture.CurrentPhase}AMessageWasSent<{typeof(TMessage).Name}> retry attempt {retryCount}/{numberOfRetries} after {timeSpan.TotalMilliseconds}ms delay. Exception: {exception.Message}");
+                });
+
+        retryPolicy.Execute(() =>
+        {
+            senderMock.Verify(x => x.SendMessageAsync(
+                It.Is<ServiceBusMessage>(m => match(m.Body.ToObjectFromJson<TMessage>()!)), 
+                It.IsAny<CancellationToken>()), Times.Exactly(times), 
+                $"{fixture.CurrentPhase}expected message of type {typeof(TMessage).Name} to have been sent {times} time(s).");
+        });
 
         return this;
     }
 
-    public Then AMessageWasSent(Mock<ServiceBusSender> senderMock, Func<ServiceBusMessage, bool> match, int times = 1)
+    public Then AMessageWasSent<TMessage>(int times = 1, int numberOfRetries = 10, int retryDelayInMilliSeconds = 200)
     {
-        senderMock.Verify(x => x.SendMessageAsync(
-            It.Is<ServiceBusMessage>(m => match(m)), 
-            It.IsAny<CancellationToken>()), Times.Exactly(times));
+        var senderMock = fixture.FakeServiceBus.GetSenderFor<TMessage>() ?? 
+            throw new Exception($"No Mock<ServiceBusSender> found for message type {typeof(TMessage).Name}");
+
+        var retryPolicy = Policy
+            .Handle<Exception>()
+            .WaitAndRetry(
+                retryCount: numberOfRetries,
+                sleepDurationProvider: _ => TimeSpan.FromMilliseconds(retryDelayInMilliSeconds),
+                onRetry: (exception, timeSpan, retryCount, context) =>
+                {
+                    Console.WriteLine($"{fixture.CurrentPhase}AMessageWasSent<{typeof(TMessage).Name}> retry attempt {retryCount}/{numberOfRetries} after {timeSpan.TotalMilliseconds}ms delay. Exception: {exception.Message}");
+                });
+
+        retryPolicy.Execute(() =>
+        {
+            senderMock.Verify(x => x.SendMessageAsync(
+                It.IsAny<ServiceBusMessage>(), 
+                It.IsAny<CancellationToken>()), Times.Exactly(times), 
+                $"{fixture.CurrentPhase}expected message of type {typeof(TMessage).Name} to have been sent {times} time(s).");
+        });
 
         return this;
     }
 
-    public Then AfterSomeTimeHasPassed(int numberOfMsToAdvance = 2000, int numberOfMsToWait = 2000)
+
+    public Then AfterSomeTimeHasPassed(int numberOfMsToAdvance = 2_500)
     {
         // Advance the time so the outbox processor wakes up to check for messages...
         fixture.FakeTimeProvider.Advance(TimeSpan.FromMilliseconds(numberOfMsToAdvance));
         // So cool!😁
 
-        // Wait for the outbox processor to process the messages. This is not ideal, but it works for now.
-        Task.Delay(numberOfMsToWait).GetAwaiter().GetResult();
-
         return this;
     }
 
-    public Then TheMessageWasHandled<TIntegrationEvent>() where TIntegrationEvent : class
+    public Then TheMessageWasHandled<TIntegrationEvent>(int numberOfReties = 25, int retryDelayInMilliSeconds = 250) where TIntegrationEvent : class
     {
-        var processor = fixture.FakeServiceBus.GetProcessorFor<TIntegrationEvent>();
-        var deliveryCount = processor.MessageDeliveryAttempts.Count;
+        var retryPolicy = Policy
+            .Handle<Exception>()
+            .WaitAndRetry(
+                retryCount: numberOfReties,
+                sleepDurationProvider: _ => TimeSpan.FromMilliseconds(retryDelayInMilliSeconds),
+                onRetry: (exception, timeSpan, retryCount, context) =>
+                {
+                    Console.WriteLine($"TheMessageWasHandled<{typeof(TIntegrationEvent).Name}> retry attempt {retryCount}/{numberOfReties} after {timeSpan.TotalMilliseconds}ms delay. Exception: {exception.Message}");
+                });
+
+        retryPolicy.Execute(() =>
         {
-            deliveryCount.ShouldBe(1, $"{fixture.CurrentPhase}expected the ServiceBusProcesser<{typeof(TIntegrationEvent).Name}> to have had a single delivery attempt, instead found {deliveryCount}.");
-            processor.MessageDeliveryAttempts[0].WasCompleted.ShouldBeTrue($"{fixture.CurrentPhase}expected the NotificationService to have handled the event {typeof(TIntegrationEvent).Name}.");
-        }
+            var processor = fixture.FakeServiceBus.GetProcessorFor<TIntegrationEvent>();
+            var deliveryCount = processor.MessageDeliveryAttempts.Count;
+            
+            deliveryCount.ShouldBe(1, $"{fixture.CurrentPhase}in TheMessageWasHandled<{typeof(TIntegrationEvent).Name}>, expected the ServiceBusProcesser<{typeof(TIntegrationEvent).Name}> to have had a single delivery attempt, instead found {deliveryCount}.");
+            processor.MessageDeliveryAttempts[0].WasCompleted.ShouldBeTrue($"{fixture.CurrentPhase}expected the event {typeof(TIntegrationEvent).Name} to have been handled.");
+        });
 
         return this;
-    }
-
-    public Then TheNotificationServiceNotifiedTheUser(string location, string reference)
-    {
-        var realSentNotifications = fixture.NotificationServiceFactory.RealSentNotifications;
-
-        realSentNotifications.ShouldNotBeNull($"{fixture.CurrentPhase}expected the NotificationService to have instantiated its SentNotifications list.");
-        {
-            realSentNotifications!.Count.ShouldBe(1, $"{fixture.CurrentPhase}expected SentNotifications list to contain a single item.");
-            realSentNotifications[0].Reference.ShouldBe(reference, $"{fixture.CurrentPhase}expected the SentNotification to have the reference {reference}.");
-
-            var expectedBody = "Dear user, your data has been submitted and included in our latest model";
-            realSentNotifications[0].Body.ShouldBe(expectedBody, $"{fixture.CurrentPhase}expected the SentNotification to have the expected body.");
-        }
-
-        return this;
-    }
+    }    
 }

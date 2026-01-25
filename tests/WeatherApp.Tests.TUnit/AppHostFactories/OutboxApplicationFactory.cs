@@ -23,6 +23,8 @@ public class OutboxApplicationFactory(ComponentTestFixture fixture) : WebApplica
             "ConnectionStrings__WeatherAppDb", "dummyConnectionString");
         Environment.SetEnvironmentVariable(
             $"{nameof(OutboxProcessorOptions)}__{nameof(OutboxProcessorOptions.IntervalBetweenBatchesInSeconds)}", "1");
+        Environment.SetEnvironmentVariable(
+            $"{nameof(OutboxProcessorOptions)}__{nameof(OutboxProcessorOptions.InitialJitterSeconds)}", "0");
 
         builder
             .ConfigureServices(services =>

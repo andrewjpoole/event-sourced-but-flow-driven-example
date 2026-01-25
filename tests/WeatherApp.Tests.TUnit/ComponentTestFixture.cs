@@ -17,7 +17,6 @@ public class ComponentTestFixture : IDisposable
     public readonly ApiWebApplicationFactory ApiFactory;
     public readonly EventListenerWebApplicationFactory EventListenerFactory;
     public readonly OutboxApplicationFactory OutboxApplicationFactory;
-    public readonly NotificationServiceWebApplicationFactory NotificationServiceFactory;
 
     public readonly FakeTimeProvider FakeTimeProvider;    
     public readonly FakeServiceBus FakeServiceBus;
@@ -36,7 +35,6 @@ public class ComponentTestFixture : IDisposable
             SetSharedOutboxRepositories = () => OutboxRepositoryInMemory
         };
         OutboxApplicationFactory = new(this) { SetSharedOutboxRepositories = () => OutboxRepositoryInMemory };
-        NotificationServiceFactory = new(this);
 
         FakeServiceBus = new FakeServiceBus(
             entityName => EntityNames.GetTypeNameFromEntityName(entityName), 
@@ -60,7 +58,6 @@ public class ComponentTestFixture : IDisposable
         GC.SuppressFinalize(this);
         ApiFactory.HttpClient?.Dispose();
         EventListenerFactory.HttpClient?.Dispose();
-        NotificationServiceFactory.HttpClient?.Dispose();
     }
 
     public (Given given, When when, Then then, CannedData cannedData) SetupHelpers()

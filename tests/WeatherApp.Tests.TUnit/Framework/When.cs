@@ -25,9 +25,9 @@ public class When(ComponentTestFixture fixture)
         return this;
     }
 
-    public When WeWrapTheCollectedWeatherDataInAnHttpRequestMessage(CollectedWeatherDataModel collectedWeatherDataModel, CannedData cannedData, out HttpRequestMessage httpRequest)
+    public When WeWrapTheCollectedWeatherDataInAnHttpRequestMessage(CollectedWeatherDataModel collectedWeatherDataModel, CannedData cannedData, string reference, out HttpRequestMessage httpRequest)
     {
-        httpRequest = new HttpRequestMessage(HttpMethod.Post, $"{Constants.WeatherModelingServiceSubmissionUri}{cannedData.Location}/{cannedData.Reference}");
+        httpRequest = new HttpRequestMessage(HttpMethod.Post, $"{Constants.WeatherModelingServiceSubmissionUri}{cannedData.Location}/{reference}");
         httpRequest.Headers.Add("x-request-id", cannedData.RequestId.ToString());
         httpRequest.Content = new StringContent(JsonSerializer.Serialize(collectedWeatherDataModel, GlobalJsonSerialiserSettings.Default), Encoding.UTF8, "application/json");
 

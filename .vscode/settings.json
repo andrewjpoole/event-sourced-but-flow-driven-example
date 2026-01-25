@@ -12,11 +12,12 @@
     "demoTime.hackerTyperChunkSize": 10,
     "demoTime.nextActionBehaviour": "currentPosition",
     "window.zoomLevel": 0,
-    "demoTime.api.enabled": false,
+    "demoTime.api.enabled": true,
     "demoTime.highlightBlur": 1,
     "demoTime.highlightOpacity": 0.5,
     "demoTime.highlightBackground": "#303030",
     "demoTime.highlightBorderColor": "rgba(255,255,255,0.22)",
     "workbench.editor.showTabs": "multiple",
-    "workbench.activityBar.location": "default"
+    "workbench.activityBar.location": "default",
+    "svg.preview.background": "custom"
 }

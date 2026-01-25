@@ -2,10 +2,10 @@
 
 # Don't forget:
 
-## close all tabs
+## close all vscode tabs and clear selection on pinned tabs
 
-## reset polyglot notebook outputs
+## clear all polyglot notebook outputs & run first cell
 
-## Select Broswer instance
+## Select correct Broswer instance
 
 ## decide whether to delete containers
