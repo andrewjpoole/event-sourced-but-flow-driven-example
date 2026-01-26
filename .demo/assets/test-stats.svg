@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="960"
+   height="540"
+   viewBox="0 0 960 540"
+   version="1.1"
+   id="svg1"
+   inkscape:version="1.4.3 (0d15f75, 2025-12-25)"
+   sodipodi:docname="test-stats.svg"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview1"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:document-units="mm"
+     inkscape:zoom="1.6133347"
+     inkscape:cx="837.39598"
+     inkscape:cy="263.73945"
+     inkscape:window-width="3840"
+     inkscape:window-height="2131"
+     inkscape:window-x="2551"
+     inkscape:window-y="121"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="layer1"
+     showgrid="false" />
+  <defs
+     id="defs1" />
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:58.6667px;font-family:'JetBrainsMonoNL Nerd Font';-inkscape-font-specification:'JetBrainsMonoNL Nerd Font';fill:#555588;stroke:none;stroke-width:40;fill-opacity:1"
+       x="306.96573"
+       y="125.82634"
+       id="text1"><tspan
+         sodipodi:role="line"
+         id="tspan1"
+         x="306.96573"
+         y="125.82634"
+         style="font-size:58.6667px;fill:#555588;fill-opacity:1">one test </tspan></text>
+    <!--Pause:1-->
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:48px;font-family:'JetBrainsMonoNL Nerd Font';-inkscape-font-specification:'JetBrainsMonoNL Nerd Font'"
+       x="44.138115"
+       y="221.65445"
+       id="text1-8"><tspan
+         sodipodi:role="line"
+         id="tspan1-2"
+         x="44.138115"
+         y="221.65445">entire end-to-end happy path✅</tspan></text>
+    <!--Pause:1-->
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:37.3333px;font-family:'JetBrainsMonoNL Nerd Font';-inkscape-font-specification:'JetBrainsMonoNL Nerd Font';writing-mode:lr-tb;direction:ltr;fill:#555588;fill-opacity:1;stroke:none;stroke-width:40"
+       x="70.770973"
+       y="328.28574"
+       id="text4"><tspan
+         sodipodi:role="line"
+         id="tspan4"
+         x="70.770973"
+         y="328.28574">3 executables</tspan></text>
+    <!--Pause:1-->
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:37.3333px;font-family:'JetBrainsMonoNL Nerd Font';-inkscape-font-specification:'JetBrainsMonoNL Nerd Font';writing-mode:lr-tb;direction:ltr;fill:#555588;fill-opacity:1;stroke:none;stroke-width:40"
+       x="380.43912"
+       y="326.97906"
+       id="text5"><tspan
+         sodipodi:role="line"
+         id="tspan5"
+         x="380.43912"
+         y="326.97906">| 4 phases |</tspan></text>
+    <!--Pause:1-->
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:37.3333px;font-family:'JetBrainsMonoNL Nerd Font';-inkscape-font-specification:'JetBrainsMonoNL Nerd Font';writing-mode:lr-tb;direction:ltr;fill:#555588;fill-opacity:1;stroke:none;stroke-width:40"
+       x="669.86725"
+       y="329.16309"
+       id="text3"><tspan
+         sodipodi:role="line"
+         id="tspan3"
+         x="669.86725"
+         y="329.16309">~45 lines</tspan></text>
+    <!--Pause:1-->
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:58.6667px;font-family:'JetBrainsMonoNL Nerd Font';-inkscape-font-specification:'JetBrainsMonoNL Nerd Font'"
+       x="239.00032"
+       y="448.4176"
+       id="text1-82"><tspan
+         sodipodi:role="line"
+         id="tspan1-4"
+         x="239.00032"
+         y="448.4176"
+         style="font-size:58.6667px">~1.6 seconds!🚀</tspan></text>
+  </g>
+</svg>

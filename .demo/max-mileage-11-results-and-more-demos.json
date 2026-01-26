@@ -1,0 +1,140 @@
+{
+  "$schema": "https://demotime.show/demo-time.schema.json",
+  "title": "max-mileage-11-results-and-more-demos",
+  "description": "",
+  "version": 3,
+  "scenes": [
+    {
+      "id": "scene-mkusnfgp-1il4",
+      "title": "slide",
+      "moves": [
+        {
+          "action": "openSlide",
+          "path": ".demo/slides/max-mileage-min-tests/slides5.md"
+        }
+      ]
+    },
+    {
+      "id": "scene-mkutva7p-ph2a",
+      "title": "missing IoC registration 1",
+      "moves": [
+        {
+          "action": "highlight",
+          "path": "src/WeatherApp.EventListener/Program.cs",
+          "position": "27:43",
+          "highlightWholeLine": true
+        }
+      ]
+    },
+    {
+      "id": "demo-mkutx1g7-p45o",
+      "title": "missing IoC registration 2",
+      "moves": [
+        {
+          "action": "insert",
+          "path": "src/WeatherApp.EventListener/Program.cs",
+          "content": "            //.AddSingleton<IDateChecker, DateChecker>()",
+          "position": "37,0",
+          "highlightWholeLine": true,
+          "insertTypingMode": "instant"
+        }
+      ]
+    },
+    {
+      "id": "demo-mkuu1u1i-ogpa",
+      "title": "missing IoC registration 3 run test",
+      "moves": [
+        {
+          "action": "selection",
+          "path": "tests/WeatherApp.Tests.TUnit/ComponentTests.cs",
+          "position": "36:36",
+          "highlightWholeLine": true
+        },
+        {
+          "action": "executeVSCodeCommand",
+          "command": "testing.runAtCursor"
+        }
+      ]
+    },
+    {
+      "id": "demo-mkuu5nrr-cm4q",
+      "title": "missing IoC registration 4 tidy up",
+      "moves": [
+        {
+          "action": "insert",
+          "path": "src/WeatherApp.EventListener/Program.cs",
+          "position": "37",
+          "highlightWholeLine": true,
+          "content": "            .AddSingleton<IDateChecker, DateChecker>()",
+          "insertTypingMode": "instant"
+        }
+      ]
+    },
+    {
+      "id": "scene-mkuuj0b6-q9nz",
+      "title": "slide - missing config",
+      "moves": [
+        {
+          "action": "openSlide",
+          "path": ".demo/slides/max-mileage-min-tests/slides5-2.md"
+        }
+      ]
+    },
+    {
+      "id": "demo-mkuujvib-ijaj",
+      "title": "missing config 1",
+      "moves": [
+        {
+          "action": "highlight",
+          "path": "tests/WeatherApp.Tests.TUnit/AppHostFactories/EventListenerWebApplicationFactory.cs",
+          "position": "23:29",
+          "highlightWholeLine": true
+        }
+      ]
+    },
+    {
+      "id": "demo-mkuulnsa-tdno",
+      "title": "missing config 2",
+      "moves": [
+        {
+          "action": "insert",
+          "path": "tests/WeatherApp.Tests.TUnit/AppHostFactories/EventListenerWebApplicationFactory.cs",
+          "position": "2",
+          "highlightWholeLine": true,
+          "content": "//Environment.SetEnvironmentVariable($\"{ServiceBusInboundOptions.SectionName}__{nameof(ServiceBusInboundOptions.Entities)}__{nameof(EntityNames.ModelingDataAcceptedIntegrationEvent)}\", EntityNames.ModelingDataAcceptedIntegrationEvent);",
+          "insertTypingMode": "instant"
+        }
+      ]
+    },
+    {
+      "id": "demo-mkuunrmj-8cta",
+      "title": "missing config 3 run test",
+      "moves": [
+        {
+          "action": "selection",
+          "path": "tests/WeatherApp.Tests.TUnit/ComponentTests.cs",
+          "position": "36:36",
+          "highlightWholeLine": true
+        },
+        {
+          "action": "executeVSCodeCommand",
+          "command": "testing.runAtCursor"
+        }
+      ]
+    },
+    {
+      "id": "demo-mkuums1o-legu",
+      "title": "missing config 4 tidy up",
+      "moves": [
+        {
+          "action": "insert",
+          "path": "tests/WeatherApp.Tests.TUnit/AppHostFactories/EventListenerWebApplicationFactory.cs",
+          "position": "2",
+          "highlightWholeLine": true,
+          "content": "Environment.SetEnvironmentVariable($\"{ServiceBusInboundOptions.SectionName}__{nameof(ServiceBusInboundOptions.Entities)}__{nameof(EntityNames.ModelingDataAcceptedIntegrationEvent)}\", EntityNames.ModelingDataAcceptedIntegrationEvent);",
+          "insertTypingMode": "instant"
+        }
+      ]
+    }
+  ]
+}

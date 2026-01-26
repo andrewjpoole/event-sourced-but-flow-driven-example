@@ -1,6 +1,6 @@
 {
   "$schema": "https://demotime.show/demo-time.schema.json",
-  "title": "max-mileage-11-end",
+  "title": "max-mileage-12-end",
   "description": "",
   "version": 3,
   "scenes": [
@@ -14,7 +14,7 @@
         },
         {
           "action": "openSlide",
-          "path": ".demo/slides/max-mileage-min-tests/slides5.md"
+          "path": ".demo/slides/max-mileage-min-tests/slides6.md"
         }
       ]
     }
