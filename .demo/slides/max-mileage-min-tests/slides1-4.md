@@ -16,6 +16,6 @@ layout: default
 customLayout: .demo/layouts/animated-diagram.html
 filePath: .demo/assets/component-test-bits.svg
 speed: 2500
-invert: true
+invert: false
 ---
 

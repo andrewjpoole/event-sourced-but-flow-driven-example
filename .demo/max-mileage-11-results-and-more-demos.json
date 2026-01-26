@@ -9,6 +9,14 @@
       "title": "slide",
       "moves": [
         {
+          "action": "executeVSCodeCommand",
+          "command": "workbench.action.closePanel"
+        },
+        {
+          "action": "executeVSCodeCommand",
+          "command": "workbench.action.toggleZenMode"
+        },
+        {
           "action": "openSlide",
           "path": ".demo/slides/max-mileage-min-tests/slides5.md"
         }
@@ -75,6 +83,10 @@
       "title": "slide - missing config",
       "moves": [
         {
+          "action": "executeVSCodeCommand",
+          "command": "workbench.action.closePanel"
+        },
+        {
           "action": "openSlide",
           "path": ".demo/slides/max-mileage-min-tests/slides5-2.md"
         }
@@ -99,9 +111,9 @@
         {
           "action": "insert",
           "path": "tests/WeatherApp.Tests.TUnit/AppHostFactories/EventListenerWebApplicationFactory.cs",
-          "position": "2",
+          "position": "25",
           "highlightWholeLine": true,
-          "content": "//Environment.SetEnvironmentVariable($\"{ServiceBusInboundOptions.SectionName}__{nameof(ServiceBusInboundOptions.Entities)}__{nameof(EntityNames.ModelingDataAcceptedIntegrationEvent)}\", EntityNames.ModelingDataAcceptedIntegrationEvent);",
+          "content": "        //Environment.SetEnvironmentVariable($\"{ServiceBusInboundOptions.SectionName}__{nameof(ServiceBusInboundOptions.Entities)}__{nameof(EntityNames.ModelingDataAcceptedIntegrationEvent)}\", EntityNames.ModelingDataAcceptedIntegrationEvent);",
           "insertTypingMode": "instant"
         }
       ]
@@ -129,10 +141,48 @@
         {
           "action": "insert",
           "path": "tests/WeatherApp.Tests.TUnit/AppHostFactories/EventListenerWebApplicationFactory.cs",
-          "position": "2",
+          "position": "25",
           "highlightWholeLine": true,
-          "content": "Environment.SetEnvironmentVariable($\"{ServiceBusInboundOptions.SectionName}__{nameof(ServiceBusInboundOptions.Entities)}__{nameof(EntityNames.ModelingDataAcceptedIntegrationEvent)}\", EntityNames.ModelingDataAcceptedIntegrationEvent);",
+          "content": "        Environment.SetEnvironmentVariable($\"{ServiceBusInboundOptions.SectionName}__{nameof(ServiceBusInboundOptions.Entities)}__{nameof(EntityNames.ModelingDataAcceptedIntegrationEvent)}\", EntityNames.ModelingDataAcceptedIntegrationEvent);",
           "insertTypingMode": "instant"
+        }
+      ]
+    },
+    {
+      "id": "scene-mkuwqvjs-yxlx",
+      "title": "slide - unhappy paths",
+      "moves": [
+        {
+          "action": "executeVSCodeCommand",
+          "command": "workbench.action.closePanel"
+        },
+        {
+          "action": "openSlide",
+          "path": ".demo/slides/max-mileage-min-tests/slides5-3.md"
+        }
+      ]
+    },
+    {
+      "id": "scene-mkuwri0q-13zp",
+      "title": "unhappy paths 1",
+      "moves": [
+        {
+          "action": "highlight",
+          "path": "tests/WeatherApp.Tests.TUnit/ComponentTests.cs",
+          "position": "78:92",
+          "highlightWholeLine": true
+        }
+      ]
+    },
+    {
+      "id": "demo-mkuwt04h-4wvw",
+      "title": "unhappy paths 2",
+      "moves": [
+        {
+          "action": "highlight",
+          "path": "tests/WeatherApp.Tests.TUnit/ComponentTests.cs",
+          "position": "94:110",
+          "highlightWholeLine": true
         }
       ]
     }

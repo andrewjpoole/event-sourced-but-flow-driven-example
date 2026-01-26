@@ -16,5 +16,9 @@ layout: default
 layout: default
 ---
 
-<img src=".demo/assets/complex-scenario2.svg" style="background: white; height: 600px;"></img>
+- Mock ContributorPaymentsService and WeatherModelingService APIs
+- The test will send integration events mimicing the WeatherModelingService
+- Database repositories are in-memory lists
+- No NotificationService, we just assert that outbox item is dispatched 
+<img src=".demo/assets/complex-scenario2.svg" style="background: white; height: 450px;"></img>
 

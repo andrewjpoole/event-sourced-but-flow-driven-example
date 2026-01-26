@@ -1,7 +1,8 @@
 ---
 customLayout: .demo/layouts/animated-diagram.html
 filePath: .demo/assets/test-stats.svg
-speed: 2500
+speed: 3500
+invert: false
 ---
 
 ---
@@ -16,4 +17,4 @@ layout: default
 
 # What dev time issues can we detect?🔦
 
-## What about a missing IoC registration?💡
+## 💡What about a missing IoC registration?

@@ -84,8 +84,7 @@ public class ComponentTests
             .And.ThereIsExistingData(cannedData.UpTo_WeatherDataCollectionInitiated(reference: "differentReference"))
             .And.TheServersAreStarted();
         
-        when.InPhase("1 (initial API request)") 
-            .And.WeWrapTheCollectedWeatherDataInAnHttpRequestMessage(weatherData, cannedData, reference, out var httpRequest)
+        when.WeWrapTheCollectedWeatherDataInAnHttpRequestMessage(weatherData, cannedData, reference, out var httpRequest)
             .And.WeSendTheMessageToTheApi(httpRequest, out var response);
 
         then.And.TheModelingServiceSubmitEndpointShouldNotHaveBeenCalled()
@@ -101,8 +100,7 @@ public class ComponentTests
             .And.ThereIsExistingData(cannedData.UpTo_WeatherModelingServiceRejectionFailure())
             .And.TheServersAreStarted();
         
-        when.InPhase("1 (initial API request)") 
-            .And.WeWrapTheCollectedWeatherDataInAnHttpRequestMessage(weatherData, cannedData, reference, out var httpRequest)
+        when.WeWrapTheCollectedWeatherDataInAnHttpRequestMessage(weatherData, cannedData, reference, out var httpRequest)
             .And.WeSendTheMessageToTheApi(httpRequest, out var response);
 
         then.And.TheModelingServiceSubmitEndpointShouldNotHaveBeenCalled()

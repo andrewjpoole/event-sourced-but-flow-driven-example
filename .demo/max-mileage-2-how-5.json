@@ -122,7 +122,7 @@
         {
           "action": "highlight",
           "path": "tests/WeatherApp.Tests.TUnit/Framework/ServiceBus/FakeServiceBus.cs",
-          "position": "146:151",
+          "position": "143:152",
           "highlightWholeLine": true
         }
       ],

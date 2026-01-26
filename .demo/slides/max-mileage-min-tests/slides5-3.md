@@ -6,4 +6,10 @@ layout: default
 
 ## 💡What about a missing IoC registration?✅
 
-## 💡What about missing required config?
+## 💡What about missing required config?✅
+
+---
+layout: default
+---
+
+# What about un-happy paths?🤔

@@ -13,6 +13,10 @@
           "command": "workbench.action.closePanel"
         },
         {
+          "action": "executeVSCodeCommand",
+          "command": "workbench.action.toggleZenMode"
+        },
+        {
           "action": "openSlide",
           "path": ".demo/slides/max-mileage-min-tests/slides6.md"
         }

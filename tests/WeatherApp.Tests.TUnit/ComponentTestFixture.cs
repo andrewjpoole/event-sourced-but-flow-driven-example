@@ -44,7 +44,6 @@ public class ComponentTestFixture : IDisposable
         FakeServiceBus.AddProcessorFor<ModelingDataAcceptedIntegrationEvent>();
         FakeServiceBus.AddProcessorFor<ModelingDataRejectedIntegrationEvent>();
         FakeServiceBus.AddProcessorFor<ModelUpdatedIntegrationEvent>();
-        //FakeServiceBus.AddProcessorFor<UserNotificationEvent>();
         FakeServiceBus.AddSenderFor<UserNotificationEvent>();
 
         FakeServiceBus.MessagesSentToSendersWillBeReceivedOnCorrespondingProcessors();

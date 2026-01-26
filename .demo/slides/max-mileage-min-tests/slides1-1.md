@@ -30,8 +30,7 @@ layout: default
 ---
 customLayout: .demo/layouts/animated-diagram.html
 filePath: .demo/assets/complex-scenario2.svg
-speed: 500
-dark: true
+speed: 400
 ---
 
 ---
@@ -43,11 +42,12 @@ layout: default
 ---
 customLayout: .demo/layouts/animated-diagram.html
 filePath: .demo/assets/scenario-sequence.svg
-speed: 1500
+speed: 1000
 ---
 
 ---
 customLayout: .demo/layouts/animated-diagram.html
 filePath: .demo/assets/lots-of-ways-to-test.svg
 speed: 2500
+invert: true
 ---

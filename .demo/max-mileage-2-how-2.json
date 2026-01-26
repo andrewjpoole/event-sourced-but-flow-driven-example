@@ -69,7 +69,7 @@
         {
           "action": "highlight",
           "path": "tests/WeatherApp.Tests.TUnit/ComponentTestFixture.cs",
-          "position": "44:48",
+          "position": "44:47",
           "highlightWholeLine": true
         }
       ]
@@ -81,7 +81,7 @@
         {
           "action": "highlight",
           "path": "tests/WeatherApp.Tests.TUnit/ComponentTestFixture.cs",
-          "position": "50:50",
+          "position": "49:49",
           "highlightWholeLine": true
         }
       ]
