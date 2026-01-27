@@ -13,12 +13,13 @@ layout: default
 ### But first let's recap what we're testing...
 
 ---
+customLayout: .demo/layouts/animated-diagram-non-autoplay.html
+filePath: .demo/assets/scenario-sequence.svg
+speed: 100000
+---
+
+---
 layout: default
 ---
 
-- Mock ContributorPaymentsService and WeatherModelingService APIs
-- The test will send integration events mimicing the WeatherModelingService
-- Database repositories are in-memory lists
-- No NotificationService, we just assert that outbox item is dispatched 
-<img src=".demo/assets/complex-scenario2.svg" style="background: white; height: 450px;"></img>
-
+# We should also take a peek at the SUT...👀

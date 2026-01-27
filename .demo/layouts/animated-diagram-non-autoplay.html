@@ -1,0 +1,16 @@
+<simple-animate-svg-component
+    svg-file-path="{{metadata.webViewUrl}}/{{metadata.filePath}}"
+    animation-speed="{{metadata.speed}}" 
+    sizing="fill"
+    auto-play="false"
+
+    {{#if metadata.invert}}
+         background-color="#000000"
+        invert-colors="true"
+    {{else}}
+       background-color="#FFFFFF"
+        invert-colors="false"
+    {{/if}}   
+    
+    >
+</simple-animate-svg-component>
