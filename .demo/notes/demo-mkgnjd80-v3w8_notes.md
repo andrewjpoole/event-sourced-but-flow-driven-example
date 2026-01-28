@@ -1,5 +1,8 @@
 # MaxMin - Notes for slides 1-1
 
+# Don't forget:
+## close all vscode tabs and clear selection on pinned tabs
+
 # (There are lots of ways)
 
 Tests are part of life as a software engineer
