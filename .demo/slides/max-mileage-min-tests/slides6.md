@@ -20,6 +20,18 @@ layout: default
 
 ### ✔️ Test entire e2e flows in addition to individual phases
 
+### ✔️ readable tests, fast feedback loop
+
+---
+layout: default
+---
+
+# Pros and Cons⚖️
+
+### ✔️ Test entire e2e flows in addition to individual phases
+
+### ✔️ readable tests, fast feedback loop
+
 ### ✔️ The more reusable the code, the more care/love is justified 
 
 ---
@@ -29,6 +41,8 @@ layout: default
 # Pros and Cons⚖️
 
 ### ✔️ Test entire e2e flows in addition to individual phases
+
+### ✔️ readable tests, fast feedback loop
 
 ### ✔️ The more reusable the code, the more care/love is justified 
 
@@ -41,6 +55,8 @@ layout: default
 # Pros and Cons⚖️
 
 ### ✔️ Test entire e2e flows in addition to individual phases
+
+### ✔️ readable tests, fast feedback loop
 
 ### ✔️ The more reusable the code, the more care/love is justified 
 
@@ -55,6 +71,8 @@ layout: default
 # Pros and Cons⚖️
 
 ### ✔️ Test entire e2e flows in addition to individual phases
+
+### ✔️ readable tests, fast feedback loop
 
 ### ✔️ The more reusable the code, the more care/love is justified 
 

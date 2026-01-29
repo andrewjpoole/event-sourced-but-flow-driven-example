@@ -10,11 +10,15 @@ layout: default
 
 # How? 
 
-### For our scenario, we will need:
-- method of running multiple executables
-- share some state amongst them
-- mock some APIs
-- pretend to be Service Bus
+### For our specific scenario, we will need:
+
+### 👉 a method of running multiple executables
+
+### 👉 to share some state amongst them
+
+### 👉 to mock some APIs
+
+### 👉 to pretend to be Service Bus
 
 ---
 layout: default
