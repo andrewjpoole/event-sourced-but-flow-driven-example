@@ -19,6 +19,13 @@
       "title": "view test 1",
       "moves": [
         {
+          "action": "snippet",
+          "contentPath": ".demo/move-snippets/open-and-remove-selection.json",
+          "args": {
+            "FILE": "tests/WeatherApp.Tests.TUnit/ComponentTests.cs"
+          }
+        },
+        {
           "action": "highlight",
           "path": "tests/WeatherApp.Tests.TUnit/ComponentTests.cs",
           "position": "35:76",

@@ -14,6 +14,14 @@
         },
         {
           "action": "executeVSCodeCommand",
+          "command": "workbench.action.closeSidebar"
+        },
+        {
+          "action": "executeVSCodeCommand",
+          "command": "workbench.action.exitZenMode"
+        },
+        {
+          "action": "executeVSCodeCommand",
           "command": "workbench.action.toggleZenMode"
         },
         {
@@ -87,6 +95,18 @@
           "command": "workbench.action.closePanel"
         },
         {
+          "action": "executeVSCodeCommand",
+          "command": "workbench.action.closeSidebar"
+        },
+        {
+          "action": "executeVSCodeCommand",
+          "command": "workbench.action.exitZenMode"
+        },
+        {
+          "action": "executeVSCodeCommand",
+          "command": "workbench.action.toggleZenMode"
+        },
+        {
           "action": "openSlide",
           "path": ".demo/slides/max-mileage-min-tests/slides5-2.md"
         }
@@ -155,6 +175,18 @@
         {
           "action": "executeVSCodeCommand",
           "command": "workbench.action.closePanel"
+        },
+        {
+          "action": "executeVSCodeCommand",
+          "command": "workbench.action.closeSidebar"
+        },
+        {
+          "action": "executeVSCodeCommand",
+          "command": "workbench.action.exitZenMode"
+        },
+        {
+          "action": "executeVSCodeCommand",
+          "command": "workbench.action.toggleZenMode"
         },
         {
           "action": "openSlide",

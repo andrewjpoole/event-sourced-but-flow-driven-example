@@ -1,0 +1,12 @@
+[
+    {
+        "action": "open",
+        "path": "{FILE}"
+    },
+    {
+        "action": "selection",
+        "path": "{FILE}",
+        "position": "1,0:1,1",
+        "highlightWholeLine": false
+    }
+]

@@ -19,6 +19,13 @@
       "title": "code - sender mocking 1",
       "moves": [
         {
+          "action": "snippet",
+          "contentPath": ".demo/move-snippets/open-and-remove-selection.json",
+          "args": {
+            "FILE": "tests/WeatherApp.Tests.TUnit/Framework/ServiceBus/FakeServiceBus.cs"
+          }
+        },
+        {
           "action": "highlight",
           "path": "tests/WeatherApp.Tests.TUnit/Framework/ServiceBus/FakeServiceBus.cs",
           "position": "72:76",
@@ -39,19 +46,26 @@
       ]
     },
     {
-      "id": "demo-mkiw356h-eu9p",
-      "title": "code - sender mocking 3",
+      "id": "demo-mkiw3jmi-jy3u",
+      "title": "code - sender mocking 3 assertions",
       "moves": [
         {
+          "action": "snippet",
+          "contentPath": ".demo/move-snippets/open-and-remove-selection.json",
+          "args": {
+            "FILE": "tests/WeatherApp.Tests.TUnit/Framework/Then.cs"
+          }
+        },
+        {
           "action": "highlight",
-          "path": "tests/WeatherApp.Tests.TUnit/Framework/ServiceBus/FakeServiceBus.cs",
-          "position": "20:21",
+          "path": "tests/WeatherApp.Tests.TUnit/Framework/Then.cs",
+          "position": "222:245",
           "highlightWholeLine": true
         }
       ]
     },
     {
-      "id": "demo-mkiw3jmi-jy3u",
+      "id": "demo-mkyjjk1g-wb6t",
       "title": "code - sender mocking 4 assertions",
       "moves": [
         {
@@ -77,6 +91,13 @@
       "id": "scene-mkiw5m4g-fffj",
       "title": "FakeServiceBus wire up 1",
       "moves": [
+        {
+          "action": "snippet",
+          "contentPath": ".demo/move-snippets/open-and-remove-selection.json",
+          "args": {
+            "FILE": "tests/WeatherApp.Tests.TUnit/Framework/ServiceBus/FakeServiceBus.cs"
+          }
+        },
         {
           "action": "highlight",
           "path": "tests/WeatherApp.Tests.TUnit/Framework/ServiceBus/FakeServiceBus.cs",

@@ -35,6 +35,17 @@ layout: default
 # How? #8 Bending time⏲️
 
 ```csharp
+// in each AppHostFactory, stick it into IoC, overriding the real one...
+services.AddSingleton<TimeProvider>(fixture.FakeTimeProvider);
+```
+
+---
+layout: default
+---
+
+# How? #8 Bending time⏲️
+
+```csharp
 // From ComponentTestFixture...
 FakeTimeProvider = new FakeTimeProvider();
 FakeTimeProvider.SetUtcNow(TimeProvider.System.GetUtcNow());
@@ -68,9 +79,14 @@ FakeTimeProvider.AutoAdvanceAmount = TimeSpan.FromMilliseconds(100);
 ```
 
 ```csharp
-// in each AppHostFactory, stick it into IoC, overriding the real one...
-services.AddSingleton<TimeProvider>(fixture.FakeTimeProvider);
+// in OutboxDispatcherHostedService...
+await Task.Delay(TimeSpan.FromSeconds(options.IntervalBetweenBatchesInSeconds), 
+                    timeProvider, cancellationToken);
+                    //👆 Time related methods now accept a TimeProvider
+                    
+await ProcessOutboxBatchAsync(options.BatchSize, cancellationToken);
 ```
+
 ---
 layout: default
 ---
@@ -78,43 +94,23 @@ layout: default
 # How? #8 Bending time⏲️
 
 ```csharp
-// in OutboxDispatcherHostedService...
-await Task.Delay(TimeSpan.FromSeconds(options.IntervalBetweenBatchesInSeconds), 
-                    timeProvider, cancellationToken);
-                    
-await ProcessOutboxBatchAsync(options.BatchSize, cancellationToken);
+// in ComponentTestFixture...
+FakeTimeProvider = new FakeTimeProvider();
+FakeTimeProvider.SetUtcNow(TimeProvider.System.GetUtcNow());
+FakeTimeProvider.AutoAdvanceAmount = TimeSpan.FromMilliseconds(100);
 ```
----
-layout: default
----
-
-# How? #8 Bending time⏲️
 
 ```csharp
 // in OutboxDispatcherHostedService...
 await Task.Delay(TimeSpan.FromSeconds(options.IntervalBetweenBatchesInSeconds), 
                     timeProvider, cancellationToken);
-// Time related methods now accept a TimeProvider
-                    
-await ProcessOutboxBatchAsync(options.BatchSize, cancellationToken);
-```
----
-layout: default
----
-
-# How? #8 Bending time⏲️
-
-```csharp
-// in OutboxDispatcherHostedService...
-await Task.Delay(TimeSpan.FromSeconds(options.IntervalBetweenBatchesInSeconds), 
-                    timeProvider, cancellationToken);
+                    //👆 Time related methods now accept a TimeProvider
                     
 await ProcessOutboxBatchAsync(options.BatchSize, cancellationToken);
 
-// but the timer will only advance by 100ms each time its checked...
-// this code is waiting for 2 whole seconds!
+// this code is waiting for 2 whole seconds...
+// but the timer will only advance by 100ms each time its checked
 ```
-
 ---
 layout: default
 ---

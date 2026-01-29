@@ -6,7 +6,7 @@
   "scenes": [
     {
       "id": "scene-mkekkbak-olek",
-      "title": "side - text fixture",
+      "title": "slide - text fixture",
       "moves": [
         {
           "action": "openSlide",
@@ -16,8 +16,15 @@
     },
     {
       "id": "scene-mkit5xs6-ywpq",
-      "title": "open text fixture",
+      "title": "open test fixture",
       "moves": [
+        {
+          "action": "snippet",
+          "contentPath": ".demo/move-snippets/open-and-remove-selection.json",
+          "args": {
+            "FILE": "tests/WeatherApp.Tests.TUnit/ComponentTestFixture.cs"
+          }
+        },
         {
           "action": "highlight",
           "path": "tests/WeatherApp.Tests.TUnit/ComponentTestFixture.cs",
@@ -93,7 +100,7 @@
         {
           "action": "highlight",
           "path": "tests/WeatherApp.Tests.TUnit/ComponentTestFixture.cs",
-          "position": "52:54",
+          "position": "51:53",
           "highlightWholeLine": true
         }
       ]

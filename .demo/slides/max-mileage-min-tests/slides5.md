@@ -2,7 +2,7 @@
 customLayout: .demo/layouts/animated-diagram.html
 filePath: .demo/assets/test-stats.svg
 speed: 3500
-invert: false
+invert: true
 ---
 
 ---

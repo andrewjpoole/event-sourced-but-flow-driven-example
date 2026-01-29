@@ -22,8 +22,17 @@
       "title": "open outbox apphost factory",
       "moves": [
         {
-          "action": "open",
-          "path": "tests/WeatherApp.Tests.TUnit/AppHostFactories/OutboxApplicationFactory.cs"
+          "action": "snippet",
+          "contentPath": ".demo/move-snippets/open-and-remove-selection.json",
+          "args": {
+            "FILE": "tests/WeatherApp.Tests.TUnit/AppHostFactories/OutboxApplicationFactory.cs"
+          }
+        },
+        {
+          "action": "highlight",
+          "path": "tests/WeatherApp.Tests.TUnit/AppHostFactories/OutboxApplicationFactory.cs",
+          "position": "14,68:14,108",
+          "highlightWholeLine": true
         }
       ]
     },

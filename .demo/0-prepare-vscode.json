@@ -11,6 +11,10 @@
         {
           "action": "snippet",
           "contentPath": ".demo/move-snippets/prepare-for-code-demo.json"
+        },
+        {
+          "action": "executeVSCodeCommand",
+          "command": "testing.clearTestResults"
         }
       ]
     }

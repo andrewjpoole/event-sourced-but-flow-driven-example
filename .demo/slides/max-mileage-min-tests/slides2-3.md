@@ -2,9 +2,7 @@
 layout: default
 ---
 
-# How? #3 Create test host factory 
-
-## for each executable app
+# How? #3 Create a test host factory for each executable app🏭
 
 ---
 layout: default
@@ -16,8 +14,6 @@ layout: default
 layout: default
 ---
 
-# How? #3 Create test host factory 
+# How? #3 Create a test host factory for each executable app🏭
 
-## for each executable app
-
-### Microsoft.AspNetCore.Mvc.Testing
+## **<dt-highlight color="#15181f" text-color="#47c4f1">Microsoft.AspNetCore.Mvc.Testing<dt-highlight color="#15181f" text-color="#ffffff">**
