@@ -34,7 +34,7 @@ public class Given(ComponentTestFixture fixture)
         fixture.FakeServiceBus.ClearDeliveryAttemptsOnAllProcessors();
         fixture.FakeServiceBus.ClearInvocationsOnAllSenders();
         fixture.MockContributorPaymentsServiceHttpMessageHandler.Reset();
-        fixture.ApiFactory.MockWeatherModelingServiceHttpMessageHandler.Reset();
+        fixture.MockWeatherModelingServiceHttpMessageHandler.Reset();
         fixture.EventRepositoryInMemory.PersistedEvents.Clear();
         fixture.OutboxRepositoryInMemory.OutboxItems.Clear();
 
@@ -117,7 +117,7 @@ public class Given(ComponentTestFixture fixture)
     public Given TheModelingServiceSubmitEndpointWillReturn(HttpStatusCode statusCode)
     {
         var submissionId = Guid.NewGuid();
-        fixture.ApiFactory.MockWeatherModelingServiceHttpMessageHandler
+        fixture.MockWeatherModelingServiceHttpMessageHandler
             .SetupRequest(HttpMethod.Post, r => r.RequestUri!.ToString().StartsWith($"{Constants.BaseUrl}{Constants.WeatherModelingServiceSubmissionUri}"))
             .ReturnsResponse(statusCode, new StringContent(submissionId.ToString()));
         return this;

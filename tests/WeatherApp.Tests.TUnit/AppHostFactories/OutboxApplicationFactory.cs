@@ -7,15 +7,13 @@ using Moq;
 using WeatherApp.Infrastructure.Outbox;
 using WeatherApp.Infrastructure.Persistence;
 using WeatherApp.Infrastructure.RetryableDapperConnection;
-using WeatherApp.Tests.TUnit.Framework.Persistence;
 
 namespace WeatherApp.Tests.TUnit.AppHostFactories;
 
 public class OutboxApplicationFactory(ComponentTestFixture fixture) : WebApplicationFactory<Outbox.Program>
 {    
     public HttpClient? HttpClient;
-    public readonly Mock<ILogger> MockLogger = new();
-    public Func<OutboxRepositoryInMemory>? SetSharedOutboxRepositories = null;
+    public readonly Mock<ILogger> MockLogger = new();    
     
     protected override IHost CreateHost(IHostBuilder builder)
     {        
@@ -30,24 +28,14 @@ public class OutboxApplicationFactory(ComponentTestFixture fixture) : WebApplica
             .ConfigureServices(services =>
             {
                 services.AddMockLogger(MockLogger);
+
+                services.AddSingleton<IOutboxRepository>(fixture.OutboxRepositoryInMemory);
+                services.AddSingleton<IOutboxBatchRepository>(fixture.OutboxRepositoryInMemory);
                 services.AddSingleton<TimeProvider>(fixture.FakeTimeProvider);
                 
-                fixture.FakeServiceBus.WireUpSendersAndProcessors(services);
+                fixture.FakeServiceBus.WireUpSendersAndProcessors(services);                
 
-                if (SetSharedOutboxRepositories is not null)
-                {
-                    var combinedOutboxAndBatchRepository = SetSharedOutboxRepositories();
-                    services.AddSingleton<IOutboxRepository>(_ => combinedOutboxAndBatchRepository);
-                    services.AddSingleton<IOutboxBatchRepository>(_ => combinedOutboxAndBatchRepository);
-                }
-
-                var mockDbTransaction = new Mock<IDbTransactionWrapped>();
-                var mockDbConnection = new Mock<IRetryableConnection>();
-                mockDbConnection.Setup(x => x.BeginTransaction(It.IsAny<IsolationLevel>()))
-                    .Returns(mockDbTransaction.Object);
-                var mockDbConnectionFactory = new Mock<IDbConnectionFactory>();
-                mockDbConnectionFactory.Setup(x => x.Create()).Returns(mockDbConnection.Object);
-                services.AddSingleton(mockDbConnectionFactory.Object);
+                ConfigureDatabaseConnectionFactory(services);
             });
 
         var host = base.CreateHost(builder);
@@ -58,5 +46,19 @@ public class OutboxApplicationFactory(ComponentTestFixture fixture) : WebApplica
     public void Start()
     {
         HttpClient = CreateClient();
+    }
+
+    private void ConfigureDatabaseConnectionFactory(IServiceCollection services)
+    {
+        var mockDbTransaction = new Mock<IDbTransactionWrapped>();
+
+        var mockDbConnection = new Mock<IRetryableConnection>();
+        mockDbConnection.Setup(x => x.BeginTransaction(It.IsAny<IsolationLevel>()))
+            .Returns(mockDbTransaction.Object);
+        
+        var mockDbConnectionFactory = new Mock<IDbConnectionFactory>();
+        mockDbConnectionFactory.Setup(x => x.Create()).Returns(mockDbConnection.Object);
+        
+        services.AddSingleton(mockDbConnectionFactory.Object);
     }
 }

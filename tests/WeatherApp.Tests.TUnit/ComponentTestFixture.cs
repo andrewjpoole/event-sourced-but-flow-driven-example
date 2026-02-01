@@ -14,14 +14,19 @@ public class ComponentTestFixture : IDisposable
 {
     private string phase = "";
 
+    // Application Host Factories for the 3 executables.
     public readonly ApiWebApplicationFactory ApiFactory;
     public readonly EventListenerWebApplicationFactory EventListenerFactory;
     public readonly OutboxApplicationFactory OutboxApplicationFactory;
 
+    // Mocked or Faked external dependencies.
     public EventRepositoryInMemory EventRepositoryInMemory = new();
     public OutboxRepositoryInMemory OutboxRepositoryInMemory = new();
     
     public readonly Mock<HttpMessageHandler> MockContributorPaymentsServiceHttpMessageHandler = 
+        new(MockBehavior.Strict);
+
+    public readonly Mock<HttpMessageHandler> MockWeatherModelingServiceHttpMessageHandler = 
         new(MockBehavior.Strict);
     
     public readonly FakeServiceBus FakeServiceBus;
@@ -29,13 +34,9 @@ public class ComponentTestFixture : IDisposable
 
     public ComponentTestFixture()
     {
-        ApiFactory = new(this) { SetSharedEventRepository = () => EventRepositoryInMemory };
-        EventListenerFactory = new(this) 
-        { 
-            SetSharedEventRepository = () => EventRepositoryInMemory,
-            SetSharedOutboxRepositories = () => OutboxRepositoryInMemory
-        };
-        OutboxApplicationFactory = new(this) { SetSharedOutboxRepositories = () => OutboxRepositoryInMemory };
+        ApiFactory = new(this);
+        EventListenerFactory = new(this);
+        OutboxApplicationFactory = new(this);
 
         FakeServiceBus = new FakeServiceBus(
             entityName => EntityNames.GetTypeNameFromEntityName(entityName), 
@@ -58,6 +59,7 @@ public class ComponentTestFixture : IDisposable
         GC.SuppressFinalize(this);
         ApiFactory.HttpClient?.Dispose();
         EventListenerFactory.HttpClient?.Dispose();
+        OutboxApplicationFactory.HttpClient?.Dispose();
     }
 
     public (Given given, When when, Then then, CannedData cannedData) SetupHelpers()

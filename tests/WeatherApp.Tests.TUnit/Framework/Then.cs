@@ -93,7 +93,7 @@ public class Then(ComponentTestFixture fixture)
     
     public Then TheModelingServiceSubmitEndpointShouldHaveBeenCalled(int times = 1)
     {
-        fixture.ApiFactory.MockWeatherModelingServiceHttpMessageHandler
+        fixture.MockWeatherModelingServiceHttpMessageHandler
             .VerifyRequest(HttpMethod.Post, 
                 r => r.RequestUri!.ToString().StartsWith($"{Constants.BaseUrl}{Constants.WeatherModelingServiceSubmissionUri}"), 
                 Times.Exactly(times), $"{fixture.CurrentPhase}expected the ModelingServiceSubmitEndpoint to have been called {times} time(s).");
@@ -198,23 +198,31 @@ public class Then(ComponentTestFixture fixture)
         var senderMock = fixture.FakeServiceBus.GetSenderFor<T>() ?? 
             throw new Exception($"No Mock<ServiceBusSender> found for message type {typeof(T).Name}");
 
-        var retryPolicy = Policy
-            .Handle<Exception>()
-            .WaitAndRetry(
-                retryCount: numberOfRetries,
-                sleepDurationProvider: _ => TimeSpan.FromMilliseconds(retryDelayInMilliSeconds),
-                onRetry: (exception, timeSpan, retryCount, context) =>
-                {
-                    Console.WriteLine($"{fixture.CurrentPhase}AMessageWasSent<{typeof(T).Name}> retry attempt {retryCount}/{numberOfRetries} after {timeSpan.TotalMilliseconds}ms delay. Exception: {exception.Message}");
-                });
+        // var retryPolicy = Policy
+        //     .Handle<Exception>()
+        //     .WaitAndRetry(
+        //         retryCount: numberOfRetries,
+        //         sleepDurationProvider: _ => TimeSpan.FromMilliseconds(retryDelayInMilliSeconds),
+        //         onRetry: (exception, timeSpan, retryCount, context) =>
+        //         {
+        //             Console.WriteLine($"{fixture.CurrentPhase}AMessageWasSent<{typeof(T).Name}> retry attempt {retryCount}/{numberOfRetries} after {timeSpan.TotalMilliseconds}ms delay. Exception: {exception.Message}");
+        //         });
 
-        retryPolicy.Execute(() =>
+        // retryPolicy.Execute(() =>
+        // {
+        //     senderMock.Verify(x => x.SendMessageAsync(
+        //         It.Is<ServiceBusMessage>(m => match(m.Body.ToObjectFromJson<T>()!)), 
+        //         It.IsAny<CancellationToken>()), Times.Exactly(times), 
+        //         $"{fixture.CurrentPhase}expected message of type {typeof(T).Name} to have been sent {times} time(s).");
+        // });
+
+        RetryAction(() =>
         {
             senderMock.Verify(x => x.SendMessageAsync(
                 It.Is<ServiceBusMessage>(m => match(m.Body.ToObjectFromJson<T>()!)), 
                 It.IsAny<CancellationToken>()), Times.Exactly(times), 
                 $"{fixture.CurrentPhase}expected message of type {typeof(T).Name} to have been sent {times} time(s).");
-        });
+        }, numberOfRetries, retryDelayInMilliSeconds);
 
         return this;
     }
@@ -224,22 +232,29 @@ public class Then(ComponentTestFixture fixture)
         var senderMock = fixture.FakeServiceBus.GetSenderFor<T>() ?? 
             throw new Exception($"No Mock<ServiceBusSender> found for message type {typeof(T).Name}");
 
-        var retryPolicy = Policy
-            .Handle<Exception>()
-            .WaitAndRetry(
-                retryCount: numberOfRetries,
-                sleepDurationProvider: _ => TimeSpan.FromMilliseconds(retryDelayInMilliSeconds),
-                onRetry: (exception, timeSpan, retryCount, context) =>
-                {
-                    Console.WriteLine($"{fixture.CurrentPhase}AMessageWasSent<{typeof(T).Name}> retry attempt {retryCount}/{numberOfRetries} after {timeSpan.TotalMilliseconds}ms delay. Exception: {exception.Message}");
-                });
+        // var retryPolicy = Policy
+        //     .Handle<Exception>()
+        //     .WaitAndRetry(
+        //         retryCount: numberOfRetries,
+        //         sleepDurationProvider: _ => TimeSpan.FromMilliseconds(retryDelayInMilliSeconds),
+        //         onRetry: (exception, timeSpan, retryCount, context) =>
+        //         {
+        //             Console.WriteLine($"{fixture.CurrentPhase}AMessageWasSent<{typeof(T).Name}> retry attempt {retryCount}/{numberOfRetries} after {timeSpan.TotalMilliseconds}ms delay. Exception: {exception.Message}");
+        //         });
 
-        retryPolicy.Execute(() =>
+        // retryPolicy.Execute(() =>
+        // {
+        //     senderMock.Verify(x => x.SendMessageAsync(
+        //         It.IsAny<ServiceBusMessage>(), It.IsAny<CancellationToken>()), Times.Exactly(times), 
+        //         $"{fixture.CurrentPhase}expected message of type {typeof(T).Name} to have been sent {times} time(s).");
+        // });
+
+        RetryAction(() =>
         {
             senderMock.Verify(x => x.SendMessageAsync(
                 It.IsAny<ServiceBusMessage>(), It.IsAny<CancellationToken>()), Times.Exactly(times), 
                 $"{fixture.CurrentPhase}expected message of type {typeof(T).Name} to have been sent {times} time(s).");
-        });
+        }, numberOfRetries, retryDelayInMilliSeconds);
 
         return this;
     }
@@ -254,7 +269,42 @@ public class Then(ComponentTestFixture fixture)
         return this;
     }
 
-    public Then TheMessageWasHandled<T>(int numberOfReties = 25, int retryDelayInMilliSeconds = 250) where T : class
+    public Then TheMessageWasHandled<T>(int times = 1, int numberOfReties = 25, int retryDelayInMilliSeconds = 250) where T : class
+    {
+        // var retryPolicy = Policy
+        //     .Handle<Exception>()
+        //     .WaitAndRetry(
+        //         retryCount: numberOfReties,
+        //         sleepDurationProvider: _ => TimeSpan.FromMilliseconds(retryDelayInMilliSeconds),
+        //         onRetry: (exception, timeSpan, retryCount, context) =>
+        //         {
+        //             Console.WriteLine($"TheMessageWasHandled<{typeof(T).Name}> retry attempt {retryCount}/{numberOfReties} after {timeSpan.TotalMilliseconds}ms delay. Exception: {exception.Message}");
+        //         });
+
+        // retryPolicy.Execute(() =>
+        // {
+        //     var processor = fixture.FakeServiceBus.GetProcessorFor<T>();
+        //     var deliveryCount = processor.MessageDeliveryAttempts.Count;
+            
+        //     deliveryCount.ShouldBe(1, $"{fixture.CurrentPhase}in TheMessageWasHandled<{typeof(T).Name}>, expected the ServiceBusProcesser<{typeof(T).Name}> to have had a single delivery attempt, instead found {deliveryCount}.");
+        //     processor.MessageDeliveryAttempts[0].WasCompleted.ShouldBeTrue($"{fixture.CurrentPhase}expected the event {typeof(T).Name} to have been handled.");
+        // });
+
+        var processor = fixture.FakeServiceBus.GetProcessorFor<T>() ?? 
+            throw new Exception($"No TestableServiceBusProcessor found for message type {typeof(T).Name}");
+
+        RetryAction(() =>
+        {            
+            var deliveryCount = processor.MessageDeliveryAttempts.Count;
+            
+            deliveryCount.ShouldBe(times, $"{fixture.CurrentPhase}in TheMessageWasHandled<{typeof(T).Name}>, expected the ServiceBusProcesser<{typeof(T).Name}> to have had a {times} attempt(s), instead found {deliveryCount}.");
+            processor.MessageDeliveryAttempts[0].WasCompleted.ShouldBeTrue($"{fixture.CurrentPhase}expected the event {typeof(T).Name} to have been handled.");
+        }, numberOfReties, retryDelayInMilliSeconds);
+
+        return this;
+    }
+
+    private void RetryAction(Action action, int numberOfReties, int retryDelayInMilliSeconds)
     {
         var retryPolicy = Policy
             .Handle<Exception>()
@@ -263,18 +313,12 @@ public class Then(ComponentTestFixture fixture)
                 sleepDurationProvider: _ => TimeSpan.FromMilliseconds(retryDelayInMilliSeconds),
                 onRetry: (exception, timeSpan, retryCount, context) =>
                 {
-                    Console.WriteLine($"TheMessageWasHandled<{typeof(T).Name}> retry attempt {retryCount}/{numberOfReties} after {timeSpan.TotalMilliseconds}ms delay. Exception: {exception.Message}");
+                    Console.WriteLine($"RetryAction retry attempt {retryCount}/{numberOfReties} after {timeSpan.TotalMilliseconds}ms delay. Exception: {exception.Message}");
                 });
 
         retryPolicy.Execute(() =>
         {
-            var processor = fixture.FakeServiceBus.GetProcessorFor<T>();
-            var deliveryCount = processor.MessageDeliveryAttempts.Count;
-            
-            deliveryCount.ShouldBe(1, $"{fixture.CurrentPhase}in TheMessageWasHandled<{typeof(T).Name}>, expected the ServiceBusProcesser<{typeof(T).Name}> to have had a single delivery attempt, instead found {deliveryCount}.");
-            processor.MessageDeliveryAttempts[0].WasCompleted.ShouldBeTrue($"{fixture.CurrentPhase}expected the event {typeof(T).Name} to have been handled.");
+            action();
         });
-
-        return this;
-    }    
+    }
 }

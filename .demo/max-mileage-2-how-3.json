@@ -19,20 +19,20 @@
     },
     {
       "id": "scene-mkitzcfb-tlet",
-      "title": "open outbox apphost factory",
+      "title": "open API apphost factory",
       "moves": [
         {
           "action": "snippet",
           "contentPath": ".demo/move-snippets/open-and-remove-selection.json",
           "args": {
-            "FILE": "tests/WeatherApp.Tests.TUnit/AppHostFactories/OutboxApplicationFactory.cs"
+            "FILE": "tests/WeatherApp.Tests.TUnit/AppHostFactories/ApiWebApplicationFactory.cs"
           }
         },
         {
           "action": "highlight",
-          "path": "tests/WeatherApp.Tests.TUnit/AppHostFactories/OutboxApplicationFactory.cs",
-          "position": "14,68:14,108",
-          "highlightWholeLine": true
+          "path": "tests/WeatherApp.Tests.TUnit/AppHostFactories/ApiWebApplicationFactory.cs",
+          "position": "12:12",
+          "highlightWholeLine": false
         }
       ]
     },
@@ -42,62 +42,23 @@
       "moves": [
         {
           "action": "highlight",
-          "path": "tests/WeatherApp.Tests.TUnit/AppHostFactories/OutboxApplicationFactory.cs",
-          "position": "14,68:14,108",
-          "highlightWholeLine": true
-        }
-      ]
-    },
-    {
-      "id": "demo-mkiu9rrn-t08t",
-      "title": "fields",
-      "moves": [
-        {
-          "action": "highlight",
-          "path": "tests/WeatherApp.Tests.TUnit/AppHostFactories/OutboxApplicationFactory.cs",
-          "position": "16:17",
-          "highlightWholeLine": false
-        }
-      ]
-    },
-    {
-      "id": "demo-mkiua79b-4bxl",
-      "title": "wire up repository",
-      "moves": [
-        {
-          "action": "highlight",
-          "path": "tests/WeatherApp.Tests.TUnit/AppHostFactories/OutboxApplicationFactory.cs",
-          "position": "18:18",
+          "path": "tests/WeatherApp.Tests.TUnit/AppHostFactories/ApiWebApplicationFactory.cs",
+          "position": "12,68:12,106",
           "highlightWholeLine": false
         }
       ]
     },
     {
       "id": "demo-mkiuh63c-3ix5",
-      "title": "override env variables",
+      "title": "show CreateHost",
       "moves": [
         {
           "action": "highlight",
-          "path": "tests/WeatherApp.Tests.TUnit/AppHostFactories/OutboxApplicationFactory.cs",
-          "position": "22:27",
+          "path": "tests/WeatherApp.Tests.TUnit/AppHostFactories/ApiWebApplicationFactory.cs",
+          "position": "17:45",
           "highlightWholeLine": false
         }
       ]
-    },
-    {
-      "id": "demo-mkiukysn-5fhb",
-      "title": "override dependencies in IoC",
-      "moves": [
-        {
-          "action": "highlight",
-          "path": "tests/WeatherApp.Tests.TUnit/AppHostFactories/OutboxApplicationFactory.cs",
-          "position": "29:51",
-          "highlightWholeLine": false
-        }
-      ],
-      "notes": {
-        "path": "notes/demo-mkiukysn-5fhb_notes.md"
-      }
     }
   ]
 }

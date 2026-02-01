@@ -40,7 +40,7 @@
         {
           "action": "highlight",
           "path": "tests/WeatherApp.Tests.TUnit/ComponentTestFixture.cs",
-          "position": "17:28",
+          "position": "17:33",
           "highlightWholeLine": true
         }
       ]
@@ -52,7 +52,7 @@
         {
           "action": "highlight",
           "path": "tests/WeatherApp.Tests.TUnit/ComponentTestFixture.cs",
-          "position": "32:38",
+          "position": "37:39",
           "highlightWholeLine": true
         }
       ]
@@ -64,7 +64,7 @@
         {
           "action": "highlight",
           "path": "tests/WeatherApp.Tests.TUnit/ComponentTestFixture.cs",
-          "position": "40:42",
+          "position": "41:43",
           "highlightWholeLine": true
         }
       ]
@@ -76,7 +76,7 @@
         {
           "action": "highlight",
           "path": "tests/WeatherApp.Tests.TUnit/ComponentTestFixture.cs",
-          "position": "44:47",
+          "position": "45:48",
           "highlightWholeLine": true
         }
       ]
@@ -88,7 +88,7 @@
         {
           "action": "highlight",
           "path": "tests/WeatherApp.Tests.TUnit/ComponentTestFixture.cs",
-          "position": "49:49",
+          "position": "50:50",
           "highlightWholeLine": true
         }
       ]
@@ -100,7 +100,7 @@
         {
           "action": "highlight",
           "path": "tests/WeatherApp.Tests.TUnit/ComponentTestFixture.cs",
-          "position": "51:53",
+          "position": "52:54",
           "highlightWholeLine": true
         }
       ]

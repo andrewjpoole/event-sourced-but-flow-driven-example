@@ -7,15 +7,13 @@ using WeatherApp.Infrastructure.ContributorPayments;
 using WeatherApp.Infrastructure.Messaging;
 using WeatherApp.Infrastructure.Outbox;
 using WeatherApp.Infrastructure.Persistence;
-using WeatherApp.Tests.TUnit.Framework.Persistence;
 
 namespace WeatherApp.Tests.TUnit.AppHostFactories;
 
 public class EventListenerWebApplicationFactory(ComponentTestFixture fixture) : WebApplicationFactory<EventListener.Program>
 {
     public readonly Mock<ILogger> MockLogger = new();
-    public Func<EventRepositoryInMemory>? SetSharedEventRepository = null;
-    public Func<OutboxRepositoryInMemory>? SetSharedOutboxRepositories = null;
+    
     public HttpClient? HttpClient;
         
     protected override IHost CreateHost(IHostBuilder builder)
@@ -33,6 +31,8 @@ public class EventListenerWebApplicationFactory(ComponentTestFixture fixture) : 
             {
                 services.AddMockLogger(MockLogger);
 
+                services.AddSingleton<IEventRepository>(fixture.EventRepositoryInMemory);
+                services.AddSingleton<IOutboxRepository>(fixture.OutboxRepositoryInMemory);
                 services.AddSingleton<TimeProvider>(fixture.FakeTimeProvider);
 
                 services.AddHttpClient(typeof(IContributorPaymentServiceClient).FullName!, client => client.BaseAddress = new Uri(Constants.BaseUrl))
@@ -40,15 +40,6 @@ public class EventListenerWebApplicationFactory(ComponentTestFixture fixture) : 
 
                 fixture.FakeServiceBus.WireUpSendersAndProcessors(services);
                 
-                if (SetSharedEventRepository is not null)
-                    services.AddSingleton<IEventRepository>(_ => SetSharedEventRepository());
-
-                if (SetSharedOutboxRepositories is not null)
-                {
-                    var combinedOutboxAndBatchRepository = SetSharedOutboxRepositories();
-                    services.AddSingleton<IOutboxRepository>(_ => combinedOutboxAndBatchRepository);
-                    services.AddSingleton<IOutboxBatchRepository>(_ => combinedOutboxAndBatchRepository);
-                }
             });
 
         var host = base.CreateHost(builder);
