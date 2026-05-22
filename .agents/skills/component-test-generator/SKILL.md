@@ -44,6 +44,7 @@ Create the full test project and adapt every template to the target app. Create 
 - `Given.cs`, `When.cs`, `Then.cs` based on `assets/templates/Given.cs.md`, `assets/templates/When.cs.md`, and `assets/templates/Then.cs.md`
 - `CannedData.cs` based on `assets/templates/CannedData.cs.md`
 - `FakeServiceBus.cs` and `TestableServiceBusProcessor.cs` based on `assets/templates/FakeServiceBus.cs.md` and `assets/templates/TestableServiceBusProcessor.cs.md`
+- `FakeExternalServicesServer.cs` and `FakeServicesState.cs` based on `assets/templates/FakeExternalServicesServer.cs.md`
 - `EventRepositoryInMemory.cs` based on `assets/templates/EventRepositoryInMemory.cs.md`
 - `OutboxRepositoryInMemory.cs` based on `assets/templates/OutboxRepositoryInMemory.cs.md` only if an outbox is detected
 - `ServiceCollectionExtensions.cs` based on `assets/templates/ServiceCollectionExtensions.cs.md`
@@ -69,8 +70,11 @@ When a component test project already contains `ComponentTests.cs`:
 ## Important notes
 
 - Always use TUnit for new projects unless the user explicitly asks for xUnit or NUnit.
-- Replace all infrastructure with in-memory fakes and mocks. Never use real databases, real Service Bus, or real HTTP services in component tests.
+- Replace all infrastructure with in-memory fakes. Never use real databases, real Service Bus, or real HTTP services in component tests.
+- External HTTP dependencies use a real `FakeExternalServicesServer` (see `assets/templates/FakeExternalServicesServer.cs.md`), not `Mock<HttpMessageHandler>`. This avoids fighting with the app's named/typed `HttpClient` DI wiring and makes request/response visible in test output.
 - The `FakeTimeProvider` pattern is essential for timer-driven behaviour such as outbox processing and retries.
+- Add `Console.WriteLine` throughout `Given`, `When`, `Then`, and `FakeExternalServicesServer` endpoints using prefixes like `[Given]`, `[When]`, `[Then]`, `[FakeServer]`. TUnit captures this output per test. Without it, passing tests show "The test case did not report any output."
+- To view per-test output, run tests with `dotnet run --project tests/YourProject -- --output Detailed --no-progress`. Standard `dotnet test` with TUnit/MTP does not surface per-test output by default.
 - Keep the `Given` / `When` / `Then` DSL readable so test intent is obvious.
 - Read the reference files for deeper detail before generating code.
 

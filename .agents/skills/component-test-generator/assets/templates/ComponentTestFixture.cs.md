@@ -26,9 +26,9 @@ public sealed class ComponentTestFixture : IDisposable
     public EventRepositoryInMemory EventRepositoryInMemory { get; } = new();
     public OutboxRepositoryInMemory OutboxRepositoryInMemory { get; } = new();
 
-    // One mock message handler per outbound HTTP dependency.
-    public readonly Mock<HttpMessageHandler> Mock{ExternalService1}HttpMessageHandler = new(MockBehavior.Strict);
-    public readonly Mock<HttpMessageHandler> Mock{ExternalService2}HttpMessageHandler = new(MockBehavior.Strict);
+    // Real Kestrel server for all external HTTP dependencies.
+    // Must be created BEFORE the app factories so its port is known for URL overrides.
+    public FakeExternalServicesServer FakeExternalServicesServer { get; }
 
     // Fake Service Bus contains inbound processors and outbound senders.
     public FakeServiceBus FakeServiceBus { get; }
@@ -38,6 +38,10 @@ public sealed class ComponentTestFixture : IDisposable
 
     public ComponentTestFixture()
     {
+        // FakeExternalServicesServer MUST be created first so its port is available
+        // when the app factories configure their URL overrides.
+        FakeExternalServicesServer = new FakeExternalServicesServer();
+
         // Factories get the fixture so they can pull shared fakes from it.
         ApiFactory = new {ApiApp}WebApplicationFactory(this);
         EventListenerFactory = new {EventListenerApp}WebApplicationFactory(this);
@@ -83,6 +87,9 @@ public sealed class ComponentTestFixture : IDisposable
         ApiFactory.HttpClient?.Dispose();
         EventListenerFactory.HttpClient?.Dispose();
         OutboxFactory.HttpClient?.Dispose();
+
+        // Dispose the fake server after the app factories to avoid connection errors during shutdown.
+        FakeExternalServicesServer.Dispose();
     }
 }
 ```
@@ -90,6 +97,6 @@ public sealed class ComponentTestFixture : IDisposable
 Adaptation notes:
 
 - Remove `OutboxRepositoryInMemory` and `OutboxFactory` only if the target solution has no outbox worker.
-- Add or remove `Mock<HttpMessageHandler>` fields to match every outbound HTTP integration.
 - Register all inbound and outbound Service Bus message types used by the apps under test.
 - Keep one fresh `ComponentTestFixture` per test for isolation.
+- `FakeExternalServicesServer` must always be the first field initialised in the constructor.

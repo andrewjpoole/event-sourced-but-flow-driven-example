@@ -1,14 +1,8 @@
 # Given template
 
-Purpose: hold readable precondition helpers for the component-test DSL. Adapt external service names, URL predicates, seeded events, and any domain-specific helper methods for the target app.
+Purpose: hold readable precondition helpers for the component-test DSL. Adapt external service names, seeded events, and any domain-specific helper methods for the target app.
 
 ```csharp
-using System.Net;
-using System.Net.Http.Json;
-using System.Text.Json;
-using Azure.Messaging.ServiceBus;
-using Moq;
-using Moq.Contrib.HttpClient;
 using {Namespace}.Domain.EventSourcing;
 
 namespace {Namespace}.Tests.TUnit.Framework;
@@ -28,11 +22,10 @@ public sealed class Given(ComponentTestFixture fixture)
 
     public Given WeHaveResetEverything()
     {
-        // Reset fakes and mocks so each scenario starts cleanly.
+        // Reset fakes so each scenario starts cleanly.
         fixture.FakeServiceBus.ClearDeliveryAttemptsOnAllProcessors();
         fixture.FakeServiceBus.ClearInvocationsOnAllSenders();
-        fixture.Mock{ExternalService1}HttpMessageHandler.Reset();
-        fixture.Mock{ExternalService2}HttpMessageHandler.Reset();
+        fixture.FakeExternalServicesServer.State.Reset();
         fixture.EventRepositoryInMemory.PersistedEvents.Clear();
         fixture.OutboxRepositoryInMemory.OutboxItems.Clear();
         return this;
@@ -41,46 +34,24 @@ public sealed class Given(ComponentTestFixture fixture)
     public Given ThereIsExistingData(List<Event> events)
     {
         fixture.EventRepositoryInMemory.InsertExistingEvents(events, fixture.FakeTimeProvider);
+        Console.WriteLine($"[Given] Seeded {events.Count} event(s) into store: {string.Join(", ", events.Select(e => e.GetType().Name))}");
         return this;
     }
 
-    public Given The{ExternalService1}EndpointWillReturn(HttpStatusCode statusCode)
+    // External service state is set directly on FakeServicesState — no mock setup needed.
+    // The fake server reads these flags on each request.
+
+    public Given The{ExternalService1}WillSucceed()
     {
-        fixture.Mock{ExternalService1}HttpMessageHandler
-            .SetupRequest(
-                HttpMethod.Post,
-                request => request.RequestUri!.ToString().StartsWith($"{Constants.BaseUrl}{Constants.{ExternalService1}UriStart}"))
-            .ReturnsAsync((HttpRequestMessage request, CancellationToken _) =>
-            {
-                // Read the request body if you need to shape the fake response.
-                var payloadJson = request.Content is null
-                    ? string.Empty
-                    : request.Content.ReadAsStringAsync().GetAwaiter().GetResult();
-
-                var responseBody = JsonSerializer.Serialize(new
-                {
-                    RequestSeen = true,
-                    Service = "{ExternalService1}",
-                    Payload = payloadJson
-                });
-
-                return new HttpResponseMessage(statusCode)
-                {
-                    Content = new StringContent(responseBody)
-                };
-            });
-
+        fixture.FakeExternalServicesServer.State.{ExternalService1Accepted} = true;
+        Console.WriteLine("[Given] {ExternalService1} → will return 200");
         return this;
     }
 
-    public Given The{ExternalService2}EndpointWillReturn(HttpStatusCode statusCode)
+    public Given The{ExternalService1}WillFail()
     {
-        fixture.Mock{ExternalService2}HttpMessageHandler
-            .SetupRequest(
-                HttpMethod.Get,
-                request => request.RequestUri!.ToString().Contains(Constants.{ExternalService2}UriStart))
-            .ReturnsResponse(statusCode, new StringContent("{}"));
-
+        fixture.FakeExternalServicesServer.State.{ExternalService1Accepted} = false;
+        Console.WriteLine("[Given] {ExternalService1} → will return error");
         return this;
     }
 
@@ -88,15 +59,11 @@ public sealed class Given(ComponentTestFixture fixture)
     {
         // This is useful when a message published by one app should immediately feed another app.
         if (!fixture.FakeServiceBus.HasProcessorFor<TMessageType>())
-        {
             return this;
-        }
 
         var senderMock = fixture.FakeServiceBus.GetSenderFor<TMessageType>();
         if (senderMock is null)
-        {
             return this;
-        }
 
         senderMock
             .Setup(x => x.SendMessageAsync(It.IsAny<ServiceBusMessage>(), It.IsAny<CancellationToken>()))
@@ -104,9 +71,7 @@ public sealed class Given(ComponentTestFixture fixture)
             {
                 var message = serviceBusMessage.Body.ToObjectFromJson<TMessageType>();
                 if (message is null)
-                {
                     throw new InvalidOperationException($"Unable to deserialise {typeof(TMessageType).Name} from Service Bus body.");
-                }
 
                 var applicationProperties = (Dictionary<string, object>?)serviceBusMessage.ApplicationProperties;
                 fixture.FakeServiceBus
@@ -121,8 +86,8 @@ public sealed class Given(ComponentTestFixture fixture)
 }
 ```
 
-URL matching notes:
+Notes:
 
-- Prefer `StartsWith` when the app uses predictable route prefixes.
-- Use `Contains` or inspect path segments when IDs are embedded in the URL.
-- Match against the same base address and relative URI shape used by the production `HttpClient` registration.
+- External service behaviour is controlled via `FakeServicesState` boolean flags. The `FakeExternalServicesServer` endpoint handlers read those flags on each inbound request — no mock setup, no URL predicate matching.
+- Log each precondition with a `[Given]` prefix so the test output tells a story.
+- Call `Console.WriteLine` from `Start()` in each factory so the bound address is visible per test (see `AppHostFactory.cs.md`).
