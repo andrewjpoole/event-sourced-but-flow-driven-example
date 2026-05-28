@@ -5,6 +5,13 @@ speed: 3500
 invert: true
 ---
 
+<!-- ---
+layout: animated
+svgFile: .demo/assets/test-stats.svg
+animationSpeed: 1000
+invertLightAndDarkColours: true
+--- -->
+
 ---
 layout: default
 ---

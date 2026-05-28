@@ -27,10 +27,11 @@ layout: default
 
 # Let’s start with a scenario…
 
+
 ---
-customLayout: .demo/layouts/animated-diagram.html
-filePath: .demo/assets/complex-scenario2.svg
-speed: 400
+layout: animated
+svgFile: .demo/assets/complex-scenario2.svg
+animationSpeed: 500
 ---
 
 ---
@@ -39,11 +40,19 @@ layout: default
 
 # and as a sequence diagram...
 
+
 ---
-customLayout: .demo/layouts/animated-diagram.html
-filePath: .demo/assets/scenario-sequence.svg
-speed: 1000
+layout: animated
+svgFile: .demo/assets/scenario-sequence.svg
+animationSpeed: 1000
 ---
+
+
+<!-- ---
+layout: animated
+svgFile: .demo/assets/lots-of-ways-to-test.svg
+animationSpeed: 100
+--- -->
 
 ---
 customLayout: .demo/layouts/animated-diagram.html
@@ -51,3 +60,4 @@ filePath: .demo/assets/lots-of-ways-to-test.svg
 speed: 2500
 invert: true
 ---
+

@@ -57,7 +57,8 @@ layout: default
 ### Where do these tests fit? 🤔
 
 ---
-customLayout: .demo/layouts/animated-diagram.html
-filePath: .demo/assets/test-trophy.svg
-speed: 500
+layout: animated
+svgFile: .demo/assets/test-trophy.svg
+animationSpeed: 1000
 ---
+

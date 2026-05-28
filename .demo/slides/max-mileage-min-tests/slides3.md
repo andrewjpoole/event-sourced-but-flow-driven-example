@@ -13,9 +13,9 @@ layout: default
 ### But first let's recap what we're testing...
 
 ---
-customLayout: .demo/layouts/animated-diagram-non-autoplay.html
-filePath: .demo/assets/scenario-sequence.svg
-speed: 100000
+layout: animated
+svgFile: .demo/assets/scenario-sequence.svg
+skipAnimation: true
 ---
 
 ---
