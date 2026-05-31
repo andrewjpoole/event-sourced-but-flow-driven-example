@@ -29,6 +29,16 @@
           "path": ".demo/slides/max-mileage-min-tests/slides6.md"
         }
       ]
+    },
+    {
+      "id": "demo-mptywc8t-7gul",
+      "title": "thanks and feedback",
+      "moves": [
+        {
+          "action": "openSlide",
+          "path": ".demo/slides/max-mileage-min-tests/slides-end.md"
+        }
+      ]
     }
   ]
 }

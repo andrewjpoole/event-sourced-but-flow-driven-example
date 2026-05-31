@@ -1,948 +1,742 @@
-const SLIDE_WIDTH = 960;
-const SLIDE_HEIGHT = 540;
-const TYPEWRITER_SPEED_FACTOR = 0.25;
+const _SW = 960, _SH = 540, _TW = 0.25;
 
 class SimpleAnimateSvgComponent extends HTMLElement {
   static get observedAttributes() {
-    return [
-      'svg-file-path',
-      'animation-speed',
-      'width',
-      'height',
-      'sizing',
-      'background-color',
-      'border',
-      'invert-colors',
-      'auto-play'
-    ];
+    return ['svg-file-path','animation-speed','width','height','sizing',
+            'background-color','border','invert-colors','auto-play','start-at','stop-at'];
   }
 
   constructor() {
     super();
-    this._shadow = this.attachShadow({ mode: 'open' });
-    this._container = document.createElement('div');
-    this._shadow.appendChild(this._container);
-
+    this._root = this.attachShadow({ mode: 'open' });
+    this._wrap = document.createElement('div');
+    this._root.appendChild(this._wrap);
     this._paths = [];
-    this._elementSegments = [];
-    this._pausePoints = [];
-    this._animationFrameId = null;
-    this._timedPauseTimeout = null;
-    this._currentPauseIndex = 0;
-    this._currentSegmentIndex = 0;
-    this._isPlaying = false;
-    this._isFinished = false;
-    this._elapsedBeforePause = 0;
-    this._startTime = null;
-    this._totalLength = 1;
-    this._speed = 100;
+    this._pauses = [];
+    this._pauseIdx = 0;
+    this._revealed = 0;
+    this._rafId = null;
+    this._timerId = null;
+    this._playing = false;
+    this._finished = false;
+    this._elapsed = 0;
+    this._t0 = null;
     this._duration = 2000;
+    this._speed = 100;
     this._autoPlay = true;
-    this._intersectionObserver = null;
-    this._wasVisible = false;
-    this._hasAutoPlayed = false;
-    this._isReadyForVisibility = false;
-    this._slowDraw = false;
-    this._speedHints = [];
-    this._waitingForManualResume = false;
-    this._wrapper = null;
-    this._parseWarningBanner = null;
-    this._currentSvgElement = null;
-    this._isSvgRevealed = false;
-    this._activeLoadController = null;
+    this._waitResume = false;
+    this._svgEl = null;
+    this._svgShown = false;
+    this._loadCtrl = null;
+    this._iobs = null;
+    this._wasVis = false;
+    this._played = false;
+    this._ready = false;
+    this._startRef = null;
+    this._stopRef = null;
   }
 
   connectedCallback() {
-    this._render();
+    this._build();
+    this._onClickResume = e => {
+      if (!this._waitResume) return;
+      e.stopPropagation(); e.preventDefault();
+      this._waitResume = false; this._play();
+    };
+    this.addEventListener('click', this._onClickResume);
+    this._onKey = e => {
+      if (e.key === 'MediaPlayPause' && this._waitResume) {
+        e.preventDefault(); this._waitResume = false; this._play();
+      }
+    };
+    document.addEventListener('keydown', this._onKey, true);
   }
 
   disconnectedCallback() {
-    this._cancelAnimation();
-    if (this._intersectionObserver) {
-      this._intersectionObserver.disconnect();
-      this._intersectionObserver = null;
-    }
-    if (this._timedPauseTimeout) {
-      clearTimeout(this._timedPauseTimeout);
-      this._timedPauseTimeout = null;
-    }
-    if (this._activeLoadController) {
-      this._activeLoadController.abort();
-      this._activeLoadController = null;
-    }
+    this._cancelRaf();
+    this.removeEventListener('click', this._onClickResume);
+    document.removeEventListener('keydown', this._onKey, true);
+    this._iobs?.disconnect(); this._iobs = null;
+    this._loadCtrl?.abort();
   }
 
-  attributeChangedCallback(name, oldValue, newValue) {
-    if (oldValue !== newValue) {
-      this._render();
-    }
-  }
+  attributeChangedCallback(n, o, v) { if (o !== v) this._build(); }
 
-  _render() {
-    this._cancelAnimation();
-    this._isReadyForVisibility = false;
-    this._hasAutoPlayed = false;
-    this._elapsedBeforePause = 0;
-    this._paths = [];
-    this._elementSegments = [];
-    this._pausePoints = [];
-    this._waitingForManualResume = false;
-    this._speedHints = [];
-    this._totalLength = 1;
-    this._container.innerHTML = '';
-    this._container.style.position = 'relative';
-    this._container.style.width = '100%';
-    this._container.style.height = '100%';
-    if (this._parseWarningBanner) {
-      this._parseWarningBanner.remove();
-      this._parseWarningBanner = null;
-    }
-    if (this._activeLoadController) {
-      this._activeLoadController.abort();
-      this._activeLoadController = null;
-    }
-    this._currentSvgElement = null;
-    this._isSvgRevealed = false;
+  _build() {
+    this._cancelRaf();
+    this._loadCtrl?.abort(); this._loadCtrl = null;
+    this._iobs?.disconnect(); this._iobs = null;
+    this._paths = []; this._pauses = []; this._elapsed = 0;
+    this._revealed = 0; this._pauseIdx = 0; this._waitResume = false;
+    this._svgEl = null; this._svgShown = false; this._ready = false; this._played = false;
+    this._wrap.innerHTML = '';
+    this._wrap.style.cssText = 'position:relative;width:100%;height:100%';
 
-    const width = this.getAttribute('width') || '100%';
-    const height = this.getAttribute('height');
-    const sizing = (this.getAttribute('sizing') || 'fill').toLowerCase();
-    const backgroundColor = this.getAttribute('background-color');
-    const border = this.getAttribute('border');
-    const filePath = this.getAttribute('svg-file-path');
-    const invertColors = this.getAttribute('invert-colors') === 'true';
-    const autoPlayAttr = this.getAttribute('auto-play');
-    this._autoPlay = autoPlayAttr !== 'false';
+    const w   = this.getAttribute('width') || '100%';
+    const h   = this.getAttribute('height');
+    const siz = (this.getAttribute('sizing') || 'fill').toLowerCase();
+    const bg  = this.getAttribute('background-color');
+    const brd = this.getAttribute('border');
+    const src = this.getAttribute('svg-file-path');
+    const inv = this.getAttribute('invert-colors') === 'true';
+    const spd = parseInt(this.getAttribute('animation-speed'), 10);
+    this._autoPlay = this.getAttribute('auto-play') !== 'false';
+    this._speed    = Number.isNaN(spd) ? 100 : Math.max(1, spd);
+    this._startRef = this.getAttribute('start-at') || null;
+    this._stopRef  = this.getAttribute('stop-at')  || null;
 
-    const speed = parseInt(this.getAttribute('animation-speed'), 10);
-    this._speed = Number.isNaN(speed) ? 100 : Math.max(1, speed);
-
-    this.style.display = 'inline-block';
-    this.style.boxSizing = 'border-box';
-    this.style.width = width;
-    this.style.height = sizing === 'fill' ? '100%' : height || 'auto';
-    this.style.padding = '0';
-    this.style.margin = '0';
-    this.style.lineHeight = '0';
-    this.style.verticalAlign = 'top';
-    if (backgroundColor) this.style.backgroundColor = backgroundColor;
-    if (border) this.style.border = border;
-
-    if (sizing === 'fill') {
-      this.style.position = 'absolute';
-      this.style.top = '0';
-      this.style.left = '0';
-      this.style.width = '100%';
-      this.style.height = '100%';
-      this.style.overflow = 'hidden';
-      this.style.aspectRatio = `${SLIDE_WIDTH}/${SLIDE_HEIGHT}`;
+    this.style.display = 'inline-block'; this.style.boxSizing = 'border-box';
+    this.style.width = w; this.style.height = siz === 'fill' ? '100%' : (h || 'auto');
+    this.style.padding = '0'; this.style.margin = '0';
+    this.style.lineHeight = '0'; this.style.verticalAlign = 'top';
+    if (bg)  this.style.backgroundColor = bg;
+    if (brd) this.style.border = brd;
+    if (siz === 'fill') {
+      this.style.position = 'absolute'; this.style.top = '0'; this.style.left = '0';
+      this.style.width = '100%'; this.style.height = '100%'; this.style.overflow = 'hidden';
+      this.style.aspectRatio = `${_SW}/${_SH}`;
     }
 
     const style = document.createElement('style');
     style.textContent = `
-      :host {
-        contain: layout style;
-      }
-      .wrapper {
-        position: relative;
-        width: 100%;
-        height: 100%;
-        overflow: hidden;
-      }
-      .svg-content {
-        width: 100%;
-        height: 100%;
-        display: block;
-      }
-      .controls-overlay {
-        position: absolute;
-        bottom: 10px;
-        right: 10px;
-        display: flex;
-        gap: 8px;
-        padding: 6px 12px;
-        border-radius: 999px;
-        background: rgba(16, 16, 16, 0.65);
-        color: #fff;
-        opacity: 0;
-        pointer-events: none;
-        transition: opacity 0.3s ease;
-        align-items: center;
-        backdrop-filter: blur(4px);
-        z-index: 10;
-      }
-      .wrapper:hover + .controls-overlay,
-      :host(:hover) .controls-overlay,
-      .controls-overlay.force-visible,
-      .controls-overlay:hover {
-        opacity: 1;
-        pointer-events: auto;
-      }
-      .control-btn {
-        width: 28px;
-        height: 28px;
-        border-radius: 50%;
-        border: none;
-        background: transparent;
-        color: inherit;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-        transition: transform 0.15s, background 0.15s;
-      }
-      .control-btn:focus-visible {
-        outline: 2px solid #fff;
-        outline-offset: 2px;
-      }
-      .control-btn:hover {
-        transform: scale(1.1);
-      }
-      .control-btn svg {
-        width: 18px;
-        height: 18px;
-        fill: currentColor;
-      }
-      svg .finished path,
-      svg .finished line,
-      svg .finished polyline,
-      svg .finished polygon,
-      svg .finished rect,
-      svg .finished circle,
-      svg .finished ellipse {
-        fill-opacity: 1 !important;
-      }
-    `;
-    this._container.appendChild(style);
+      :host{contain:layout style}
+      .sw{position:relative;width:100%;height:100%;overflow:hidden}
+      .sc{width:100%;height:100%;display:block}
+      .co{position:absolute;bottom:5px;right:5px;display:flex;gap:3px;padding:2px 6px;
+          border-radius:999px;background:rgba(16,16,16,.65);color:#fff;opacity:0;
+          pointer-events:none;transition:opacity .3s;align-items:center;
+          backdrop-filter:blur(4px);z-index:10}
+      .sw:hover+.co,:host(:hover) .co,.co.fv,.co:hover{opacity:1;pointer-events:auto}
+      .cb{width:22px;height:22px;border-radius:50%;border:none;background:transparent;
+          color:inherit;display:flex;align-items:center;justify-content:center;
+          cursor:pointer;transition:transform .15s,background .15s}
+      .cb:focus-visible{outline:2px solid #fff;outline-offset:2px}
+      .cb:hover{transform:scale(1.1)}
+      .cb svg{width:14px;height:14px;fill:currentColor}`;
+    this._wrap.appendChild(style);
 
-    const wrapper = document.createElement('div');
-    wrapper.className = 'wrapper';
-    this._wrapper = wrapper;
+    const sw = document.createElement('div'); sw.className = 'sw';
+    this._sc = document.createElement('div'); this._sc.className = 'sc';
+    sw.appendChild(this._sc); this._wrap.appendChild(sw);
+    this._co = document.createElement('div'); this._co.className = 'co';
+    this._wrap.appendChild(this._co);
+    this._buildControls();
 
-    this._svgWrapper = document.createElement('div');
-    this._svgWrapper.className = 'svg-content';
-    wrapper.appendChild(this._svgWrapper);
-    this._container.appendChild(wrapper);
-
-    this._controlsOverlay = document.createElement('div');
-    this._controlsOverlay.className = 'controls-overlay';
-    this._container.appendChild(this._controlsOverlay);
-
-    this._setupControls();
-
-    if (!filePath) {
-      this._showMessage('svg-file-path attribute is required');
-      return;
-    }
-
-    this._loadSvg(filePath, { sizing, width, invertColors, autoPlay: this._autoPlay });
+    if (!src) { this._msg('svg-file-path attribute is required'); return; }
+    this._loadSvg(src, { siz, w, inv });
   }
 
-  _showMessage(message) {
-    const notice = document.createElement('div');
-    notice.style.padding = '12px';
-    notice.style.color = '#fff';
-    notice.style.fontSize = '14px';
-    notice.innerText = message;
-    this._svgWrapper.innerHTML = '';
-    this._svgWrapper.appendChild(notice);
+  _msg(text) {
+    this._sc.innerHTML = `<div style="padding:12px;color:#fff;font-size:14px">${text}</div>`;
   }
 
-  _setupControls() {
-    this._controlsOverlay.innerHTML = '';
-    const icons = {
-      start: '<svg viewBox="0 0 24 24"><g transform="translate(24 0) scale(-1 1)"><path d="M6 6v12l10-6z"/><path d="M18 6h2v12h-2z"/></g></svg>',
-      play: '<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>',
-      pause: '<svg viewBox="0 0 24 24"><path d="M6 19h4V5H6zm8-14v14h4V5z"/></svg>',
-      end: '<svg viewBox="0 0 24 24"><path d="M6 6v12l10-6z"/><path d="M18 6h2v12h-2z"/></svg>'
-    };
-
-    this._btnStart = document.createElement('button');
-    this._btnStart.className = 'control-btn';
-    this._btnStart.title = 'Restart';
-    this._btnStart.innerHTML = icons.start;
-    this._btnStart.onclick = (event) => {
-      event.stopPropagation();
-      this._reset();
-      this._showControls(true);
-    };
-
-    this._btnPlayPause = document.createElement('button');
-    this._btnPlayPause.className = 'control-btn';
-    this._btnPlayPause.title = 'Play';
-    this._btnPlayPause.innerHTML = icons.play;
-    this._btnPlayPause.onclick = (event) => {
-      event.stopPropagation();
-      if (this._isPlaying) {
-        this._pause();
-      } else {
-        this._play();
-      }
-    };
-
-    this._btnEnd = document.createElement('button');
-    this._btnEnd.className = 'control-btn';
-    this._btnEnd.title = 'Finish';
-    this._btnEnd.innerHTML = icons.end;
-    this._btnEnd.onclick = (event) => {
-      event.stopPropagation();
-      this._finish();
-    };
-
-    this._controlsOverlay.appendChild(this._btnStart);
-    this._controlsOverlay.appendChild(this._btnPlayPause);
-    this._controlsOverlay.appendChild(this._btnEnd);
-    this._updatePlayButtonIcon();
+  _buildControls() {
+    const rew = '<svg viewBox="0 0 24 24"><g transform="translate(24 0) scale(-1 1)"><path d="M6 6v12l10-6z"/><path d="M18 6h2v12h-2z"/></g></svg>';
+    const play = '<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>';
+    const end  = '<svg viewBox="0 0 24 24"><path d="M6 6v12l10-6z"/><path d="M18 6h2v12h-2z"/></svg>';
+    this._btnR = this._mkBtn('Restart', rew,  () => { this._restart(); this._forceCo(true); });
+    this._btnP = this._mkBtn('Play',    play, () => this._playing ? this._pause() : this._play());
+    this._btnE = this._mkBtn('Finish',  end,  () => this._finish());
+    this._co.append(this._btnR, this._btnP, this._btnE);
+    this._syncBtn();
   }
 
-  async _loadSvg(filePath, options) {
+  _mkBtn(title, html, fn) {
+    const b = document.createElement('button');
+    b.className = 'cb'; b.title = title; b.innerHTML = html;
+    b.onclick = e => { e.stopPropagation(); fn(); };
+    return b;
+  }
+
+  async _loadSvg(src, opts) {
+    const ctrl = new AbortController();
+    this._loadCtrl = ctrl;
     try {
-      const controller = new AbortController();
-      this._activeLoadController = controller;
-      const response = await fetch(filePath, { signal: controller.signal });
-      if (!response.ok) throw new Error('Unable to fetch SVG');
-      const svgText = await response.text();
-      this._pauseComments = this._parsePauseComments(svgText);
-      this._speedHints = this._parseSpeedHints(svgText);
-      const parser = new DOMParser();
-      const doc = parser.parseFromString(svgText, 'image/svg+xml');
-      const parserError = doc.querySelector('parsererror');
-      if (parserError) {
-        let detail = parserError.textContent?.trim() || 'Unknown parse error';
-        const lower = detail.toLowerCase();
-        const firstOp = lower.indexOf('error on line');
-        if (firstOp >= 0) {
-          const secondOp = lower.indexOf('error on line', firstOp + 1);
-          if (secondOp >= 0) {
-            detail = detail.slice(0, secondOp).trim();
-          }
-        }
-        const message = `SVG parse error: ${detail}`;
-        console.error(`[AnimateSvg] ${message}`);
-        this._showParseWarningBanner(message);
-        throw new Error(message);
+      const res = await fetch(src, { signal: ctrl.signal });
+      if (!res.ok) throw new Error('fetch failed');
+      const txt = await res.text();
+      const rawPauses = this._parsePauses(txt);
+      const speedHints = this._parseSpeed(txt);
+      const doc = new DOMParser().parseFromString(txt, 'image/svg+xml');
+      const err = doc.querySelector('parsererror');
+      if (err) {
+        let detail = err.textContent?.trim() || 'Unknown';
+        const lo = detail.toLowerCase(), fi = lo.indexOf('error on line');
+        if (fi >= 0) { const si = lo.indexOf('error on line', fi+1); if (si >= 0) detail = detail.slice(0, si).trim(); }
+        this._showBanner(`SVG parse error: ${detail}`);
+        throw new Error(detail);
       }
-      const svgEl = doc.querySelector('svg');
-      if (!svgEl) throw new Error('SVG tag not found');
-      this._svgWrapper.innerHTML = '';
-      this._svgWrapper.appendChild(svgEl);
-      this._currentSvgElement = svgEl;
-      this._isSvgRevealed = false;
-      svgEl.style.visibility = 'hidden';
-      this._applySizing(svgEl, options.sizing, options.width);
-      if (options.invertColors) {
-        this._invertColors(svgEl);
-      }
-      this._prepareAnimation(svgEl, svgText);
-      this._isReadyForVisibility = true;
-      this._setupVisibilityObserver();
-      if (!this._autoPlay) {
-        this._draw(0);
-      }
-      this._activeLoadController = null;
-    } catch (error) {
-      if (error.name === 'AbortError') {
-        this._activeLoadController = null;
-        return;
-      }
-      this._showMessage('Error loading SVG');
-      console.error(error);
-      this._activeLoadController = null;
+      const svg = doc.querySelector('svg');
+      if (!svg) throw new Error('no <svg>');
+      this._sc.innerHTML = '';
+      this._sc.appendChild(svg);
+      this._svgEl = svg; this._svgShown = false;
+      svg.style.visibility = 'hidden';
+      this._applySizing(svg, opts);
+      if (opts.inv) this._invertColors(svg);
+      this._prepare(svg, txt, speedHints, rawPauses);
+      this._ready = true; this._loadCtrl = null;
+      this._setupIobs();
+      if (!this._autoPlay) this._draw(0);
+    } catch (e) {
+      if (e.name === 'AbortError') { this._loadCtrl = null; return; }
+      this._msg('Error loading SVG'); console.error(e); this._loadCtrl = null;
     }
   }
 
-  _applySizing(svgEl, sizing, width) {
-    const padding = 20;
-    let bbox;
-    try {
-      bbox = svgEl.getBBox();
-    } catch {
-      bbox = { x: 0, y: 0, width: 0, height: 0 };
+  _applySizing(svg, { siz, w }) {
+    const PAD = 20;
+    // Prefer the SVG's own viewBox — the author set it correctly
+    const existingVB = svg.getAttribute('viewBox');
+    if (!existingVB) {
+      // No viewBox set — calculate from bounding box (original behavior)
+      let bb; try { bb = svg.getBBox(); } catch { bb = { x:0, y:0, width:0, height:0 }; }
+      const vbw = bb.width  > 0 ? bb.width  : parseFloat(svg.getAttribute('width'))  || 100;
+      const vbh = bb.height > 0 ? bb.height : parseFloat(svg.getAttribute('height')) || 100;
+      svg.setAttribute('viewBox', `${bb.x-PAD} ${bb.y-PAD} ${vbw+PAD*2} ${vbh+PAD*2}`);
     }
-    const hasBBox = Number.isFinite(bbox.width) && Number.isFinite(bbox.height) && bbox.width > 0 && bbox.height > 0;
-    const viewBoxWidth = hasBBox ? bbox.width : parseFloat(svgEl.getAttribute('width')) || 100;
-    const viewBoxHeight = hasBBox ? bbox.height : parseFloat(svgEl.getAttribute('height')) || 100;
-    const viewBoxX = Number.isFinite(bbox.x) ? bbox.x - padding : 0;
-    const viewBoxY = Number.isFinite(bbox.y) ? bbox.y - padding : 0;
-    const viewBoxString = `${viewBoxX} ${viewBoxY} ${viewBoxWidth + padding * 2} ${viewBoxHeight + padding * 2}`;
-    svgEl.setAttribute('viewBox', viewBoxString);
-    if (sizing === 'fill') {
-      svgEl.removeAttribute('width');
-      svgEl.removeAttribute('height');
-      svgEl.style.width = '100%';
-      svgEl.style.height = '100%';
-      svgEl.style.maxWidth = '100%';
-      svgEl.style.maxHeight = '100%';
-      svgEl.setAttribute('preserveAspectRatio', 'xMidYMid meet');
-    } else if (sizing === 'exact') {
-      svgEl.style.width = width;
-      svgEl.style.height = 'auto';
-      svgEl.setAttribute('preserveAspectRatio', 'xMidYMid meet');
+    if (siz === 'fill') {
+      svg.removeAttribute('width'); svg.removeAttribute('height');
+      svg.style.width = '100%'; svg.style.height = '100%';
+      svg.style.maxWidth = '100%'; svg.style.maxHeight = '100%';
+      svg.setAttribute('preserveAspectRatio', 'xMidYMid meet');
+    } else if (siz === 'exact') {
+      svg.style.width = w; svg.style.height = 'auto';
+      svg.setAttribute('preserveAspectRatio', 'xMidYMid meet');
     }
   }
 
-  _prepareAnimation(svgEl, svgText) {
-    const drawablePositions = this._extractDrawablePositions(svgText);
-    const speedHints = this._speedHints || [];
-    const nodes = Array.from(
-      svgEl.querySelectorAll('path, line, polyline, polygon, rect, circle, ellipse, text, image, use')
-    );
-    let cumulativeLength = 0;
-    let cumulativeTime = 0;
-    let hintIndex = 0;
-    let currentMultiplier = 1;
-    const animEntries = [];
-    const elementSegments = [];
+  _prepare(svg, svgTxt, speedHints, rawPauses) {
+    const drawPos = this._extractPos(svgTxt);
+    const nodes = Array.from(svg.querySelectorAll(
+      'path,line,polyline,polygon,rect,circle,ellipse,text,image,use'));
+    const startIdx = this._resolveRef(this._startRef, nodes);
+    const stopIdx  = this._resolveRef(this._stopRef,  nodes);
 
-    nodes.forEach((node, idx) => {
-      const tag = node.tagName.toLowerCase();
-      const drawableInfo = drawablePositions[idx] || { index: Number.MAX_SAFE_INTEGER };
-      while (hintIndex < speedHints.length && speedHints[hintIndex].index <= drawableInfo.index) {
-        const hint = speedHints[hintIndex];
-        currentMultiplier = hint.multiplier;
-        hintIndex += 1;
-      }
+    let cumTime = 0, hIdx = 0, mult = 1;
+    const entries = [], segs = [], ranges = [];
 
-      const effectiveSpeed = Math.max(this._speed * currentMultiplier, 0.0001);
-      const startAt = cumulativeLength;
-      const startTime = cumulativeTime;
-      let length = 0;
-      let nodeDuration = 0;
+    nodes.forEach((node, ni) => {
+      const dpos = drawPos[ni] || { index: Infinity };
+      while (hIdx < speedHints.length && speedHints[hIdx].index <= dpos.index) mult = speedHints[hIdx++].multiplier;
+      const effSpd = Math.max(this._speed * mult, 1e-4);
+      const eStart = entries.length;
+      let nodeDur = 0;
 
-      if (tag === 'text') {
-        const { entries, totalLength, totalDuration } = this._processTextElement(
-          node,
-          cumulativeLength,
-          startTime,
-          this._speed,
-          currentMultiplier
-        );
-        entries.forEach((entry) => animEntries.push(entry));
-        length = totalLength;
-        nodeDuration = totalDuration;
+      if (node.tagName.toLowerCase() === 'text') {
+        try {
+          const { entries: te, totalDuration: td } = this._processText(node, cumTime, this._speed, mult);
+          te.forEach(e => entries.push(e));
+          nodeDur = td;
+        } catch (ex) { console.warn('[AnimDiag] text error:', ex); }
       } else {
-        if (typeof node.getTotalLength === 'function') {
-          try {
-            length = node.getTotalLength();
-          } catch {
-            length = 0;
-          }
-        }
-        const computedStyle =
-          typeof window !== 'undefined' && typeof window.getComputedStyle === 'function'
-            ? window.getComputedStyle(node)
-            : null;
-        const canAnimateStroke = this._canAnimateStroke(node, length, computedStyle);
-        if (canAnimateStroke) {
-          const segmentDuration = (length / effectiveSpeed) * 1000;
-          const segmentStartTime = startTime;
-          const segmentEndTime = segmentStartTime + segmentDuration;
-          animEntries.push({
-            el: node,
-            length,
-            startAt,
-            endAt: startAt + length,
-            isText: false,
-            duration: segmentDuration,
-            startTime: segmentStartTime,
-            endTime: segmentEndTime,
-            behavior: 'stroke',
-            finalFillOpacity: computedStyle ? computedStyle.fillOpacity : '1',
-            finalOpacity: computedStyle ? computedStyle.opacity : '1'
-          });
-          nodeDuration = segmentDuration;
+        let len = 0;
+        if (typeof node.getTotalLength === 'function') { try { len = node.getTotalLength(); } catch { len = 0; } }
+        const cs = typeof window !== 'undefined' ? window.getComputedStyle(node) : null;
+        if (this._canStroke(node, len, cs)) {
+          const dur = (len / effSpd) * 1000;
+          entries.push({ el: node, len, startTime: cumTime, endTime: cumTime+dur, dur,
+            isText: false, behavior: 'stroke',
+            finalFill: cs?.fillOpacity || '1', finalOp: cs?.opacity || '1',
+            origDash: cs?.strokeDasharray || '' });
+          nodeDur = dur;
           node.style.fillOpacity = '0';
-          node.style.strokeOpacity = node.style.strokeOpacity || '1';
+        } else if (this._canFillReveal(node, cs)) {
+          const dur = this._estimateFillDuration(node, effSpd);
+          entries.push({ el: node, len: 0, startTime: cumTime, endTime: cumTime+dur, dur,
+            isText: false, behavior: 'fill-reveal',
+            finalOp: cs?.opacity || '1', finalFillOp: cs?.fillOpacity || '1' });
+          nodeDur = dur;
+          node.style.clipPath = 'inset(0 100% 0 0)';
+          node.style.opacity = '1';
         } else {
-          animEntries.push({
-            el: node,
-            length: 0,
-            startAt,
-            endAt: startAt,
-            isText: false,
-            duration: 0,
-            startTime,
-            endTime: startTime,
-            behavior: 'instant',
-            finalOpacity: computedStyle ? computedStyle.opacity : '1'
-          });
+          entries.push({ el: node, len: 0, startTime: cumTime, endTime: cumTime, dur: 0,
+            isText: false, behavior: 'instant', finalOp: cs?.opacity || '1' });
           node.style.opacity = '0';
-          if (!node.style.transition) {
-            node.style.transition = 'opacity 0.15s linear';
-          }
+          if (!node.style.transition) node.style.transition = 'opacity 0.15s linear';
         }
       }
 
-      const endAt = cumulativeLength + length;
-      const endTime = startTime + nodeDuration;
-      elementSegments.push({ startAt, endAt, tag, startTime, endTime });
-      cumulativeLength = endAt;
-      cumulativeTime = endTime;
+      segs.push({ startTime: cumTime, endTime: cumTime + nodeDur });
+      ranges.push({ s: eStart, e: entries.length });
+      cumTime += nodeDur;
     });
 
-    this._totalLength = cumulativeLength > 0 ? cumulativeLength : 1;
-    this._paths = animEntries;
-    this._elementSegments = elementSegments;
-    this._currentSegmentIndex = 0;
-    this._duration = cumulativeTime > 0 ? cumulativeTime : 2000;
-    if (!isFinite(this._duration) || this._duration <= 0) {
-      this._duration = 2000;
-    }
+    const { filtered, timeOff, nodeFirstEntry } = this._applyRange(entries, nodes, ranges, startIdx, stopIdx);
+    this._paths = filtered;
+    this._revealed = 0;
+    this._duration = filtered.length > 0 ? Math.max(filtered[filtered.length-1].endTime, 1) : 2000;
+    if (!isFinite(this._duration) || this._duration <= 0) this._duration = 2000;
 
-
-    this._paths.forEach((segment) => {
-      if (segment.isText) {
-        segment.el.style.fillOpacity = '0';
-        segment.el.style.transition = 'fill-opacity 0.15s linear';
-        return;
+    // Set initial hidden state for all filtered entries
+    filtered.forEach(seg => {
+      if (seg.isText) {
+        seg.el.style.fillOpacity = '0';
+        seg.el.style.transition = 'fill-opacity 0.15s linear';
+      } else if (seg.behavior === 'instant') {
+        seg.el.style.opacity = '0';
+        if (!seg.el.style.transition) seg.el.style.transition = 'opacity 0.15s linear';
+      } else if (seg.behavior === 'fill-reveal') {
+        seg.el.style.clipPath = 'inset(0 100% 0 0)';
+        seg.el.style.opacity = '1';
+      } else {
+        seg.el.style.fillOpacity = '0';
+        seg.el.style.strokeDasharray = `${seg.len} ${seg.len}`;
+        seg.el.style.strokeDashoffset = `${seg.len}`;
+        seg.el.style.transition = 'stroke-dashoffset 0.1s linear';
       }
-      if (segment.behavior === 'instant') {
-        segment.el.style.opacity = '0';
-        if (!segment.el.style.transition) {
-          segment.el.style.transition = 'opacity 0.15s linear';
-        }
-        return;
-      }
-      segment.el.style.fillOpacity = '0';
-      const len = segment.length;
-      segment.el.style.strokeDasharray = `${len} ${len}`;
-      segment.el.style.strokeDashoffset = `${len}`;
-      segment.el.style.transition = 'stroke-dashoffset 0.1s linear';
     });
 
-    this._pausePoints = this._mapCommentsToPausePoints(
-      this._pauseComments,
-      drawablePositions,
-      elementSegments,
-      this._duration
-    );
+    const effStart = startIdx >= 0 ? startIdx : 0;
+    const effStop  = stopIdx  >= 0 ? stopIdx  : nodes.length - 1;
+    this._pauses = this._mapPauses(rawPauses, drawPos, segs, this._duration, timeOff, effStart, effStop, nodeFirstEntry, filtered.length);
+    if (this._pauses.length) console.log(`[AnimDiag] ${this._pauses.length} pause(s)`);
   }
 
-  _processTextElement(textEl, startAt, startTime, baseSpeed, multiplier) {
-    const text = textEl.textContent || '';
-    textEl.textContent = '';
-    const characters = Array.from(text);
-    const computedStyle = window.getComputedStyle(textEl);
+  _resolveRef(ref, nodes) {
+    if (ref == null) return -1;
+    const n = parseInt(ref, 10);
+    if (!isNaN(n) && String(n) === ref.trim()) return n >= 0 && n < nodes.length ? n : -1;
+    return nodes.findIndex(nd => nd.id === ref);
+  }
+
+  _applyRange(entries, nodes, ranges, startIdx, stopIdx) {
+    // nodeFirstEntry[ni] = index into filtered array of the first entry for node ni
+    const nodeFirstEntry = [];
+
+    if (startIdx < 0 && stopIdx < 0) {
+      ranges.forEach((r, ni) => { nodeFirstEntry[ni] = r.s; });
+      return { filtered: entries, timeOff: 0, nodeFirstEntry };
+    }
+
+    const effStart = startIdx >= 0 ? startIdx : 0;
+    const effStop  = stopIdx  >= 0 ? stopIdx  : nodes.length - 1;
+    const sr = ranges[effStart];
+    const timeOff = sr ? (entries[sr.s]?.startTime || 0) : 0;
+
+    for (let ni = 0; ni < effStart; ni++) {
+      const { s, e } = ranges[ni];
+      for (let i = s; i < e; i++) this._revealSeg(entries[i]);
+    }
+    for (let ni = effStop+1; ni < nodes.length; ni++) {
+      const { s, e } = ranges[ni];
+      for (let i = s; i < e; i++) this._hideSeg(entries[i]);
+    }
+
+    const filtered = [];
+    for (let ni = effStart; ni <= effStop; ni++) {
+      nodeFirstEntry[ni] = filtered.length;
+      const { s, e } = ranges[ni];
+      for (let i = s; i < e; i++) {
+        const seg = { ...entries[i] };
+        seg.startTime -= timeOff; seg.endTime -= timeOff;
+        filtered.push(seg);
+      }
+    }
+    return { filtered, timeOff, nodeFirstEntry };
+  }
+
+  _processText(textEl, startTime, baseSpeed, mult) {
     const entries = [];
-    let cursor = startAt;
-    let currentTime = startTime;
-    const effectiveSpeed = Math.max(baseSpeed * Math.max(multiplier, 0.01) * TYPEWRITER_SPEED_FACTOR, 0.0001);
+    let curTime = startTime;
+    const spd = Math.max(baseSpeed * Math.max(mult, 0.01) * _TW, 1e-4);
+    const segs = this._collectSegs(textEl);
+    while (textEl.firstChild) textEl.removeChild(textEl.firstChild);
 
-    characters.forEach((char, index) => {
-      const displayChar = char === ' ' ? '\u00A0' : char;
-      const tspan = document.createElementNS('http://www.w3.org/2000/svg', 'tspan');
-      tspan.textContent = displayChar;
-      if (index === 0) {
-        ['x', 'y', 'dx', 'dy'].forEach((attr) => {
-          const value = textEl.getAttribute(attr);
-          if (value !== null) tspan.setAttribute(attr, value);
-        });
-      }
-      tspan.style.fontFamily = computedStyle.fontFamily;
-      tspan.style.fontSize = computedStyle.fontSize;
-      tspan.style.fontWeight = computedStyle.fontWeight;
-      tspan.style.fontStyle = computedStyle.fontStyle;
-      tspan.style.fill = computedStyle.fill || computedStyle.color || '#000';
-      tspan.style.stroke = computedStyle.stroke || 'none';
-      tspan.style.strokeWidth = computedStyle.strokeWidth;
-      tspan.style.fillOpacity = '0';
-      tspan.style.transition = 'fill-opacity 0.15s linear';
-      textEl.appendChild(tspan);
-
-      const charLength = Math.max(tspan.getComputedTextLength(), 1);
-      const charDuration = (charLength / effectiveSpeed) * 1000;
-      entries.push({
-        el: tspan,
-        length: charLength,
-        startAt: cursor,
-        endAt: cursor + charLength,
-        isText: true,
-        startTime: currentTime,
-        endTime: currentTime + charDuration,
-        duration: charDuration,
-        behavior: 'text'
-      });
-      cursor += charLength;
-      currentTime += charDuration;
-    });
-
-    return { entries, totalLength: cursor - startAt, totalDuration: currentTime - startTime };
-  }
-
-  _mapCommentsToPausePoints(comments, drawables, segments, totalDuration) {
-    if (!comments || !comments.length) return [];
-    const points = [];
-
-    comments.forEach((comment) => {
-      const indexBefore = drawables.filter((item) => item.index < comment.index).length;
-      let progress = 0;
-      if (segments.length && totalDuration > 0) {
-        if (indexBefore <= 0) {
-          progress = 0;
-        } else if (indexBefore >= segments.length) {
-          progress = 1;
-        } else {
-          const targetSegment = segments[indexBefore - 1];
-          progress = targetSegment ? targetSegment.endTime / totalDuration : 0;
+    segs.forEach(seg => {
+      Array.from(seg.text).forEach((ch, ci) => {
+        const ts = document.createElementNS('http://www.w3.org/2000/svg', 'tspan');
+        ts.textContent = ch === ' ' ? ' ' : ch;
+        if (ci === 0) {
+          const p = seg.pos;
+          if (p.x  !== null) ts.setAttribute('x',  p.x);
+          if (p.y  !== null) ts.setAttribute('y',  p.y);
+          if (p.dx !== null) ts.setAttribute('dx', p.dx);
+          if (p.dy !== null) ts.setAttribute('dy', p.dy);
         }
-      }
-      points.push({
-        progress: Math.min(1, Math.max(0, progress)),
-        type: comment.type,
-        duration: comment.duration,
-        triggered: false
+        const s = seg.style;
+        if (s.fontFamily) ts.setAttribute('font-family', s.fontFamily.replace(/^['"]|['"]$/g,''));
+        if (s.fontSize)   ts.setAttribute('font-size',   s.fontSize);
+        if (s.fontWeight && s.fontWeight !== 'normal') ts.setAttribute('font-weight', s.fontWeight);
+        if (s.fontStyle  && s.fontStyle  !== 'normal') ts.setAttribute('font-style',  s.fontStyle);
+        ts.style.fillOpacity = '0';
+        ts.style.transition  = 'fill-opacity 0.15s linear';
+        textEl.appendChild(ts);
+
+        const clen = Math.max(ts.getComputedTextLength(), 1);
+        const cdur = (clen / spd) * 1000;
+        entries.push({ el: ts, len: clen, startTime: curTime, endTime: curTime+cdur,
+          dur: cdur, isText: true, behavior: 'text' });
+        curTime += cdur;
       });
     });
 
-    points.sort((a, b) => a.progress - b.progress);
-    return points;
+    return { entries, totalDuration: curTime - startTime };
   }
 
-  _parseSpeedHints(svgText) {
-    const pattern = /<!--\s*Speed:(\d*\.?\d+)\s*-->/g;
-    const hints = [];
-    let match;
-    while ((match = pattern.exec(svgText)) !== null) {
-      const multiplier = parseFloat(match[1]);
-      if (!Number.isNaN(multiplier)) {
-        hints.push({ index: match.index, multiplier: multiplier });
+  _collectSegs(el) {
+    const kids = Array.from(el.childNodes);
+    const hasTspan = kids.some(n => n.nodeType === 1 && n.tagName.toLowerCase() === 'tspan');
+    const pStyle = this._getStyle(el);
+    const norm = t => (t || '').replace(/[\r\n]/g,' ').replace(/\s+/g,' ').trim();
+
+    if (!hasTspan) {
+      const text = norm(el.textContent);
+      return text ? [{ text, pos: this._pos(el), style: pStyle }] : [];
+    }
+
+    const segs = []; let first = true;
+    kids.forEach(kid => {
+      if (kid.nodeType === 3) {
+        const t = norm(kid.textContent);
+        if (!t) return;
+        segs.push({ text: t, pos: first ? this._pos(el) : { x:null,y:null,dx:null,dy:null }, style: pStyle });
+        first = false;
+      } else if (kid.nodeType === 1 && kid.tagName.toLowerCase() === 'tspan') {
+        const t = norm(kid.textContent);
+        if (!t) return;
+        const pos = this._pos(kid);
+        if (first) {
+          if (pos.x  === null) pos.x  = el.getAttribute('x');
+          if (pos.y  === null) pos.y  = el.getAttribute('y');
+        }
+        segs.push({ text: t, pos, style: this._getStyle(kid, pStyle) });
+        first = false;
       }
-    }
-    hints.sort((a, b) => a.index - b.index);
-    return hints;
+    });
+    return segs;
   }
 
-  _extractDrawablePositions(svgText) {
-    const regex = /<(path|line|polyline|polygon|rect|circle|ellipse|text|image|use)(\s[^>]*)*>/g;
-    const positions = [];
-    let match;
-    while ((match = regex.exec(svgText)) !== null) {
-      positions.push({ index: match.index, tag: match[1] });
-    }
-    return positions;
+  _pos(el) {
+    return { x: el.getAttribute('x'), y: el.getAttribute('y'),
+             dx: el.getAttribute('dx'), dy: el.getAttribute('dy') };
   }
 
-  _canAnimateStroke(node, length, computedStyle = null) {
-    if (length <= 0) return false;
-    let style = computedStyle;
-    if (!style) {
-      if (typeof window === 'undefined' || typeof window.getComputedStyle !== 'function') {
-        return true;
-      }
-      style = window.getComputedStyle(node);
-    }
-    const stroke = style.stroke;
-    if (!stroke || stroke === 'none') return false;
-    const strokeOpacity = parseFloat(style.strokeOpacity);
-    const opacity = Number.isFinite(strokeOpacity) ? strokeOpacity : 1;
-    if (opacity <= 0) return false;
-    const strokeWidth = parseFloat(style.strokeWidth);
-    const hasStrokeWidth = Number.isFinite(strokeWidth) ? strokeWidth > 0 : true;
-    return hasStrokeWidth;
+  _getStyle(el, fb = null) {
+    const cs = window.getComputedStyle(el);
+    const r = (attr, prop) => el.getAttribute(attr) || el.style[prop] || (fb && fb[prop]) || cs[prop];
+    return { fontFamily: r('font-family','fontFamily'), fontSize: r('font-size','fontSize'),
+             fontWeight: r('font-weight','fontWeight'), fontStyle: r('font-style','fontStyle'),
+             fill: cs.fill || (fb && fb.fill) || cs.color || '#000' };
   }
 
-  _parsePauseComments(svgText) {
-    const pattern = /<!--\s*Pause:(UntilPlay|(\d+))\s*-->/g;
-    const pauses = [];
-    let match;
-    while ((match = pattern.exec(svgText)) !== null) {
-      if (match[1] === 'UntilPlay') {
-        pauses.push({ type: 'manual', duration: 0, index: match.index });
-      } else if (match[2]) {
-        pauses.push({ type: 'timed', duration: parseFloat(match[2]) * 1000, index: match.index });
-      }
-    }
-    return pauses;
+  _mapPauses(raw, drawPos, segs, totalDur, timeOff, rangeStart, rangeStop, nodeFirstEntry, filteredLen) {
+    if (!raw.length || totalDur <= 0) return [];
+    return raw.map(p => {
+      const before = drawPos.filter(d => d.index < p.index).length;
+      if (before <= rangeStart || before > rangeStop) return null;
+      const seg = segs[before];
+      const time = seg ? Math.max(0, seg.startTime - timeOff) : 0;
+      // Store path entry index so hideFrom is unambiguous for zero-duration (instant) elements
+      const pathIndex = nodeFirstEntry[before] !== undefined ? nodeFirstEntry[before] : filteredLen;
+      return { time, type: p.type, dur: p.duration, triggered: false, pathIndex };
+    }).filter(Boolean).sort((a,b) => a.time - b.time);
   }
 
-  _invertColors(svgEl) {
-    const elements = svgEl.querySelectorAll('path, line, polyline, polygon, rect, circle, ellipse, text, tspan');
-    elements.forEach((element) => {
-      const style = window.getComputedStyle(element);
-      this._invertIfGrayscale(element, 'stroke', style.stroke);
-      this._invertIfGrayscale(element, 'fill', style.fill);
+  _parsePauses(txt) {
+    const re = /<!--\s*Pause:(UntilPlay|(\d+))\s*-->/g, out = [];
+    let m;
+    while ((m = re.exec(txt)) !== null) {
+      if (m[1] === 'UntilPlay') out.push({ type:'manual', duration:0, index:m.index });
+      else if (m[2]) out.push({ type:'timed', duration:parseFloat(m[2])*1000, index:m.index });
+    }
+    return out;
+  }
+
+  _parseSpeed(txt) {
+    const re = /<!--\s*Speed:(\d*\.?\d+)\s*-->/g, out = [];
+    let m;
+    while ((m = re.exec(txt)) !== null) {
+      const v = parseFloat(m[1]);
+      if (!isNaN(v)) out.push({ index:m.index, multiplier:v });
+    }
+    return out.sort((a,b) => a.index - b.index);
+  }
+
+  _extractPos(txt) {
+    const re = /<(path|line|polyline|polygon|rect|circle|ellipse|text|image|use)(\s[^>]*)*>/g;
+    const out = []; let m;
+    while ((m = re.exec(txt)) !== null) out.push({ index:m.index, tag:m[1] });
+    return out;
+  }
+
+  _canStroke(node, len, cs) {
+    if (len <= 0 || !cs) return false;
+    if (!cs.stroke || cs.stroke === 'none') return false;
+    const op = parseFloat(cs.strokeOpacity);
+    if (isFinite(op) && op <= 0) return false;
+    const sw = parseFloat(cs.strokeWidth);
+    return isFinite(sw) ? sw > 0 : true;
+  }
+
+  _canFillReveal(node, cs) {
+    if (!cs) return false;
+    const fill = cs.fill;
+    if (!fill || fill === 'none') return false;
+    const fo = parseFloat(cs.fillOpacity);
+    if (isFinite(fo) && fo <= 0) return false;
+    // Must NOT have a visible stroke (otherwise stroke animation would have handled it)
+    if (cs.stroke && cs.stroke !== 'none') {
+      const sw = parseFloat(cs.strokeWidth);
+      if (isFinite(sw) && sw > 0) return false;
+    }
+    return true;
+  }
+
+  _estimateFillDuration(node, effSpd) {
+    // Estimate duration from bounding box diagonal or path length
+    let size = 0;
+    try {
+      const bb = node.getBBox();
+      size = Math.sqrt(bb.width * bb.width + bb.height * bb.height);
+    } catch { size = 0; }
+    if (size <= 0) {
+      try { if (typeof node.getTotalLength === 'function') size = node.getTotalLength() * 0.3; } catch { size = 0; }
+    }
+    if (size <= 0) size = 20; // fallback minimum
+    return (size / effSpd) * 1000;
+  }
+
+  _invertColors(svg) {
+    svg.querySelectorAll('path,line,polyline,polygon,rect,circle,ellipse,text,tspan').forEach(el => {
+      const cs = window.getComputedStyle(el);
+      this._invertGray(el, 'stroke', cs.stroke);
+      this._invertGray(el, 'fill',   cs.fill);
     });
   }
 
-  _invertIfGrayscale(el, property, color) {
-    if (!color || color === 'none' || color === 'transparent') return;
-    const rgb = this._parseRgbColor(color);
+  _invertGray(el, prop, color) {
+    if (!color || color === 'none') return;
+    const rgb = this._parseRgb(color);
     if (!rgb) return;
-    const { r, g, b } = rgb;
-    if (Math.max(r, g, b) - Math.min(r, g, b) < 30) {
-      el.style[property] = `rgb(${255 - r}, ${255 - g}, ${255 - b})`;
-    }
+    if (Math.max(rgb.r,rgb.g,rgb.b) - Math.min(rgb.r,rgb.g,rgb.b) < 30)
+      el.style[prop] = `rgb(${255-rgb.r},${255-rgb.g},${255-rgb.b})`;
   }
 
-  _parseRgbColor(color) {
-    const rgbMatch = color.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/i);
-    if (rgbMatch) {
-      return {
-        r: parseInt(rgbMatch[1], 10),
-        g: parseInt(rgbMatch[2], 10),
-        b: parseInt(rgbMatch[3], 10)
-      };
+  _parseRgb(c) {
+    let m = c.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/i);
+    if (m) return { r:+m[1], g:+m[2], b:+m[3] };
+    m = c.match(/^#([0-9a-f]{3}|[0-9a-f]{6})$/i);
+    if (m) {
+      let h = m[1];
+      if (h.length===3) h = h.split('').map(x=>x+x).join('');
+      return { r:parseInt(h.slice(0,2),16), g:parseInt(h.slice(2,4),16), b:parseInt(h.slice(4,6),16) };
     }
-
-    const hexMatch = color.match(/^#([0-9a-f]{3}|[0-9a-f]{6})$/i);
-    if (hexMatch) {
-      let hex = hexMatch[1];
-      if (hex.length === 3) {
-        hex = hex.split('').map((h) => h + h).join('');
-      }
-      return {
-        r: parseInt(hex.slice(0, 2), 16),
-        g: parseInt(hex.slice(2, 4), 16),
-        b: parseInt(hex.slice(4, 6), 16)
-      };
-    }
-
     return null;
   }
 
-  _setupVisibilityObserver() {
-    if (!this._autoPlay) return;
-    if (typeof IntersectionObserver === 'undefined') return;
-    if (this._intersectionObserver) {
-      this._intersectionObserver.disconnect();
-      this._intersectionObserver = null;
-    }
-    this._intersectionObserver = new IntersectionObserver((entries) => {
-      entries.forEach((entry) => this._handleVisibility(entry));
+  _setupIobs() {
+    if (!this._autoPlay || typeof IntersectionObserver === 'undefined') return;
+    this._iobs = new IntersectionObserver(entries => {
+      entries.forEach(e => {
+        if (!this._autoPlay || !this._ready) return;
+        if (e.isIntersecting) {
+          if (!this._wasVis) {
+            this._wasVis = true;
+            if (!this._played) this._play(); else { this._restart(); this._play(); }
+            this._played = true;
+          }
+        } else if (this._wasVis) {
+          this._wasVis = false;
+          if (this._playing) this._pause();
+        }
+      });
     }, { threshold: 0.2 });
-    this._intersectionObserver.observe(this);
+    this._iobs.observe(this);
   }
 
-  _handleVisibility(entry) {
-    if (!this._autoPlay || !this._isReadyForVisibility) return;
-    if (entry.isIntersecting) {
-      if (!this._wasVisible) {
-        this._wasVisible = true;
-        if (!this._hasAutoPlayed) {
-          this._play();
-        } else {
-          this._reset();
-          this._play();
-        }
-        this._hasAutoPlayed = true;
-      }
-    } else if (this._wasVisible) {
-      this._wasVisible = false;
-      if (this._isPlaying) {
-        this._pause();
-      }
-    }
-  }
+  // ─── Playback ────────────────────────────────────────────────────────────────
 
   _play() {
-    if (!this._paths.length || this._isPlaying) return;
-    if (this._isFinished) {
-      this._reset();
-    }
-    this._cancelAnimation();
-    this._isPlaying = true;
-    this._startTime = performance.now() - this._elapsedBeforePause;
-    const drawFrame = (time) => {
-      if (!this._isPlaying) return;
-      const elapsed = time - this._startTime;
-      if (elapsed >= this._duration) {
-        this._finish();
-        return;
-      }
-      const clampedElapsed = Math.max(0, elapsed);
-      this._draw(clampedElapsed);
-      let progress = clampedElapsed / this._duration;
-      while (
-        this._currentPauseIndex < this._pausePoints.length &&
-        this._pausePoints[this._currentPauseIndex].triggered
-      ) {
-        this._currentPauseIndex += 1;
-      }
-      if (this._currentPauseIndex < this._pausePoints.length) {
-        const pause = this._pausePoints[this._currentPauseIndex];
-        if (!pause.triggered && progress >= pause.progress) {
-          pause.triggered = true;
-          const pausedElapsed = Math.max(0, Math.min(elapsed, this._duration));
-          if (pause.type === 'timed') {
-            this._pause();
-            this._elapsedBeforePause = pausedElapsed;
-            this._currentPauseIndex += 1;
-            this._timedPauseTimeout = setTimeout(() => {
-              this._timedPauseTimeout = null;
-              this._play();
-            }, pause.duration);
+    if (!this._paths.length || this._playing) return;
+    if (this._finished && this._elapsed >= this._duration) this._restart();
+    this._finished = false;
+    this._cancelRaf();
+    this._playing = true;
+    this._t0 = performance.now() - this._elapsed;
+
+    const frame = t => {
+      if (!this._playing) return;
+      const el = t - this._t0;
+      const ct = Math.max(0, Math.min(el, this._duration));
+      this._draw(ct);
+
+      while (this._pauseIdx < this._pauses.length && this._pauses[this._pauseIdx].triggered)
+        this._pauseIdx++;
+
+      if (this._pauseIdx < this._pauses.length) {
+        const p = this._pauses[this._pauseIdx];
+        if (!p.triggered && ct >= p.time) {
+          p.triggered = true;
+          // pathIndex is the first entry AFTER the pause — reveal everything before it,
+          // hide everything from it onward. Using index (not time) avoids the ambiguity
+          // where instant elements (dur=0) share the same startTime as the pause point.
+          const hideFrom = p.pathIndex;
+          for (let i = this._revealed; i < hideFrom; i++) this._revealSeg(this._paths[i]);
+          this._revealed = hideFrom;
+          for (let i = hideFrom; i < this._paths.length; i++) this._hideSeg(this._paths[i]);
+
+          this._pause();
+          this._elapsed = Math.min(p.time, this._duration - 1);
+          this._pauseIdx++;
+          if (p.type === 'timed') {
+            this._timerId = setTimeout(() => { this._timerId = null; this._play(); }, p.dur);
           } else {
-            this._pause();
-            this._waitingForManualResume = true;
-            this._showControls(true);
-            this._updatePlayButtonIcon();
+            this._waitResume = true;
+            this._forceCo(true); this._syncBtn();
           }
           return;
         }
       }
-      this._animationFrameId = requestAnimationFrame(drawFrame);
+
+      if (el >= this._duration) { this._finish(); return; }
+      this._rafId = requestAnimationFrame(frame);
     };
-    this._showControls(false);
-    this._animationFrameId = requestAnimationFrame(drawFrame);
-    this._updatePlayButtonIcon();
+
+    this._forceCo(false);
+    this._rafId = requestAnimationFrame(frame);
+    this._syncBtn();
   }
 
   _pause() {
-    if (!this._isPlaying) return;
-    this._isPlaying = false;
-    if (this._animationFrameId) {
-      cancelAnimationFrame(this._animationFrameId);
-      this._animationFrameId = null;
-    }
-    this._elapsedBeforePause = performance.now() - this._startTime;
-    this._updatePlayButtonIcon();
+    if (!this._playing) return;
+    this._playing = false;
+    this._cancelRaf();
+    this._elapsed = Math.min(performance.now() - this._t0, this._duration - 1);
+    this._syncBtn();
   }
 
-  _reset() {
-    this._pause();
-    this._isFinished = false;
-    this._elapsedBeforePause = 0;
-    this._currentPauseIndex = 0;
-    this._pausePoints.forEach((point) => (point.triggered = false));
-    this._currentSegmentIndex = 0;
-    this._draw(0);
-    this._showControls(this._autoPlay === false);
-    this._waitingForManualResume = false;
+  _restart() {
+    if (this._playing) this._pause();
+    this._finished = false; this._elapsed = 0; this._pauseIdx = 0;
+    this._pauses.forEach(p => p.triggered = false);
+    for (let i = 0; i < this._revealed; i++) this._hideSeg(this._paths[i]);
+    this._revealed = 0;
+    this._waitResume = false;
+    this._forceCo(!this._autoPlay); this._syncBtn();
   }
 
   _finish() {
     this._pause();
     this._draw(this._duration);
-    this._isFinished = true;
-    this._elapsedBeforePause = this._duration;
-    this._currentSegmentIndex = this._paths.length;
-    this._showControls(true);
-    this._waitingForManualResume = false;
+    this._finished = true; this._elapsed = this._duration;
+    this._forceCo(true); this._waitResume = false;
   }
 
-  _draw(currentTime) {
-    const time = Math.max(0, Math.min(currentTime, this._duration));
-    while (
-      this._currentSegmentIndex < this._paths.length &&
-      time >= this._paths[this._currentSegmentIndex].endTime
-    ) {
-      this._currentSegmentIndex += 1;
+  // ─── Draw: O(1) per frame ────────────────────────────────────────────────────
+
+  _draw(t) {
+    const time = Math.max(0, Math.min(t, this._duration));
+    const paths = this._paths, n = paths.length;
+
+    // Rewind: un-reveal all if any done segment is now after current time
+    if (this._revealed > 0 && paths[this._revealed-1].endTime > time) {
+      for (let i = 0; i < this._revealed; i++) this._hideSeg(paths[i]);
+      this._revealed = 0;
     }
 
-    this._paths.forEach((segment, index) => {
-      if (index < this._currentSegmentIndex) {
-        if (segment.isText) {
-          segment.el.style.fillOpacity = '1';
-        } else if (segment.behavior === 'instant') {
-          segment.el.style.opacity = segment.finalOpacity ?? '1';
-        } else {
-          segment.el.style.strokeDashoffset = '0';
-          if (segment.finalFillOpacity !== undefined) {
-            segment.el.style.fillOpacity = segment.finalFillOpacity;
-          }
-        }
-        return;
-      }
+    // Advance: reveal newly-completed segments
+    while (this._revealed < n && time >= paths[this._revealed].endTime) {
+      this._revealSeg(paths[this._revealed]);
+      this._revealed++;
+    }
 
-      if (index > this._currentSegmentIndex) {
-        if (segment.isText) {
-          segment.el.style.fillOpacity = '0';
-        } else if (segment.behavior === 'instant') {
-          segment.el.style.opacity = '0';
-        } else {
-          segment.el.style.strokeDashoffset = `${segment.length}`;
-          if (segment.finalFillOpacity !== undefined) {
-            segment.el.style.fillOpacity = '0';
-          }
-        }
-        return;
-      }
+    // Animate the one segment currently in progress
+    if (this._revealed < n) {
+      const seg = paths[this._revealed];
+      if (time >= seg.startTime) this._animSeg(seg, time);
+    }
 
-      if (segment.isText) {
-        segment.el.style.fillOpacity = time >= segment.endTime ? '1' : '0';
-        return;
-      }
-
-      if (segment.behavior === 'instant') {
-        const targetOpacity = segment.finalOpacity ?? '1';
-        segment.el.style.opacity = time >= segment.endTime ? targetOpacity : '0';
-        return;
-      }
-
-      const elapsedInSegment = Math.max(0, Math.min(segment.duration, time - segment.startTime));
-      const segmentProgress = segment.duration > 0 ? elapsedInSegment / segment.duration : time >= segment.endTime ? 1 : 0;
-      const offset = Math.max(segment.length * (1 - segmentProgress), 0);
-      segment.el.style.strokeDashoffset = `${offset}`;
-      if (segment.finalFillOpacity !== undefined) {
-        segment.el.style.fillOpacity = '0';
-      }
-    });
     this._showSvg();
   }
 
-  _cancelAnimation() {
-    if (this._animationFrameId) {
-      cancelAnimationFrame(this._animationFrameId);
-      this._animationFrameId = null;
-    }
-    if (this._timedPauseTimeout) {
-      clearTimeout(this._timedPauseTimeout);
-      this._timedPauseTimeout = null;
-    }
-  }
-
-  _updatePlayButtonIcon() {
-    if (!this._btnPlayPause) return;
-    this._btnPlayPause.innerHTML = this._isPlaying ? '<svg viewBox="0 0 24 24"><path d="M6 19h4V5H6zm8-14v14h4V5z"/></svg>' : '<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>';
-    this._btnPlayPause.title = this._isPlaying ? 'Pause' : 'Play';
-  }
-
-  _showControls(forceVisible) {
-    if (!this._controlsOverlay) return;
-    if (forceVisible) {
-      this._controlsOverlay.classList.add('force-visible');
+  _revealSeg(seg) {
+    if (seg.isText) {
+      seg.el.style.fillOpacity = '1';
+    } else if (seg.behavior === 'instant') {
+      seg.el.style.opacity = seg.finalOp ?? '1';
+    } else if (seg.behavior === 'fill-reveal') {
+      seg.el.style.clipPath = 'inset(0 0% 0 0)';
+      seg.el.style.opacity = seg.finalOp ?? '1';
     } else {
-      this._controlsOverlay.classList.remove('force-visible');
+      seg.el.style.strokeDashoffset = '0';
+      seg.el.style.strokeDasharray = seg.origDash || 'none';
+      if (seg.finalFill !== undefined) seg.el.style.fillOpacity = seg.finalFill;
     }
   }
 
-  _showSvg() {
-    if (this._isSvgRevealed || !this._currentSvgElement) return;
-    this._currentSvgElement.style.visibility = 'visible';
-    this._isSvgRevealed = true;
+  _hideSeg(seg) {
+    if (seg.isText) {
+      seg.el.style.fillOpacity = '0';
+    } else if (seg.behavior === 'instant') {
+      seg.el.style.opacity = '0';
+    } else if (seg.behavior === 'fill-reveal') {
+      seg.el.style.clipPath = 'inset(0 100% 0 0)';
+    } else {
+      seg.el.style.strokeDasharray = `${seg.len} ${seg.len}`;
+      seg.el.style.strokeDashoffset = `${seg.len}`;
+      if (seg.finalFill !== undefined) seg.el.style.fillOpacity = '0';
+    }
   }
 
-  _showParseWarningBanner(message) {
-    if (!this._container) return;
-    if (this._parseWarningBanner) {
-      this._parseWarningBanner.textContent = message;
+  _animSeg(seg, time) {
+    if (seg.isText) {
+      seg.el.style.fillOpacity = time >= seg.endTime ? '1' : '0';
       return;
     }
-    const banner = document.createElement('div');
-    banner.textContent = message;
-    banner.style.position = 'absolute';
-    banner.style.top = '0';
-    banner.style.left = '0';
-    banner.style.right = '0';
-    banner.style.padding = '6px 12px';
-    banner.style.background = 'rgba(255, 179, 0, 0.95)';
-    banner.style.color = '#1b1b1b';
-    banner.style.fontSize = '11px';
-    banner.style.fontFamily = 'system-ui, sans-serif';
-    banner.style.textAlign = 'center';
-    banner.style.zIndex = '20';
-    banner.style.borderBottomLeftRadius = '8px';
-    banner.style.borderBottomRightRadius = '8px';
-    banner.style.pointerEvents = 'none';
-    banner.style.whiteSpace = 'pre-wrap';
-    banner.style.wordBreak = 'break-word';
-    banner.style.lineHeight = '1.2';
-    banner.style.maxHeight = 'none';
-    banner.style.boxSizing = 'border-box';
-    banner.style.display = 'block';
-    banner.style.margin = '0 auto';
-    this._container.appendChild(banner);
-    this._parseWarningBanner = banner;
+    if (seg.behavior === 'instant') {
+      seg.el.style.opacity = time >= seg.endTime ? (seg.finalOp ?? '1') : '0';
+      return;
+    }
+    if (seg.behavior === 'fill-reveal') {
+      const elapsed = Math.max(0, Math.min(seg.dur, time - seg.startTime));
+      const prog = seg.dur > 0 ? elapsed / seg.dur : (time >= seg.endTime ? 1 : 0);
+      const clipRight = Math.max(0, (1 - prog) * 100);
+      seg.el.style.clipPath = `inset(0 ${clipRight}% 0 0)`;
+      return;
+    }
+    const elapsed = Math.max(0, Math.min(seg.dur, time - seg.startTime));
+    const prog = seg.dur > 0 ? elapsed / seg.dur : (time >= seg.endTime ? 1 : 0);
+    seg.el.style.strokeDasharray  = `${seg.len} ${seg.len}`;
+    seg.el.style.strokeDashoffset = `${Math.max(seg.len * (1 - prog), 0)}`;
+    if (seg.finalFill !== undefined) seg.el.style.fillOpacity = '0';
+  }
+
+  // ─── Helpers ─────────────────────────────────────────────────────────────────
+
+  _cancelRaf() {
+    if (this._rafId)   { cancelAnimationFrame(this._rafId); this._rafId = null; }
+    if (this._timerId) { clearTimeout(this._timerId); this._timerId = null; }
+  }
+
+  _syncBtn() {
+    if (!this._btnP) return;
+    this._btnP.innerHTML = this._playing
+      ? '<svg viewBox="0 0 24 24"><path d="M6 19h4V5H6zm8-14v14h4V5z"/></svg>'
+      : '<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>';
+    this._btnP.title = this._playing ? 'Pause' : 'Play';
+  }
+
+  _forceCo(on) { this._co?.classList.toggle('fv', on); }
+
+  _showSvg() {
+    if (this._svgShown || !this._svgEl) return;
+    this._svgEl.style.visibility = 'visible';
+    this._svgShown = true;
+  }
+
+  _showBanner(msg) {
+    if (!this._wrap) return;
+    const b = document.createElement('div');
+    b.textContent = msg;
+    Object.assign(b.style, {
+      position:'absolute', top:'0', left:'0', right:'0',
+      padding:'6px 12px', background:'rgba(255,179,0,.95)', color:'#1b1b1b',
+      fontSize:'11px', fontFamily:'system-ui,sans-serif', textAlign:'center',
+      zIndex:'20', borderRadius:'0 0 8px 8px', pointerEvents:'none',
+      whiteSpace:'pre-wrap', wordBreak:'break-word', boxSizing:'border-box'
+    });
+    this._wrap.appendChild(b);
   }
 }
 
