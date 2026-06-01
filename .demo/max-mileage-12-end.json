@@ -6,7 +6,7 @@
   "scenes": [
     {
       "id": "scene-mkkdi5mw-ncdt",
-      "title": "final slides",
+      "title": "ai skills",
       "moves": [
         {
           "action": "executeVSCodeCommand",
@@ -26,7 +26,17 @@
         },
         {
           "action": "openSlide",
-          "path": ".demo/slides/max-mileage-min-tests/slides6.md"
+          "path": ".demo/slides/max-mileage-min-tests/slides6-ai-skill.md"
+        }
+      ]
+    },
+    {
+      "id": "demo-mpu5vk2u-t0c5",
+      "title": "pros and cons",
+      "moves": [
+        {
+          "action": "openSlide",
+          "path": ".demo/slides/max-mileage-min-tests/slides-pros-cons.md"
         }
       ]
     },

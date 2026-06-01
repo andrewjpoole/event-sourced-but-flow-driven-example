@@ -152,6 +152,16 @@
       ]
     },
     {
+      "id": "demo-mpu8zkdr-mows",
+      "title": "slide run test",
+      "moves": [
+        {
+          "action": "openSlide",
+          "path": ".demo/slides/max-mileage-min-tests/slides4-run-test.md"
+        }
+      ]
+    },
+    {
       "id": "demo-mku9d937-6rv8",
       "title": "run test",
       "moves": [
@@ -168,6 +178,16 @@
         {
           "action": "executeVSCodeCommand",
           "command": "testing.runAtCursor"
+        }
+      ]
+    },
+    {
+      "id": "demo-mpu90og0-46zi",
+      "title": "slide debug test",
+      "moves": [
+        {
+          "action": "openSlide",
+          "path": ".demo/slides/max-mileage-min-tests/slides4-debug-test.md"
         }
       ]
     },

@@ -70,6 +70,12 @@
         {
           "action": "open",
           "path": "tests/WeatherApp.Tests.TUnit/Framework/ServiceBus/TestableServiceBusProcessor.cs"
+        },
+        {
+          "action": "selection",
+          "path": "tests/WeatherApp.Tests.TUnit/Framework/ServiceBus/TestableServiceBusProcessor.cs",
+          "position": "71,0",
+          "highlightWholeLine": true
         }
       ]
     },
@@ -86,18 +92,6 @@
       ]
     },
     {
-      "id": "demo-mkivgld2-ivva",
-      "title": "StartProcessingAsync",
-      "moves": [
-        {
-          "action": "highlight",
-          "path": "tests/WeatherApp.Tests.TUnit/Framework/ServiceBus/TestableServiceBusProcessor.cs",
-          "position": "47:48",
-          "highlightWholeLine": false
-        }
-      ]
-    },
-    {
       "id": "demo-mkivg5pp-1qnf",
       "title": "MessageDeliveryAttempts",
       "moves": [
@@ -105,6 +99,18 @@
           "action": "highlight",
           "path": "tests/WeatherApp.Tests.TUnit/Framework/ServiceBus/TestableServiceBusProcessor.cs",
           "position": "9:9",
+          "highlightWholeLine": false
+        }
+      ]
+    },
+    {
+      "id": "demo-mkivgld2-ivva",
+      "title": "StartProcessingAsync",
+      "moves": [
+        {
+          "action": "highlight",
+          "path": "tests/WeatherApp.Tests.TUnit/Framework/ServiceBus/TestableServiceBusProcessor.cs",
+          "position": "47:48",
           "highlightWholeLine": false
         }
       ]
@@ -178,11 +184,18 @@
           "contentPath": ".demo/move-snippets/open-and-remove-selection.json",
           "args": {
             "FILE": "tests/WeatherApp.Tests.TUnit/Framework/ServiceBus/TestableMessageEventArgs.cs"
-          }
+          },
+          "disabled": true
         },
         {
           "action": "open",
           "path": "tests/WeatherApp.Tests.TUnit/Framework/ServiceBus/TestableMessageEventArgs.cs"
+        },
+        {
+          "action": "selection",
+          "path": "tests/WeatherApp.Tests.TUnit/Framework/ServiceBus/TestableMessageEventArgs.cs",
+          "position": "36,0",
+          "highlightWholeLine": true
         }
       ]
     },
@@ -236,7 +249,7 @@
         {
           "action": "highlight",
           "path": "tests/WeatherApp.Tests.TUnit/Framework/Then.cs",
-          "position": "194:208",
+          "position": "235:249",
           "highlightWholeLine": false
         }
       ]

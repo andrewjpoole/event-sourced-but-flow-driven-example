@@ -38,9 +38,11 @@
           "action": "highlight",
           "path": "src/WeatherApp.EventListener/Program.cs",
           "position": "27:43",
-          "highlightWholeLine": true
+          "highlightWholeLine": true,
+          "disabled": false
         }
-      ]
+      ],
+      "disabled": true
     },
     {
       "id": "demo-mkutx1g7-p45o",
@@ -52,9 +54,11 @@
           "content": "            //.AddSingleton<IDateChecker, DateChecker>()",
           "position": "37,0",
           "highlightWholeLine": true,
-          "insertTypingMode": "instant"
+          "insertTypingMode": "instant",
+          "disabled": false
         }
-      ]
+      ],
+      "disabled": true
     },
     {
       "id": "demo-mkuu1u1i-ogpa",
@@ -70,7 +74,8 @@
           "action": "executeVSCodeCommand",
           "command": "testing.runAtCursor"
         }
-      ]
+      ],
+      "disabled": true
     },
     {
       "id": "demo-mkuu5nrr-cm4q",
@@ -84,7 +89,8 @@
           "content": "            .AddSingleton<IDateChecker, DateChecker>()",
           "insertTypingMode": "instant"
         }
-      ]
+      ],
+      "disabled": true
     },
     {
       "id": "scene-mkuuj0b6-q9nz",
@@ -110,7 +116,8 @@
           "action": "openSlide",
           "path": ".demo/slides/max-mileage-min-tests/slides5-2.md"
         }
-      ]
+      ],
+      "disabled": true
     },
     {
       "id": "demo-mkuujvib-ijaj",
@@ -122,7 +129,8 @@
           "position": "23:29",
           "highlightWholeLine": true
         }
-      ]
+      ],
+      "disabled": true
     },
     {
       "id": "demo-mkuulnsa-tdno",
@@ -136,7 +144,8 @@
           "content": "        //Environment.SetEnvironmentVariable($\"{ServiceBusInboundOptions.SectionName}__{nameof(ServiceBusInboundOptions.Entities)}__{nameof(EntityNames.ModelingDataAcceptedIntegrationEvent)}\", EntityNames.ModelingDataAcceptedIntegrationEvent);",
           "insertTypingMode": "instant"
         }
-      ]
+      ],
+      "disabled": true
     },
     {
       "id": "demo-mkuunrmj-8cta",
@@ -152,7 +161,8 @@
           "action": "executeVSCodeCommand",
           "command": "testing.runAtCursor"
         }
-      ]
+      ],
+      "disabled": true
     },
     {
       "id": "demo-mkuums1o-legu",
@@ -166,7 +176,8 @@
           "content": "        Environment.SetEnvironmentVariable($\"{ServiceBusInboundOptions.SectionName}__{nameof(ServiceBusInboundOptions.Entities)}__{nameof(EntityNames.ModelingDataAcceptedIntegrationEvent)}\", EntityNames.ModelingDataAcceptedIntegrationEvent);",
           "insertTypingMode": "instant"
         }
-      ]
+      ],
+      "disabled": true
     },
     {
       "id": "scene-mkuwqvjs-yxlx",
@@ -192,7 +203,8 @@
           "action": "openSlide",
           "path": ".demo/slides/max-mileage-min-tests/slides5-3.md"
         }
-      ]
+      ],
+      "disabled": true
     },
     {
       "id": "scene-mkuwri0q-13zp",
