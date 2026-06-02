@@ -2,12 +2,5 @@
 layout: default
 ---
 
-# How? #5 Mock service bus sender🚌
+# How? #5 Wiring up the FakeServiceBus🚌
 
----
-layout: default
----
-
-# How? #5 Mock service bus sender🚌
-
-### 💡ServiceBusSender can be Mocked using your favourite mocking framework

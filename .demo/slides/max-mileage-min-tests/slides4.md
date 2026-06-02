@@ -5,8 +5,8 @@ layout: default
 # So a quick test strategy...♟️
 
 ---
-layout: animated
-svgFile: .demo/assets/recap-test-strategy.svg
+customLayout: .demo/layouts/animated-diagram.html
+filePath: .demo/assets/recap-test-strategy.svg
 animationSpeed: 1000
 ---
 

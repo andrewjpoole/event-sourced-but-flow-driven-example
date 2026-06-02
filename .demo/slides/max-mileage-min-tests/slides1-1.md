@@ -29,9 +29,9 @@ layout: default
 
 
 ---
-layout: animated
-svgFile: .demo/assets/complex-scenario2.svg
-animationSpeed: 500
+customLayout: .demo/layouts/animated-diagram.html
+filePath: .demo/assets/complex-scenario2.svg
+speed: 500
 ---
 
 ---
@@ -42,17 +42,11 @@ layout: default
 
 
 ---
-layout: animated
-svgFile: .demo/assets/scenario-sequence.svg
-animationSpeed: 1000
+customLayout: .demo/layouts/animated-diagram.html
+filePath: .demo/assets/scenario-sequence.svg
+speed: 1500
 ---
 
-
-<!-- ---
-layout: animated
-svgFile: .demo/assets/lots-of-ways-to-test.svg
-animationSpeed: 100
---- -->
 
 ---
 customLayout: .demo/layouts/animated-diagram.html

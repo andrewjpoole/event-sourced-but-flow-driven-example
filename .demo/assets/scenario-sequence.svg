@@ -1734,7 +1734,7 @@
        stroke-linejoin="round"
        d="m 476.153,708.798 c 3.2178,43.32207 -7.18039,86.50811 -7.58844,129.94344 -1.08262,38.86565 -0.33129,77.79854 -2.60012,116.64831 -1.7701,56.83245 -11.48229,112.96835 -19.87913,169.07495 -2.91524,22.418 -0.37512,192.0425 -0.70885,214.59 l 3.54992,259.9922"
        sodipodi:nodetypes="cccccc"
-       style="stroke-width:6.09199925;stroke-dasharray:none" />
+       style="stroke-width:6.09199925;stroke-dasharray:none" /><!--Pause:UntilPlay-->
     <path
        id="STROKE_605c63be-79d3-420d-b40c-2869cbe99fc8"
        opacity="1.000"
@@ -2023,7 +2023,7 @@
        stroke-linejoin="round"
        d="M 298.985 1141.647 Q 299.694 1142.434 319.120 1138.355 Q 319.120 1138.278 318.944 1138.123 "
        style="stroke-width:5.29;stroke-dasharray:none" />
-    <!--Pause:5-->
+    <!--Pause:UntilPlay-->
     <path
        id="STROKE_9fe50ef0-aaa3-44a6-aed9-a199cbac698b"
        opacity="1.000"

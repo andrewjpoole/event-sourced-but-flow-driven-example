@@ -236,27 +236,8 @@
       ]
     },
     {
-      "id": "demo-mkuapo2j-8yki",
-      "title": "Assertions 1",
-      "moves": [
-        {
-          "action": "snippet",
-          "contentPath": ".demo/move-snippets/open-and-remove-selection.json",
-          "args": {
-            "FILE": "tests/WeatherApp.Tests.TUnit/Framework/Then.cs"
-          }
-        },
-        {
-          "action": "highlight",
-          "path": "tests/WeatherApp.Tests.TUnit/Framework/Then.cs",
-          "position": "235:249",
-          "highlightWholeLine": false
-        }
-      ]
-    },
-    {
       "id": "scene-mkitbn5o-1uvt",
-      "title": "slide - mock service bus sender",
+      "title": "slide - wiring up fake service bus",
       "moves": [
         {
           "action": "openSlide",
@@ -266,7 +247,7 @@
     },
     {
       "id": "scene-mkivywzt-12q6",
-      "title": "code - sender mocking 1",
+      "title": "code - add sender",
       "moves": [
         {
           "action": "snippet",
@@ -284,32 +265,32 @@
       ]
     },
     {
-      "id": "demo-mkub76gm-47ws",
-      "title": "code - sender mocking 2",
-      "moves": [
-        {
-          "action": "highlight",
-          "path": "tests/WeatherApp.Tests.TUnit/Framework/ServiceBus/FakeServiceBus.cs",
-          "position": "13:24",
-          "highlightWholeLine": true
-        }
-      ]
-    },
-    {
-      "id": "demo-mkiw3jmi-jy3u",
-      "title": "code - sender mocking 3 assertions",
+      "id": "demo-mpwjntu5-56gb",
+      "title": "code - add processor",
       "moves": [
         {
           "action": "snippet",
           "contentPath": ".demo/move-snippets/open-and-remove-selection.json",
           "args": {
-            "FILE": "tests/WeatherApp.Tests.TUnit/Framework/Then.cs"
+            "FILE": "tests/WeatherApp.Tests.TUnit/Framework/ServiceBus/FakeServiceBus.cs"
           }
         },
         {
           "action": "highlight",
-          "path": "tests/WeatherApp.Tests.TUnit/Framework/Then.cs",
-          "position": "210:223",
+          "path": "tests/WeatherApp.Tests.TUnit/Framework/ServiceBus/FakeServiceBus.cs",
+          "position": "26:30",
+          "highlightWholeLine": true
+        }
+      ]
+    },
+    {
+      "id": "demo-mkub76gm-47ws",
+      "title": "code - wire up senders and processors",
+      "moves": [
+        {
+          "action": "highlight",
+          "path": "tests/WeatherApp.Tests.TUnit/Framework/ServiceBus/FakeServiceBus.cs",
+          "position": "13:24",
           "highlightWholeLine": true
         }
       ]

@@ -29,8 +29,8 @@ layout: default
 ### Anatomy of an e2e component test...
 
 ---
-layout: animated
-svgFile: .demo/assets/component-test-bits.svg
-animationSpeed: 1200
+customLayout: .demo/layouts/animated-diagram.html
+filePath: .demo/assets/component-test-bits.svg
+speed: 1200
 ---
 
