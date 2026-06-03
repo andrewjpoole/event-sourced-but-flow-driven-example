@@ -50,7 +50,7 @@
     },
     {
       "id": "demo-mkkdp1w0-wo94",
-      "title": "ochestrator 3 sync AI handler",
+      "title": "ochestrator 3 sync API handler",
       "moves": [
         {
           "action": "highlight",
@@ -67,7 +67,7 @@
         {
           "action": "highlight",
           "path": "src/WeatherApp.Application/Orchestration/CollectedWeatherDataOrchestrator.cs",
-          "position": "64:83",
+          "position": "74:83",
           "highlightWholeLine": true
         }
       ]

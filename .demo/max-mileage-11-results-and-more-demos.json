@@ -207,18 +207,6 @@
       "disabled": true
     },
     {
-      "id": "scene-mkuwri0q-13zp",
-      "title": "unhappy paths 1",
-      "moves": [
-        {
-          "action": "highlight",
-          "path": "tests/WeatherApp.Tests.TUnit/ComponentTests.cs",
-          "position": "78:92",
-          "highlightWholeLine": true
-        }
-      ]
-    },
-    {
       "id": "demo-mkuwt04h-4wvw",
       "title": "unhappy paths 2",
       "moves": [

@@ -20,7 +20,7 @@ layout: default
 
 ### ⚙️ Replace db connection in IoC container with Mock/Fake backed by in-memory collections
 
-### ⚙️ SqlLite or EFCore in-memory database*
+### ⚙️ SqlLite or EFCore in-memory database
 
 ---
 layout: default
@@ -30,9 +30,9 @@ layout: default
 
 ### ⚙️ Replace db connection in IoC container with Mock/Fake backed by in-memory collections
 
-### ⚙️ SqlLite or EFCore in-memory database*
+### ⚙️ SqlLite or EFCore in-memory database
 
-### ⚙️ Or use a real database with something like CSharpSqlTests
+### ⚙️ Or use a real database 
 
 ---
 layout: default
@@ -42,7 +42,7 @@ layout: default
 
 ### ⚙️ Replace db connection in IoC container with Mock/Fake backed by in-memory collections
 
-### ⚙️ SqlLite or EFCore in-memory database*
+### ⚙️ SqlLite or EFCore in-memory database
 
 ### ⚙️ Or use a real database
 
@@ -56,8 +56,8 @@ layout: default
 
 ### ⚙️ Replace db connection in IoC container with Mock/Fake backed by in-memory collections
 
-### ⚙️ SqlLite or EFCore in-memory database*
+### ⚙️ SqlLite or EFCore in-memory database
 
-### ⚙️ Or use a real database with something like CSharpSqlTests
+### ⚙️ Or use a real database
 
 ### **<dt-highlight color="#15181f" text-color="#47c4f1">Decent test data generation is usually a significant piece of work, although LLMs are very good at this!</dt-highlight>**
