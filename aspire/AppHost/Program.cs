@@ -1,4 +1,5 @@
 using Microsoft.Extensions.Options;
+using AppHost;
 using Projects;
 using WeatherApp.Infrastructure.Messaging;
 using WeatherApp.Infrastructure.Outbox;
@@ -14,7 +15,7 @@ var sql = builder.AddSqlServer("sql", port: 54782)
 
 var db = sql.AddDatabase("WeatherAppDb", "WeatherAppDb");
 
-builder.AddSqlProject<WeatherAppDb>("weatherAppDbSqlProj")
+builder.AddSqlProjectFromDacpac("weatherAppDbSqlProj", Path.Combine("..", "..", "database"), "WeatherAppDb.dacpac")
     .WithSkipWhenDeployed()
     .WithConfigureDacDeployOptions(options => 
     {
